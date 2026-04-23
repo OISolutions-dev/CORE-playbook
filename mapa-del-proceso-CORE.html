@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manual del Consultor — Levantamiento de KPIs CORE</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --azul:      #1B3A6B;
+      --azul-med:  #2A5BA8;
+      --azul-claro:#4A8FD4;
+      --naranja:   #E87722;
+      --verde:     #2E8B57;
+      --rojo:      #C0392B;
+      --morado:    #7B3FA0;
+      --gris-bg:   #F2F5FA;
+      --blanco:    #FFFFFF;
+      --texto:     #1A1A2E;
+      --borde:     #D0D8E8;
+      --borde-med: #B0BDD0;
+
+      /* Actor colors */
+      --a0: #E8F4FD; --a0b: #2980B9;
+      --a1: #EAF7EA; --a1b: #27AE60;
+      --a2: #FEF9E7; --a2b: #D4AC0D;
+      --a3: #FDEDEC; --a3b: #C0392B;
+      --a4a:#F5EEF8; --a4ab:#8E44AD;
+      --a4b:#FFF0F5; --a4bb:#C0396B;
+      --a5: #FEF5E7; --a5b: #E67E22;
+      --a6: #E8F8F5; --a6b: #1ABC9C;
+
+      /* Stage colors */
+      --e0:#F8F9FA; --e1:#E3F2FD; --e2:#E8F5E9; --e3:#FFF9C4;
+      --e4:#FCE4EC; --e5:#EDE7F6; --e6:#E0F7FA;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--gris-bg);color:var(--texto);min-height:100vh;}
+
+    /* ── HEADER ── */
+    header{background:linear-gradient(135deg,var(--azul) 0%,var(--azul-med) 100%);color:white;padding:32px 48px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;}
+    header .left h1{font-size:1.7rem;font-weight:800;letter-spacing:-0.4px;line-height:1.2;}
+    header .left p{margin-top:8px;font-size:0.9rem;opacity:.85;max-width:520px;}
+    .stats{display:flex;gap:20px;margin-top:14px;}
+    .stat{background:rgba(255,255,255,.12);border-radius:8px;padding:10px 18px;text-align:center;}
+    .stat span{display:block;font-size:1.5rem;font-weight:800;}
+    .stat small{font-size:0.72rem;opacity:.8;letter-spacing:.5px;text-transform:uppercase;}
+    .badge-manual{background:var(--naranja);color:white;padding:6px 14px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;align-self:flex-start;}
+
+    /* ── NAV ── */
+    nav{background:white;border-bottom:2px solid var(--borde);display:flex;padding:0 48px;overflow-x:auto;}
+    nav button{background:none;border:none;border-bottom:3px solid transparent;padding:14px 20px;font-size:.88rem;font-weight:600;color:#666;cursor:pointer;white-space:nowrap;transition:all .2s;margin-bottom:-2px;}
+    nav button:hover{color:var(--azul-med);}
+    nav button.active{color:var(--azul);border-bottom-color:var(--naranja);}
+
+    /* ── MAIN ── */
+    main{padding:36px 48px;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+    .section-title{font-size:1.3rem;font-weight:700;color:var(--azul);margin-bottom:6px;}
+    .section-sub{font-size:.89rem;color:#555;margin-bottom:28px;line-height:1.5;}
+
+    /* ── DIAGRAM BOX ── */
+    .diagram-box{background:white;border:1px solid var(--borde);border-radius:12px;padding:32px;overflow-x:auto;margin-bottom:24px;}
+    .mermaid{max-width:100%;}
+
+    /* ── PHASE CARDS (process overview) ── */
+    .phase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:8px;}
+    .phase-card{background:white;border:1px solid var(--borde);border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+    .phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent,var(--azul-med));}
+    .phase-card .phase-num{font-size:2rem;font-weight:900;color:var(--accent,var(--azul-med));opacity:.15;position:absolute;top:12px;right:16px;line-height:1;}
+    .phase-card h3{font-size:.92rem;font-weight:700;color:var(--azul);margin-bottom:10px;}
+    .phase-card ul{list-style:none;padding:0;}
+    .phase-card ul li{font-size:.82rem;color:#444;padding:4px 0;border-bottom:1px solid #F0F0F0;display:flex;align-items:flex-start;gap:6px;}
+    .phase-card ul li:last-child{border-bottom:none;}
+    .phase-card ul li::before{content:"›";color:var(--accent,var(--naranja));font-weight:700;flex-shrink:0;}
+
+    /* ── MATRIX TABLE ── */
+    .matrix-wrap{overflow-x:auto;margin-bottom:24px;}
+    .matrix-table{border-collapse:collapse;min-width:900px;width:100%;background:white;border-radius:10px;overflow:hidden;font-size:.78rem;}
+    .matrix-table th,.matrix-table td{border:1px solid var(--borde);padding:8px 10px;text-align:center;vertical-align:middle;}
+    .matrix-table .corner{background:var(--azul);color:white;font-weight:700;font-size:.8rem;}
+    .matrix-table .actor-header{font-weight:700;font-size:.75rem;padding:10px 8px;line-height:1.3;}
+    .matrix-table .stage-label{text-align:left;font-weight:700;padding:10px 12px;border-left:4px solid;}
+    .matrix-table .cell-dot{font-size:.7rem;color:#777;line-height:1.3;}
+    .cell-filled{font-size:.65rem;font-weight:600;padding:2px 0;}
+
+    /* Actor header colors */
+    .ah-a0{background:var(--a0);color:var(--a0b);}
+    .ah-a1{background:var(--a1);color:var(--a1b);}
+    .ah-a2{background:var(--a2);color:var(--a2b);}
+    .ah-a3{background:var(--a3);color:var(--a3b);}
+    .ah-a4a{background:var(--a4a);color:var(--a4ab);}
+    .ah-a4b{background:var(--a4b);color:var(--a4bb);}
+    .ah-a5{background:var(--a5);color:var(--a5b);}
+    .ah-a6{background:var(--a6);color:var(--a6b);}
+
+    /* Stage row colors */
+    .sr-e0{background:var(--e0);border-left-color:#999;}
+    .sr-e1{background:var(--e1);border-left-color:#2196F3;}
+    .sr-e2{background:var(--e2);border-left-color:#4CAF50;}
+    .sr-e3{background:var(--e3);border-left-color:#FBC02D;}
+    .sr-e4{background:var(--e4);border-left-color:#E91E63;}
+    .sr-e5{background:var(--e5);border-left-color:#9C27B0;}
+    .sr-e6{background:var(--e6);border-left-color:#00BCD4;}
+
+    .cell-active{background:#EEF3FB;}
+    .cell-empty{background:#FAFAFA;color:#CCC;font-size:.7rem;}
+    .backbone-row td{background:#1B3A6B;color:white;font-size:.75rem;font-weight:600;}
+    .backbone-row .stage-label{background:#1B3A6B;color:white;border-left-color:#E87722;}
+
+    /* ── ACTOR CARDS ── */
+    .actor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .actor-card{background:white;border:1px solid var(--borde);border-radius:10px;padding:18px 20px;border-left:5px solid;}
+    .actor-card h3{font-size:.9rem;font-weight:700;margin-bottom:4px;}
+    .actor-card .code{font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.7;margin-bottom:8px;}
+    .actor-card .desc{font-size:.8rem;color:#555;margin-bottom:10px;line-height:1.4;}
+    .actor-card .kpi-count{display:inline-block;background:var(--azul-med);color:white;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;}
+    .actor-card .examples{margin-top:10px;}
+    .actor-card .examples li{font-size:.77rem;color:#555;padding:3px 0;display:flex;gap:6px;}
+    .actor-card .examples li::before{content:"·";color:var(--naranja);font-weight:700;flex-shrink:0;}
+
+    /* ── KPI LIST ── */
+    .filter-bar{background:white;border:1px solid var(--borde);border-radius:8px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+    .filter-bar label{font-size:.82rem;font-weight:600;color:var(--azul);}
+    .filter-bar select,.filter-bar input{border:1px solid var(--borde-med);border-radius:6px;padding:6px 10px;font-size:.82rem;color:var(--texto);}
+    .kpi-table-wrap{background:white;border:1px solid var(--borde);border-radius:10px;overflow:hidden;}
+    .kpi-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+    .kpi-table thead tr{background:var(--azul);color:white;}
+    .kpi-table th{padding:10px 12px;text-align:left;font-weight:600;font-size:.78rem;}
+    .kpi-table tbody tr{border-bottom:1px solid var(--borde);}
+    .kpi-table tbody tr:hover{background:var(--gris-bg);}
+    .kpi-table td{padding:9px 12px;vertical-align:top;}
+    .kpi-table .num{font-weight:700;color:var(--azul);text-align:center;white-space:nowrap;}
+    .kpi-table .desc{color:var(--texto);}
+    .kpi-table .coords{font-size:.7rem;color:var(--azul-claro);font-family:monospace;}
+    .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+    .tag-original{background:#E3F2FD;color:#1565C0;}
+    .tag-recuperado{background:#FFF9C4;color:#827717;}
+    .tag-nuevo{background:#E8F5E9;color:#1B5E20;}
+
+    .fuente-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:600;border:1px solid;white-space:nowrap;}
+    .ft-web{background:var(--a0);color:var(--a0b);border-color:var(--a0b);}
+    .ft-reportes{background:#F3E5F5;color:#6A1B9A;border-color:#6A1B9A;}
+    .ft-abierta{background:var(--a6);color:var(--a6b);border-color:var(--a6b);}
+    .ft-founders{background:var(--a0);color:var(--a0b);border-color:var(--a0b);}
+    .ft-academia{background:var(--a1);color:var(--a1b);border-color:var(--a1b);}
+    .ft-corporates{background:var(--a2);color:var(--a2b);border-color:var(--a2b);}
+    .ft-gobierno{background:var(--a3);color:var(--a3b);border-color:var(--a3b);}
+    .ft-incubadoras{background:var(--a4b);color:var(--a4bb);border-color:var(--a4bb);}
+    .ft-capital{background:var(--a5);color:var(--a5b);border-color:var(--a5b);}
+    .ft-conectores{background:var(--a6);color:var(--a6b);border-color:var(--a6b);}
+    .ft-backbone{background:#E8EAF6;color:#283593;border-color:#283593;}
+    .ft-formula{background:#FBE9E7;color:#BF360C;border-color:#BF360C;}
+    .ft-media{background:#E0F7FA;color:#006064;border-color:#006064;}
+    .ft-proveedores{background:var(--a4a);color:var(--a4ab);border-color:var(--a4ab);}
+
+    /* ── LEGEND ── */
+    .legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:.78rem;color:#444;}
+    .legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      header{padding:20px;flex-direction:column;}
+      main{padding:20px;}
+      nav{padding:0 12px;}
+      .stats{gap:12px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ──────── HEADER ──────── -->
+<header>
+  <div class="left">
+    <h1>Manual del Consultor — Levantamiento de KPIs</h1>
+    <p>Guía del proceso para el diagnóstico de ecosistemas con la metodología CORE. Basado en la tesis doctoral de Odille Sánchez y el Índice de KPIs (Dic 2025).</p>
+    <div class="stats">
+      <div class="stat"><span>228</span><small>KPIs totales</small></div>
+      <div class="stat"><span>8</span><small>Tipos de actor</small></div>
+      <div class="stat"><span>7</span><small>Etapas del embudo</small></div>
+      <div class="stat"><span>6</span><small>Fases del proceso</small></div>
+    </div>
+  </div>
+  <span class="badge-manual">Manual consultor</span>
+</header>
+
+<!-- ──────── NAV ──────── -->
+<nav>
+  <button class="active" onclick="showTab('proceso')">Proceso de Levantamiento</button>
+  <button onclick="showTab('matriz')">Matriz Actor × Etapa</button>
+  <button onclick="showTab('actores')">Guía por Actor</button>
+  <button onclick="showTab('kpis')">Catálogo de KPIs</button>
+</nav>
+
+<!-- ──────── CONTENIDO ──────── -->
+<main>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 1: PROCESO DE LEVANTAMIENTO
+═══════════════════════════════════════════════ -->
+<div id="tab-proceso" class="tab-panel active">
+  <p class="section-title">Proceso de Levantamiento de KPIs CORE</p>
+  <p class="section-sub">Seis fases secuenciales para el diagnóstico de un ecosistema. El consultor debe completarlas en orden. La calidad del diagnóstico final es directamente proporcional a la profundidad del levantamiento.</p>
+
+  <div class="diagram-box">
+    <div class="mermaid">
+flowchart TD
+    START([" Ecosistema identificado\npara diagnóstico"])
+
+    subgraph F0["FASE 0 — PREPARACIÓN (antes del levantamiento)"]
+        direction LR
+        P1[" Revisar contexto\nCiudad · sector · madurez\ndel ecosistema"]
+        P2[" Identificar actores\ndisponibles por tipo\nA0 → A6"]
+        P3{"¿Existe un Backbone\norganizado?"}
+        P3Y[" Incluir capas\nG1 / G2 / G3"]
+        P3N["⏭ Operar sin\ncapa backbone"]
+        P1 --> P2 --> P3
+        P3 -->|"Sí"| P3Y
+        P3 -->|"No"| P3N
+    end
+
+    subgraph F1["FASE 1 — MAPEO DE INTERSECCIONES"]
+        direction LR
+        M1[" Construir Matriz\nActor × Etapa\n(8 actores × 7 etapas)"]
+        M2[" Marcar intersecciones\ncon actores presentes\nen ESTE ecosistema"]
+        M3[" Priorizar por\ndisponibilidad de\ndatos y estrategia"]
+        M1 --> M2 --> M3
+    end
+
+    subgraph F2["FASE 2 — SELECCIÓN DE KPIs"]
+        direction LR
+        S1[" Para cada intersección:\nidentificar KPIs aplicables\ndel catálogo (228 en total)"]
+        S2[" Clasificar:\nKPIs Primarios vs.\nKPIs de Soporte"]
+        S3[" Agrupar por\nfuente de datos\n(encuesta / web / reportes)"]
+        S1 --> S2 --> S3
+    end
+
+    subgraph F3["FASE 3 — RECOLECCIÓN DE DATOS"]
+        direction TB
+        R0[" WEB SCRAPING\n21 KPIs — Automatizado\n(publicaciones, eventos, medios)"]
+        R1[" REPORTES EXISTENTES\n38 KPIs — Documentación\npública e institucional"]
+        R2[" ENCUESTA ABIERTA\n35 KPIs — Líderes\nde ecosistema"]
+        R3[" FOUNDERS (A0)\n17 KPIs — Emprendedores\nstartups · scaleups"]
+        R4[" ACADEMIA (A1)\n19 KPIs — Docentes\ninvestigadores · OTTs"]
+        R5[" CORPORATIVOS (A2)\n6 KPIs — Empresas\ncámaras · spin-offs"]
+        R6[" GOBIERNO (A3)\n9 KPIs — Municipal\nestatal · nacional"]
+        R7[" INCUBADORAS (A4-B)\n6 KPIs — Aceleradoras\nparques tecnológicos"]
+        R8[" CAPITAL (A5)\n14 KPIs — Fondos VC\nángeles · banca"]
+        R9[" CONECTORES (A6)\n9 KPIs — Comunidades\nmedios · clusters"]
+        R10[" BACKBONE (si existe)\n4 KPIs — G1/G2/G3"]
+    end
+
+    subgraph F4["FASE 4 — INTEGRACIÓN Y VERIFICACIÓN"]
+        direction LR
+        I1[" Compilar datos\npor KPI e intersección"]
+        I2[" Calcular indicadores\nderivados (fórmulas)"]
+        I3{"¿Datos\ncompletos?"}
+        I3Y["▶ Proceder\nal análisis"]
+        I3N[" Documentar gaps\ny definir proxies"]
+        I1 --> I2 --> I3
+        I3 -->|"Sí"| I3Y
+        I3 -->|"No"| I3N
+        I3N --> I3Y
+    end
+
+    subgraph F5["FASE 5 — ANÁLISIS Y DIAGNÓSTICO"]
+        direction LR
+        A1[" Llenar el Heatmap\nActor × Etapa\n(densidad de medición)"]
+        A2[" Identificar zonas\nde baja densidad\n(brechas críticas)"]
+        A3[" Detectar puntos\nciegos de medición"]
+        A4[" Comparar vs.\nestado ideal del\necosistema CORE"]
+        A1 --> A2 --> A3 --> A4
+    end
+
+    subgraph F6["FASE 6 — REPORTE Y ENTREGA"]
+        direction LR
+        RE1[" Dashboard de\nsalud del ecosistema"]
+        RE2[" Diagnóstico de\nbrechas con evidencia"]
+        RE3[" Recomendaciones de\nintervención prioritarias"]
+        RE4[" Plan de seguimiento\ny monitoreo continuo"]
+        RE1 --> RE2 --> RE3 --> RE4
+    end
+
+    RESULTADO([" Entregable final:\nRadiografía del Ecosistema\n+ Hoja de ruta CORE"])
+
+    START --> F0
+    F0 --> F1
+    F1 --> F2
+    F2 --> F3
+    F3 --> F4
+    F4 --> F5
+    F5 --> F6
+    F6 --> RESULTADO
+    RESULTADO -->|"Re-levantamiento\nperiódico (anual)"| F1
+
+    style START fill:#E87722,color:#fff,stroke:none
+    style RESULTADO fill:#2E8B57,color:#fff,stroke:none
+    style F0 fill:#F8F9FA,stroke:#999
+    style F1 fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    style F2 fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
+    style F3 fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px
+    style F4 fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
+    style F5 fill:#EDE7F6,stroke:#9C27B0,stroke-width:2px
+    style F6 fill:#E0F7FA,stroke:#00BCD4,stroke-width:2px
+    </div>
+  </div>
+
+  <p class="section-title" style="margin-top:12px;">Resumen de fases</p>
+  <p class="section-sub">Descripción operativa de cada fase — qué debe hacer el consultor en cada etapa.</p>
+
+  <div class="phase-grid">
+    <div class="phase-card" style="--accent:#999">
+      <div class="phase-num">0</div>
+      <h3>FASE 0 — Preparación</h3>
+      <ul>
+        <li>Revisar contexto: ciudad, sector, nivel de madurez del ecosistema</li>
+        <li>Listar actores disponibles para cada tipo de encuesta (A0–A6)</li>
+        <li>Confirmar si existe un backbone organizado (G1/G2/G3)</li>
+        <li>Definir alcance del levantamiento (¿todas las etapas o un subconjunto?)</li>
+        <li>Agendar entrevistas y recolección de reportes</li>
+      </ul>
+    </div>
+    <div class="phase-card" style="--accent:#2196F3">
+      <div class="phase-num">1</div>
+      <h3>FASE 1 — Mapeo de Intersecciones</h3>
+      <ul>
+        <li>Construir la Matriz Actor × Etapa para este ecosistema</li>
+        <li>Marcar cada celda: ¿el actor opera en esa etapa aquí?</li>
+        <li>Identificar intersecciones vacías (actores ausentes en etapas clave)</li>
+        <li>Priorizar celdas según estrategia y disponibilidad de datos</li>
+      </ul>
+    </div>
+    <div class="phase-card" style="--accent:#4CAF50">
+      <div class="phase-num">2</div>
+      <h3>FASE 2 — Selección de KPIs</h3>
+      <ul>
+        <li>Consultar el Catálogo (228 KPIs) filtrado por intersección</li>
+        <li>Para cada celda activa: seleccionar KPIs primarios y de soporte</li>
+        <li>Clasificar KPIs por fuente de datos requerida</li>
+        <li>Adaptar a disponibilidad local (no todos los KPIs son viables)</li>
+        <li>Priorizar KPIs ORIGINAL sobre RECUPERADO y NUEVO</li>
+      </ul>
+    </div>
+    <div class="phase-card" style="--accent:#FBC02D">
+      <div class="phase-num">3</div>
+      <h3>FASE 3 — Recolección de Datos</h3>
+      <ul>
+        <li>Lanzar encuestas por tipo de actor (ver Guía por Actor)</li>
+        <li>Ejecutar web scraping para 21 KPIs automatizables</li>
+        <li>Recopilar reportes públicos e institucionales (38 KPIs)</li>
+        <li>Aplicar encuesta abierta a líderes del ecosistema (35 KPIs)</li>
+        <li>Si existe backbone: aplicar encuesta específica (4 KPIs)</li>
+        <li>Registrar fuente, fecha y responsable de cada dato</li>
+      </ul>
+    </div>
+    <div class="phase-card" style="--accent:#E91E63">
+      <div class="phase-num">4</div>
+      <h3>FASE 4 — Integración y Verificación</h3>
+      <ul>
+        <li>Compilar todos los datos por KPI e intersección</li>
+        <li>Calcular indicadores derivados con fórmulas del catálogo</li>
+        <li>Verificar consistencia entre fuentes cruzadas</li>
+        <li>Documentar gaps de información y definir proxies</li>
+        <li>Validar con informantes clave cuando haya inconsistencias</li>
+      </ul>
+    </div>
+    <div class="phase-card" style="--accent:#9C27B0">
+      <div class="phase-num">5</div>
+      <h3>FASE 5 — Análisis y Diagnóstico</h3>
+      <ul>
+        <li>Llenar el Heatmap: densidad de indicadores por celda</li>
+        <li>Identificar zonas de baja densidad (brechas críticas)</li>
+        <li>Detectar puntos ciegos: intersecciones sin datos</li>
+        <li>Comparar resultado vs. estado ideal del ecosistema CORE</li>
+        <li>Identificar actores sobre-medidos y sub-medidos</li>
+      </ul>
+    </div>
+    <div class="phase-card" style="--accent:#00BCD4">
+      <div class="phase-num">6</div>
+      <h3>FASE 6 — Reporte y Entrega</h3>
+      <ul>
+        <li>Generar dashboard de salud del ecosistema</li>
+        <li>Redactar diagnóstico de brechas con evidencia específica</li>
+        <li>Formular recomendaciones de intervención priorizadas</li>
+        <li>Diseñar plan de monitoreo continuo y re-levantamiento periódico</li>
+        <li>Presentar a cliente con narrativa basada en datos</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 2: MATRIZ ACTOR × ETAPA
+═══════════════════════════════════════════════ -->
+<div id="tab-matriz" class="tab-panel">
+  <p class="section-title">Matriz Actor × Etapa</p>
+  <p class="section-sub">Cada celda representa una intersección de medición. Las celdas sombreadas indican dónde el catálogo tiene KPIs asignados (2da revisión, Dic 2025). El consultor marca las celdas activas para el ecosistema específico que está diagnosticando.</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#EEF3FB;border:1px solid #2A5BA8"></div> Con KPIs asignados</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FAFAFA;border:1px solid #CCC"></div> Sin KPIs asignados</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1B3A6B"></div> Backbone (capa de gobernanza)</div>
+  </div>
+
+  <div class="matrix-wrap">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th class="corner" colspan="2">Etapa ↓ / Actor →</th>
+          <th class="actor-header ah-a0">A0<br/>Founders</th>
+          <th class="actor-header ah-a1">A1<br/>Academia & I+D</th>
+          <th class="actor-header ah-a2">A2<br/>Corporativos</th>
+          <th class="actor-header ah-a3">A3<br/>Gobierno</th>
+          <th class="actor-header ah-a4a">A4-A<br/>Prov. Servicios</th>
+          <th class="actor-header ah-a4b">A4-B<br/>Incubadoras</th>
+          <th class="actor-header ah-a5">A5<br/>Capital</th>
+          <th class="actor-header ah-a6">A6<br/>Conectores</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- E0 -->
+        <tr>
+          <td class="stage-label sr-e0" style="writing-mode:horizontal-tb;white-space:nowrap;font-size:.7rem"><strong>E0</strong></td>
+          <td class="stage-label sr-e0" style="text-align:left;font-size:.75rem">Comunicación</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-active cell-filled">40, 41, 45<br/>72, 76, 148</td>
+        </tr>
+        <!-- E1 -->
+        <tr>
+          <td class="stage-label sr-e1"><strong>E1</strong></td>
+          <td class="stage-label sr-e1" style="text-align:left;font-size:.75rem">Awareness & Cultura</td>
+          <td class="cell-active cell-filled">189, 190</td>
+          <td class="cell-active cell-filled">2, 8, 9<br/>74, 159, 160</td>
+          <td class="cell-active cell-filled">24, 43, 53<br/>59, 161–164</td>
+          <td class="cell-active cell-filled">8, 22, 47, 48<br/>53, 57, 63<br/>66, 77, 78</td>
+          <td class="cell-active cell-filled">43, 53, 55</td>
+          <td class="cell-active cell-filled">14, 45, 53<br/>55, 114</td>
+          <td class="cell-active cell-filled">166, 200, 201</td>
+          <td class="cell-active cell-filled">11, 38–45<br/>71–79, 213–215</td>
+        </tr>
+        <!-- E2 -->
+        <tr>
+          <td class="stage-label sr-e2"><strong>E2</strong></td>
+          <td class="stage-label sr-e2" style="text-align:left;font-size:.75rem">Inmersión & Conocimiento</td>
+          <td class="cell-active cell-filled">191</td>
+          <td class="cell-active cell-filled">1, 2, 5, 7, 8<br/>15, 16, 25<br/>42, 74, 86, 93<br/>112, 115, 126<br/>127, 147, 151<br/>152, 169, 170</td>
+          <td class="cell-active cell-filled">24, 53, 59<br/>87, 88, 93<br/>150, 171</td>
+          <td class="cell-active cell-filled">5, 6, 8, 15<br/>21, 23, 25<br/>42, 43, 46<br/>48, 51, 53–70</td>
+          <td class="cell-active cell-filled">21, 25, 45<br/>50, 52, 53<br/>55, 58, 60<br/>64, 68, 75<br/>113</td>
+          <td class="cell-active cell-filled">14, 25, 27<br/>29, 30, 33<br/>34, 36, 50<br/>52–55, 58–68<br/>75, 111–114</td>
+          <td class="cell-active cell-filled">202–204</td>
+          <td class="cell-active cell-filled">13, 71, 73<br/>216, 217</td>
+        </tr>
+        <!-- E3 -->
+        <tr>
+          <td class="stage-label sr-e3"><strong>E3</strong></td>
+          <td class="stage-label sr-e3" style="text-align:left;font-size:.75rem">Idea & Desarrollo de Proyecto</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-active cell-filled">1–3, 5, 7, 8<br/>15–16, 25, 42<br/>45, 81–86, 93<br/>112, 115, 116<br/>126, 127, 147<br/>151–152, 173</td>
+          <td class="cell-active cell-filled">24, 87, 88<br/>93, 135, 136<br/>150</td>
+          <td class="cell-active cell-filled">5, 6, 8, 15<br/>21–26, 30<br/>32, 42, 43<br/>55, 57, 60–70<br/>81–84, 90<br/>93, 112–116<br/>121–124, 133<br/>134, 136, 149</td>
+          <td class="cell-active cell-filled">21, 25–27<br/>29, 30, 33<br/>34, 36, 45<br/>55, 58, 60<br/>64, 68, 75<br/>111–114</td>
+          <td class="cell-active cell-filled">14, 25, 27<br/>29, 30, 33<br/>34, 36, 45<br/>53, 55, 58<br/>60, 64, 68<br/>111–114</td>
+          <td class="cell-active cell-filled">174, 175<br/>205, 206</td>
+          <td class="cell-active cell-filled">12, 42, 145<br/>153, 155–157<br/>176, 218, 219</td>
+        </tr>
+        <!-- E4 -->
+        <tr>
+          <td class="stage-label sr-e4"><strong>E4</strong></td>
+          <td class="stage-label sr-e4" style="text-align:left;font-size:.75rem">Crear & Lanzar Empresas</td>
+          <td class="cell-active cell-filled">192–199</td>
+          <td class="cell-active cell-filled">81, 82, 85<br/>115, 116, 126<br/>127, 151, 152<br/>177</td>
+          <td class="cell-active cell-filled">24, 87, 88<br/>135, 136<br/>150, 178</td>
+          <td class="cell-active cell-filled">26, 30, 32<br/>51, 57, 60<br/>62, 65–67<br/>69, 78, 81–84<br/>90, 93, 112<br/>113, 115, 116<br/>121–124, 133<br/>134, 136, 149</td>
+          <td class="cell-active cell-filled">26, 27, 29<br/>30, 33, 34<br/>36, 45, 60<br/>68, 75, 82–84<br/>90, 91, 93<br/>111–114<br/>117–119<br/>122–124<br/>128–131<br/>134, 136<br/>138, 139, 149</td>
+          <td class="cell-active cell-filled">27, 29, 30<br/>33, 34, 36<br/>45, 50, 52<br/>55, 60, 68<br/>75, 82–84<br/>90, 91, 93<br/>97, 101<br/>111–114<br/>117–119<br/>122–124<br/>128–131<br/>134, 136<br/>138, 139, 149</td>
+          <td class="cell-active cell-filled">207–209</td>
+          <td class="cell-active cell-filled">180, 220–223</td>
+        </tr>
+        <!-- E5 -->
+        <tr>
+          <td class="stage-label sr-e5"><strong>E5</strong></td>
+          <td class="stage-label sr-e5" style="text-align:left;font-size:.75rem">Consolidar & Crecer</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-active cell-filled">81, 82, 85<br/>115, 116, 126<br/>127, 151, 152</td>
+          <td class="cell-active cell-filled">87, 135, 136<br/>150, 182</td>
+          <td class="cell-active cell-filled">26, 30, 32<br/>51, 57, 60<br/>62, 65–67<br/>69, 81, 82<br/>84, 90, 93<br/>112, 113<br/>115, 116<br/>121, 122<br/>124, 133<br/>134, 136<br/>149, 154</td>
+          <td class="cell-active cell-filled">26–30, 33<br/>34, 36, 75<br/>82–84, 90, 91<br/>93, 111–114<br/>117–119<br/>122–124<br/>128–131<br/>134, 136<br/>138, 139, 149</td>
+          <td class="cell-active cell-filled">27–30, 33<br/>34, 36, 75<br/>82–84, 90, 91<br/>93, 97, 101<br/>111–114<br/>117–119<br/>122–124<br/>128–131<br/>134, 136<br/>138, 139, 149</td>
+          <td class="cell-active cell-filled">181, 210–212</td>
+          <td class="cell-active cell-filled">224</td>
+        </tr>
+        <!-- E6 -->
+        <tr>
+          <td class="stage-label sr-e6"><strong>E6</strong></td>
+          <td class="stage-label sr-e6" style="text-align:left;font-size:.75rem">Infraestructura Compartida</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-active cell-filled">183–186</td>
+          <td class="cell-empty">—</td>
+          <td class="cell-active cell-filled">187, 188</td>
+          <td class="cell-active cell-filled">225</td>
+          <td class="cell-active cell-filled">226</td>
+          <td class="cell-active cell-filled">227</td>
+          <td class="cell-active cell-filled">228</td>
+        </tr>
+        <!-- BACKBONE -->
+        <tr class="backbone-row">
+          <td class="stage-label" style="background:#1B3A6B;color:white;border-left-color:#E87722;font-size:.7rem"><strong>G</strong></td>
+          <td style="text-align:left;font-size:.72rem;background:#1B3A6B;color:white;padding:10px 12px">Backbone<br/>(si existe)</td>
+          <td style="font-size:.68rem;color:#B0C4DE">G1: Ejecutivo<br/>65, 67, 66<br/>133, 154</td>
+          <td style="background:#1B3A6B;color:#888">—</td>
+          <td style="background:#1B3A6B;color:#888">—</td>
+          <td style="font-size:.68rem;color:#B0C4DE">G2: Operativo<br/>10, 12, 50<br/>32, 85</td>
+          <td style="background:#1B3A6B;color:#888">—</td>
+          <td style="background:#1B3A6B;color:#888">—</td>
+          <td style="font-size:.68rem;color:#B0C4DE">G3: Dinámico<br/>11</td>
+          <td style="background:#1B3A6B;color:#888">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="diagram-box">
+    <p style="font-weight:700;color:var(--azul);margin-bottom:16px;font-size:.95rem;">Cómo usar la matriz en el levantamiento</p>
+    <div class="mermaid">
+flowchart LR
+    subgraph PASO1["Paso 1: Identificar"]
+        X1["Para cada celda de la\nmatriz, pregunta:\n¿Este actor opera\nen esta etapa\nen ESTE ecosistema?"]
+    end
+    subgraph PASO2["Paso 2: Marcar"]
+        X2[" Celda ACTIVA\nEl actor está presente\ny tiene KPIs asignados\n\n⬜ Celda VACÍA\nActor ausente =\nBRECHA potencial"]
+    end
+    subgraph PASO3["Paso 3: Priorizar"]
+        X3["Prioridad ALTA\nActores en E3-E5\n(donde ocurre la\ncreación de valor)\n\nPrioridad MEDIA\nE1-E2 (formación)"]
+    end
+    subgraph PASO4["Paso 4: KPIs"]
+        X4["Usar el # de KPI\nen la celda como\nclave para buscarlo\nen el Catálogo\n(Tab: KPIs)"]
+    end
+    PASO1 --> PASO2 --> PASO3 --> PASO4
+
+    style PASO1 fill:#E3F2FD,stroke:#2196F3
+    style PASO2 fill:#E8F5E9,stroke:#4CAF50
+    style PASO3 fill:#FFF9C4,stroke:#FBC02D
+    style PASO4 fill:#FCE4EC,stroke:#E91E63
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 3: GUÍA POR ACTOR
+═══════════════════════════════════════════════ -->
+<div id="tab-actores" class="tab-panel">
+  <p class="section-title">Guía de Recolección por Tipo de Actor</p>
+  <p class="section-sub">Para cada tipo de actor, el consultor aplica un instrumento específico. Esta guía indica a quién entrevistar, cuántos KPIs recolecta y qué tipo de información busca.</p>
+
+  <div class="actor-grid">
+
+    <div class="actor-card" style="border-left-color:var(--a0b)">
+      <div class="code" style="color:var(--a0b)">A0 — Survey to Founders</div>
+      <h3>Fundadores, Emprendedores, Startups y Scaleups</h3>
+      <div class="desc">Datos directamente del usuario emprendedor. Es la voz de quienes están en el embudo activo.</div>
+      <span class="kpi-count">17 KPIs directos · 11 sugeridos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Rondas de financiamiento cerradas (KPI #27)</li>
+        <li>Número de fondeos recibidos (#33, #36)</li>
+        <li>Startups creadas en fase E4 (#192–199)</li>
+        <li>Porcentaje de startups con inversión (#29)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#F8FBFF;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Fundadores activos de startups y scaleups del ecosistema. Ideal: 15–30 personas en etapas E3–E5.
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a1b)">
+      <div class="code" style="color:var(--a1b)">A1 — Survey to Academic & R&D</div>
+      <h3>Academia e Investigación</h3>
+      <div class="desc">Docentes, investigadores, estudiantes, OTTs (Oficinas de Transferencia de Tecnología) y centros de investigación.</div>
+      <span class="kpi-count">19 KPIs directos · 6 sugeridos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Outputs de investigación transferidos al ecosistema (#1)</li>
+        <li>Estudiantes en programas de emprendimiento (#2)</li>
+        <li>Colaboraciones academia-industria (#3)</li>
+        <li>Publicaciones en revistas de alto impacto (#4)</li>
+        <li>Patentes y colaboraciones de I+D (#5)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#F8FBFF;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Directores de vinculación, coordinadores de OTT, decanos de facultades STEM, investigadores con patentes o spin-offs.
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a2b)">
+      <div class="code" style="color:var(--a2b)">A2 — Survey to Corporates</div>
+      <h3>Empresas e Iniciativa Privada</h3>
+      <div class="desc">Empresas, cámaras empresariales, directivos con agenda de innovación, spin-offs corporativos.</div>
+      <span class="kpi-count">6 KPIs directos · 7 sugeridos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Iniciativas de innovación lideradas por empleados (#24)</li>
+        <li>Colaboraciones con academia en I+D (#87, #88)</li>
+        <li>Inversión corporativa en startups (#135, #136)</li>
+        <li>Open Innovation / CVC activo (#178, #182)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#FFFBF0;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Directores de innovación, gerentes de RRHH en empresas grandes, líderes de cámaras industriales.
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a3b)">
+      <div class="code" style="color:var(--a3b)">A3 — Survey to Government Actors</div>
+      <h3>Gobierno y Ciudad</h3>
+      <div class="desc">Gobiernos municipales, estatales y nacionales, agencias públicas de desarrollo económico.</div>
+      <span class="kpi-count">9 KPIs directos · 3 sugeridos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Programas de desarrollo de habilidades financiados (#21)</li>
+        <li>Regulaciones simplificadas para formación (#22)</li>
+        <li>Capital público invertido en startups (#26)</li>
+        <li>Facilidad para crear empresa / impuesto corporativo (#46–48)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#FFF5F5;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Secretarios de Desarrollo Económico, directores de Innovación municipal/estatal, coordinadores de INADEM o equivalentes.
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a4ab)">
+      <div class="code" style="color:var(--a4ab)">A4-A — Survey to Service Providers</div>
+      <h3>Proveedores de Servicios</h3>
+      <div class="desc">Laboratorios, makerspaces, coworks, incubadoras no formales, consultores, OTTs privadas.</div>
+      <span class="kpi-count">1 KPI directo</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Infraestructura compartida disponible (#225)</li>
+        <li>Servicios técnicos de soporte al emprendedor</li>
+        <li>Acceso a laboratorios y makerspaces</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#F9F0FF;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Directores de makerspaces, managers de coworks orientados a startups, consultores especializados en emprendimiento.
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a4bb)">
+      <div class="code" style="color:var(--a4bb)">A4-B — Survey to Incubators / Accelerators</div>
+      <h3>Incubadoras y Aceleradoras</h3>
+      <div class="desc">Aceleradoras formales, programas de incubación, parques tecnológicos orientados a la creación de startups.</div>
+      <span class="kpi-count">6 KPIs directos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Número de programas de incubación entregados (#25)</li>
+        <li>Rondas de financiamiento cerradas en portafolio (#27, #29)</li>
+        <li>Volumen de fondeo early-stage (#33, #34, #36)</li>
+        <li>Infraestructura de aceleración disponible (#226)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#FFF0F5;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Directores de aceleradoras, program managers de incubación, directores de parques tecnológicos con portafolio activo.
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a5b)">
+      <div class="code" style="color:var(--a5b)">A5 — Survey to Capital</div>
+      <h3>Fuentes de Capital</h3>
+      <div class="desc">Inversionistas, fondos de venture capital, ángeles inversionistas, banca de desarrollo.</div>
+      <span class="kpi-count">14 KPIs directos · 6 sugeridos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Base de nuevos inversionistas (&lt;5 años actividad) (#35)</li>
+        <li>Capital total invertido en startups y scaleups (#26)</li>
+        <li>Actividad en mercados de capital público (#37)</li>
+        <li>KPIs de capital en E1–E5 (#166, 174, 175, 181, 200–212)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#FFF8F0;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Managing partners de fondos VC locales, ángeles activos de la región, directores de instrumentos de financiamiento público (NAFINSA, INADEM).
+      </div>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a6b)">
+      <div class="code" style="color:var(--a6b)">A6 — Survey to Connectors, Communities & Media</div>
+      <h3>Conectores, Comunidades y Medios</h3>
+      <div class="desc">Clubes, comunidades de emprendedores, medios especializados, asociaciones, clusters, espacios de divulgación.</div>
+      <span class="kpi-count">9 KPIs directos · 4 sugeridos</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Tasa de participación de actores en el ecosistema (#11)</li>
+        <li>Alcance e impacto en medios (#40, #41)</li>
+        <li>Actividad de networking en el ecosistema (#42)</li>
+        <li>Número de eventos y competencias de startups (#38, #44, #45)</li>
+      </ul>
+      <div style="margin-top:12px;padding:10px;background:#F0FFF8;border-radius:6px;font-size:.78rem;color:#444;">
+        <strong>¿A quién entrevistar?</strong><br/>
+        Líderes de comunidades de emprendedores, editores de medios especializados, directores de clusters y asociaciones empresariales.
+      </div>
+    </div>
+
+    <!-- Fuentes secundarias -->
+    <div class="actor-card" style="border-left-color:#6A1B9A">
+      <div class="code" style="color:#6A1B9A">REPORTES EXISTENTES</div>
+      <h3>Documentación Pública e Institucional</h3>
+      <div class="desc">38 KPIs se obtienen de fuentes secundarias: reportes gubernamentales, datos del INEGI, estadísticas de organizaciones multilaterales.</div>
+      <span class="kpi-count">38 KPIs</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Centros de I+D de multinacionales (#6)</li>
+        <li>Universidades top del ecosistema (#9)</li>
+        <li>Acceso a servicios básicos (#46)</li>
+        <li>Tasa de participación laboral juvenil (#47)</li>
+        <li>Costo de internet (#49)</li>
+      </ul>
+    </div>
+
+    <div class="actor-card" style="border-left-color:#2980B9">
+      <div class="code" style="color:#2980B9">WEB SCRAPING</div>
+      <h3>Datos Digitales y Automatizables</h3>
+      <div class="desc">21 KPIs recolectables con herramientas de scraping. Publicaciones académicas, eventos, medios digitales, actividad en plataformas.</div>
+      <span class="kpi-count">21 KPIs</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Publicaciones en revistas de alto impacto (#4)</li>
+        <li>Menciones en medios nacionales/internacionales (#41)</li>
+        <li>Número de eventos globales de startups (#44)</li>
+        <li>Tiempo promedio para cerrar ronda (#28)</li>
+        <li>Base de nuevos inversionistas (#35)</li>
+      </ul>
+    </div>
+
+    <div class="actor-card" style="border-left-color:var(--a6b)">
+      <div class="code" style="color:var(--a6b)">ENCUESTA ABIERTA — Ecosystem Leaders</div>
+      <h3>Encuesta a Líderes del Ecosistema</h3>
+      <div class="desc">35 KPIs que requieren perspectiva transversal. Diseñada para líderes con visión del ecosistema completo, no de un solo actor.</div>
+      <span class="kpi-count">35 KPIs</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>Actividad de networking del ecosistema (#42)</li>
+        <li>Número de programas de competencias (#14, #17–20)</li>
+        <li>Total de grants para startups (#30)</li>
+        <li>Costo de iniciar un negocio (#50)</li>
+      </ul>
+    </div>
+
+    <div class="actor-card" style="border-left-color:#283593">
+      <div class="code" style="color:#283593">BACKBONE (si existe)</div>
+      <h3>Consejo Ejecutivo / Núcleo Operativo / Stakeholders Activos</h3>
+      <div class="desc">Si el ecosistema tiene un backbone organizado (G1/G2/G3), aplicar encuesta específica de gobernanza.</div>
+      <span class="kpi-count">4 KPIs</span>
+      <ul class="examples" style="margin-top:10px;list-style:none;padding:0;">
+        <li>G1 Ejecutivo: KPIs 65, 67, 66, 133, 154</li>
+        <li>G2 Operativo: KPIs 10, 12, 50, 32, 85</li>
+        <li>G3 Dinámico: KPI 11</li>
+        <li>Iniciativas colaborativas facilitadas (#10)</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 4: CATÁLOGO DE KPIs
+═══════════════════════════════════════════════ -->
+<div id="tab-kpis" class="tab-panel">
+  <p class="section-title">Catálogo de KPIs — 228 indicadores</p>
+  <p class="section-sub">Listado completo de KPIs del índice (2da revisión, Dic 2025). Usa los filtros para encontrar los indicadores relevantes para cada intersección Actor × Etapa.</p>
+
+  <div class="filter-bar">
+    <label>Fuente:</label>
+    <select id="filtroFuente" onchange="filtrarKPIs()">
+      <option value="">Todas</option>
+      <option value="web scraping">Web Scraping</option>
+      <option value="existing reports">Reportes Existentes</option>
+      <option value="open survey">Encuesta Abierta</option>
+      <option value="founders">Founders (A0)</option>
+      <option value="academic">Academia (A1)</option>
+      <option value="corporates">Corporativos (A2)</option>
+      <option value="government">Gobierno (A3)</option>
+      <option value="incubators">Incubadoras (A4-B)</option>
+      <option value="capital">Capital (A5)</option>
+      <option value="connectors">Conectores (A6)</option>
+      <option value="backbone">Backbone</option>
+    </select>
+    <label>Tipo:</label>
+    <select id="filtroTipo" onchange="filtrarKPIs()">
+      <option value="">Todos</option>
+      <option value="ORIGINAL">Original</option>
+      <option value="RECUPERADO">Recuperado</option>
+      <option value="NUEVO">Nuevo</option>
+    </select>
+    <label>Buscar:</label>
+    <input type="text" id="busqueda" placeholder="Buscar en descripción..." oninput="filtrarKPIs()" style="min-width:200px;"/>
+    <span id="contadorKPIs" style="font-size:.8rem;color:#666;margin-left:auto;"></span>
+  </div>
+
+  <div class="kpi-table-wrap">
+    <table class="kpi-table" id="tablaKPIs">
+      <thead>
+        <tr>
+          <th style="width:60px">#</th>
+          <th>KPI — Descripción</th>
+          <th style="width:120px">Tipo</th>
+          <th style="width:200px">Fuente de datos</th>
+          <th style="width:160px">Coordenadas</th>
+        </tr>
+      </thead>
+      <tbody id="kpiBody">
+        <!-- Populated by JS -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="background:var(--azul);color:rgba(255,255,255,.6);text-align:center;padding:16px;font-size:.78rem;margin-top:48px;">
+  Metodología CORE — Manual del Consultor · Levantamiento de KPIs · OI Solutions 2026 · Basado en Sánchez & Almanza (2025) y Revisión de KPIs Ecosistema Dic 2025
+</footer>
+
+<script>
+/* ── Mermaid init ── */
+mermaid.initialize({
+  startOnLoad:true,
+  theme:'base',
+  themeVariables:{
+    primaryColor:'#EEF3FB',primaryTextColor:'#1A1A2E',
+    primaryBorderColor:'#2A5BA8',lineColor:'#2A5BA8',
+    secondaryColor:'#FFF8F0',tertiaryColor:'#F0F8F4',
+    background:'#FFFFFF',clusterBkg:'#F4F6FA',
+    titleColor:'#1B3A6B',edgeLabelBackground:'#FFFFFF',
+    fontSize:'13px'
+  },
+  flowchart:{htmlLabels:true,curve:'basis',padding:18}
+});
+
+/* ── Tab switching ── */
+function showTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* ── KPI Data ── */
+const kpis = [
+  [1,"Number of Research Outputs Transferred to the Ecosystem","A1,E2 ; A1,E3 ; A1,E4","ORIGINAL","Survey to academic & R&D"],
+  [2,"Number of Students Engaged in Entrepreneurship Programs","A1,E1 ; A1,E2 ; A1,E3","ORIGINAL","Survey to academic & R&D"],
+  [3,"Number of Academic-Industry Collaborations Initiated","A1,E2 ; A1,E3 ; A1,E4","ORIGINAL","Survey to academic & R&D"],
+  [4,"Number of Research Publications in High-Impact Journals","A1,E2 ; A1,E3","ORIGINAL","Web scraping"],
+  [5,"Number of patents and R&D collaborations","A1,E3 ; A1,E4 ; A3,E3 ; A3,E4","ORIGINAL","Survey to academic & R&D"],
+  [6,"R&D centers of multinational companies","A1,E1 ; A1,E5 ; A3,E1 ; A3,E5","ORIGINAL","Existing reports"],
+  [7,"R&D Expenditure","A1,E3 ; A1,E4 ; A1,E5","ORIGINAL","Survey to academic & R&D"],
+  [8,"STEM and entrepreneurship education enrollment","A1,E1 ; A1,E2 ; A3,E1 ; A3,E2","ORIGINAL","Survey to academic & R&D"],
+  [9,"Top Universities","A1,E1 ; A1,E2","ORIGINAL","Existing reports"],
+  [10,"Number of Collaborative Initiatives Facilitated","A6,E2 ; A6,E3","ORIGINAL","Survey to Backbone if exists"],
+  [11,"Ecosystem Actor Engagement Rate","A6,E1 ; A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [12,"Number of Ecosystem Data Points Tracked","A6,E3","ORIGINAL","Survey to Backbone if exists"],
+  [13,"Number of People Completing Skills Development Programs","A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [14,"Number of Programs Designed for Emerging Skills","A4-B,E1 ; A4-B,E2 ; A4-B,E3 ; A6,E1 ; A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [15,"Number of Students Completing Entrepreneurship Programs","A1,E2 ; A1,E3 ; A3,E2 ; A3,E3","ORIGINAL","Survey to academic & R&D"],
+  [16,"Number of Faculty Members Trained in Entrepreneurship Education","A1,E2 ; A1,E3","ORIGINAL","Survey to academic & R&D"],
+  [17,"Total Funding Allocated to Training and Development Programs","A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [18,"Percentage of Training Programs Supported by Corporate Funding","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [19,"Number of Community-Supported Training Programs","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [20,"Collaborative Skill-Building Activities Organized","A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [21,"Number of Government-Funded Skill Development Programs","A3,E1 ; A3,E2 ; A4-B,E1 ; A4-B,E2","ORIGINAL","Survey to Government actors"],
+  [22,"Number of Regulations Simplified to Promote Training Accessibility","A3,E4","ORIGINAL","Survey to Government actors"],
+  [23,"Percentage of Target Population Benefiting from Government-Funded Training Programs","A3,E2","ORIGINAL","Survey to Government actors"],
+  [24,"Number of Employee-Led Innovation Initiatives","A2,E2 ; A2,E3 ; A2,E4","ORIGINAL","Survey to corporates"],
+  [25,"Number of Training or Incubation Programs Delivered","A1,E2 ; A1,E3 ; A3,E2 ; A3,E3 ; A4-B,E2 ; A4-B,E3 ; A4-B,E4","ORIGINAL","Survey to academic & R&D"],
+  [26,"Total Capital Invested in Startups and Scaleups","A3,E4 ; A3,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to Government actors"],
+  [27,"Number of Funding Rounds Closed","A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to founders"],
+  [28,"Average Time to Close a Funding Round","A4-B,E4 ; A5,E4","ORIGINAL","Web scraping"],
+  [29,"Percentage of Startups Receiving Investment","A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to incubators - accelerators"],
+  [30,"Total Grants Allocated to Startups","A3,E3 ; A3,E4 ; A4-B,E3 ; A4-B,E4 ; A6,E3 ; A6,E4","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [31,"Investment Diversity Index","A5,E4 ; A5,E5","ORIGINAL","Existing reports"],
+  [32,"Bank credit to SMEs","A3,E4","ORIGINAL","Survey to Backbone if exists"],
+  [33,"Early stage Funding Volume: Sum of value of investments","A4-B,E3 ; A4-B,E4","ORIGINAL","Survey to founders"],
+  [34,"Early-Stage Funding Growth: Number of investments","A4-B,E3 ; A4-B,E4 ; A4-B,E5 ; A6,E3 ; A6,E4","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [35,"Emerging Investor Base: New Investors with less than 5 years of activity","A5,E2 ; A5,E3","ORIGINAL","Web scraping"],
+  [36,"Number of Investors / Venture Capitals","A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to founders"],
+  [37,"Public capital market activity","A3,E5 ; A5,E5","ORIGINAL","Existing reports"],
+  [38,"Number of Ecosystem Events Facilitated","A4-A,E0 ; A4-A,E1 ; A4-A,E2 ; A5,E1 ; A5,E2 ; A6,E0 ; A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [39,"Number of Active Ecosystem Members","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [40,"Media Reach and Engagement","A6,E0 ; A6,E1","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [41,"Number of Mentions or Features in National or International Media","A6,E0 ; A6,E1","ORIGINAL","Web scraping"],
+  [42,"Ecosystem Networking Activity","A1,E1 ; A1,E2 ; A1,E3 ; A3,E1 ; A3,E2 ; A3,E3 ; A6,E1 ; A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [43,"Industry association memberships","A2,E1 ; A2,E2 ; A3,E1 ; A3,E2 ; A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [44,"Number of global startup events","A6,E1","ORIGINAL","Web scraping"],
+  [45,"Number of startup competitions","A1,E1 ; A1,E2 ; A4-B,E1 ; A4-B,E2 ; A4-B,E3 ; A6,E1 ; A6,E2 ; A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [46,"Access to utilities (electricity, water, internet penetration)","A3,E4","ORIGINAL","Existing reports"],
+  [47,"Youth Labor Participation Rate","A3,E1","ORIGINAL","Existing reports"],
+  [48,"Corporate tax rate","A3,E4","ORIGINAL","Existing reports"],
+  [49,"Cost of internet","A3,E6","ORIGINAL","Existing reports"],
+  [50,"Cost starting a business (% of income per capita)","A4-B,E4 ; A6,E4","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [51,"Ease of doing business (overall ranking or sub-index)","A3,E4 ; A3,E5","ORIGINAL","Existing reports"],
+  [52,"Number of days to register a business","A4-B,E4 ; A6,E4","ORIGINAL","Existing reports"],
+  [53,"Number of Legal and Regulatory Reforms Supporting Startups","A2,E1 ; A2,E2 ; A3,E1 ; A3,E2 ; A3,E3 ; A4-A,E1 ; A4-A,E2 ; A4-B,E1 ; A4-B,E2 ; A4-B,E3 ; A6,E1 ; A6,E2 ; A6,E3","ORIGINAL","Existing reports"],
+  [54,"IP protection rating","A3,E3","ORIGINAL","Existing reports"],
+  [55,"IPO regulations","A3,E2 ; A3,E3 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [56,"Political Stability","A3,E2","ORIGINAL","Existing reports"],
+  [57,"Rule of Law Index","A2,E2 ; A3,E2 ; A4-A,E2","ORIGINAL","Existing reports"],
+  [58,"Number of Public-Private Partnerships","A3,E2 ; A3,E3 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [59,"Number of Technology Transfer Programs or Offices","A1,E2 ; A2,E2 ; A3,E2","ORIGINAL","Survey to academic & R&D"],
+  [60,"Number of Joint Ventures Between Academia and Industry","A1,E2 ; A1,E3 ; A3,E2 ; A3,E3 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Survey to academic & R&D"],
+  [61,"Number of New Startups Registered","A1,E2","ORIGINAL","Existing reports"],
+  [62,"Startup Survival Rate","A2,E3 ; A3,E3","ORIGINAL","Existing reports"],
+  [63,"Rate of startups registered by women","A3,E1","ORIGINAL","Existing reports"],
+  [64,"Number of New Products or Services Launched","A4-A,E2 ; A4-B,E2","ORIGINAL","Survey to Government actors"],
+  [65,"Number of Workers in Knowledge-Based Industries","A3,E2","ORIGINAL","Existing reports"],
+  [66,"Employment Growth in Knowledge-Based Industries","A2,E1 ; A3,E1 ; A3,E2","ORIGINAL","Existing reports"],
+  [67,"Percentage of Employees with Advanced Degrees in Knowledge-Based Industries","A2,E1 ; A3,E2","ORIGINAL","Existing reports"],
+  [68,"Percentage of Workforce Employed in Startups","A3,E2 ; A4-A,E2 ; A4-B,E2","ORIGINAL","Existing reports"],
+  [69,"Number of New Jobs Created by Startups per Year","A2,E3 ; A3,E2 ; A3,E3","ORIGINAL","Existing reports"],
+  [70,"Job Quality Index in Startups","A3,E2","ORIGINAL","Existing reports"],
+  [71,"Number of Communities or Networks Supporting Entrepreneurs","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [72,"Number of Initiatives to Support Underrepresented Entrepreneurs","A3,E1 ; A3,E2 ; A6,E0 ; A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [73,"Number of Mentors in the Ecosystem","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [74,"Graduate Startup Rate","A1,E1 ; A1,E2","ORIGINAL","Survey to academic & R&D"],
+  [75,"Number of Incubators and Accelerators","A3,E2 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [76,"Number of Ecosystem Publications or Reports","A3,E0 ; A6,E0","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [77,"Number of International Connections or Partnerships","A3,E1","ORIGINAL","Existing reports"],
+  [78,"Bilateral Trade and Investment Agreements","A2,E1 ; A3,E1 ; A3,E4","ORIGINAL","Existing reports"],
+  [79,"Diplomatic Presence and Trade Missions","A6,E1","ORIGINAL","Existing reports"],
+  [80,"GDP per capita","","ORIGINAL","Existing reports"],
+  [81,"Startup Revenue Growth Rate","A1,E3 ; A1,E4 ; A1,E5 ; A2,E3 ; A3,E3 ; A3,E4 ; A3,E5 ; A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to Backbone if exists"],
+  [82,"Number of Startups Successfully Graduated from Incubation","A1,E3 ; A1,E4 ; A1,E5 ; A3,E3 ; A3,E4 ; A3,E5 ; A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to Backbone if exists"],
+  [83,"Number of Startups Scaling Internationally","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to Backbone if exists"],
+  [84,"Startup Exit Rate (IPO, M&A)","A3,E4 ; A3,E5 ; A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to Backbone if exists"],
+  [85,"Startup Failure Rate by Stage","A1,E3 ; A2,E4 ; A3,E4 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Survey to Backbone if exists"],
+  [86,"Number of Technology Platforms Developed by Startups","A1,E2 ; A1,E3","ORIGINAL","Survey to academic & R&D"],
+  [87,"R&D Investment by Private Sector","A1,E3 ; A1,E4 ; A1,E5 ; A2,E3 ; A2,E4 ; A2,E5","ORIGINAL","Survey to corporates"],
+  [88,"Percentage of Revenue Invested in R&D by Startups","A1,E3 ; A1,E4 ; A1,E5 ; A2,E3 ; A2,E4 ; A2,E5","ORIGINAL","Survey to corporates"],
+  [89,"Number of Data Analytics Tools Used by Startups","","ORIGINAL","Web scraping"],
+  [90,"Number of Digital Transformation Initiatives","A3,E2 ; A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [91,"Blockchain and IoT adoption in startups","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [92,"Number of Cybersecurity Initiatives Developed","","ORIGINAL","Existing reports"],
+  [93,"AI Integration in Startups","A1,E2 ; A1,E3 ; A3,E2 ; A3,E3 ; A4-A,E2 ; A4-A,E3 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [94,"Number of Ecosystem Leaders Engaged in Governance Efforts","","ORIGINAL","Existing reports"],
+  [95,"Number of Ecosystem Governance Frameworks Established","","ORIGINAL","Existing reports"],
+  [96,"Number of Ecosystem Monitoring Reports Published","","ORIGINAL","Existing reports"],
+  [97,"Number of Knowledge-Sharing Platforms","A4-A,E4 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [98,"Number of Cross-Sector Collaborations","","ORIGINAL","Existing reports"],
+  [99,"Percentage of Startups with Board of Directors","","ORIGINAL","Existing reports"],
+  [100,"Number of Entrepreneurship Conferences Organized","","ORIGINAL","Existing reports"],
+  [101,"Number of Global Partnerships Formed","A4-A,E4 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [102,"Number of Ecosystem Impact Reports Published","","ORIGINAL","Existing reports"],
+  [103,"Number of Ecosystem Challenges or Problems Addressed","","ORIGINAL","Existing reports"],
+  [104,"Number of Social Impact Startups","","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [105,"Number of Environmental Startups","","ORIGINAL","Existing reports"],
+  [106,"Carbon footprint reduction by startups","","ORIGINAL","Web scraping"],
+  [107,"Number of Startups Addressing Climate Goals","","ORIGINAL","Web scraping"],
+  [108,"Number of Startups Addressing Social Goals (SDGs)","","ORIGINAL","Web scraping"],
+  [109,"Economic Impact of Startups","","ORIGINAL","Web scraping"],
+  [110,"Number of Ecosystem Benchmarking Activities","","ORIGINAL","Existing reports"],
+  [111,"Number of Pilot Programs or Proof-of-Concept Initiatives","A3,E2 ; A3,E3 ; A4-A,E2 ; A4-A,E3 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [112,"Number of Technology Licensing Agreements","A1,E2 ; A1,E3 ; A3,E2 ; A3,E3 ; A4-A,E2 ; A4-A,E3 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [113,"Number of Cross-Sector Innovation Projects","A1,E2 ; A3,E0 ; A3,E2 ; A4-A,E1 ; A4-A,E2 ; A4-B,E1 ; A4-B,E2","ORIGINAL","Existing reports"],
+  [114,"Percentage of Startups Using Shared R&D Infrastructure","A1,E2 ; A3,E2 ; A4-A,E1 ; A4-B,E1 ; A4-B,E2","ORIGINAL","Existing reports"],
+  [115,"Number of Spin-Off Companies from Academia","A1,E2 ; A1,E3 ; A1,E4 ; A1,E5 ; A3,E2 ; A3,E3 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Survey to academic & R&D"],
+  [116,"Corporate Venture Capital Activity","A1,E3 ; A1,E4 ; A3,E3 ; A3,E4 ; A4-B,E3 ; A4-B,E4","ORIGINAL","Survey to academic & R&D"],
+  [117,"Total Revenue Generated by Startups in the Ecosystem","A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [118,"Percentage of Startups Achieving Profitability","A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [119,"Number of Startups in Emerging Industry Sectors","A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [120,"Number of Co-Working Spaces","","ORIGINAL","Existing reports"],
+  [121,"Number of Startup Studios or Venture Builders","A3,E3 ; A4-A,E3 ; A4-B,E3 ; A4-B,E4","ORIGINAL","Existing reports"],
+  [122,"Number of Research Consortiums","A1,E2 ; A3,E2 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [123,"Number of Innovation Hubs","A3,E2 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [124,"Number of Smart City Projects","A3,E2 ; A3,E3 ; A4-A,E2 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [125,"Number of Multinational Corporations in the Ecosystem","","ORIGINAL","Existing reports"],
+  [126,"Number of University-Based Venture Funds","A1,E3 ; A1,E4 ; A1,E5","ORIGINAL","Survey to academic & R&D"],
+  [127,"Number of Academic Labs Collaborating with Startups","A1,E3 ; A1,E4 ; A1,E5","ORIGINAL","Survey to academic & R&D"],
+  [128,"Number of Startups Participating in International Trade Shows","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [129,"Number of Startups Receiving Export Assistance","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [130,"Number of Startups with International Revenue","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [131,"Number of International Investor Networks","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [132,"Number of Startups with Diversity in Leadership","","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [133,"Number of Startups with Defined Governance Structures","A3,E2 ; A3,E3","ORIGINAL","Existing reports"],
+  [134,"Number of Startups Using Agile Methodologies","A3,E2 ; A3,E3 ; A4-A,E2 ; A4-A,E3 ; A4-B,E2 ; A4-B,E3","ORIGINAL","Existing reports"],
+  [135,"Number of Corporate R&D Labs","A2,E3 ; A2,E4 ; A2,E5","ORIGINAL","Survey to corporates"],
+  [136,"Corporate Investment in Startups (CVC)","A2,E3 ; A2,E4 ; A2,E5 ; A3,E3 ; A3,E4 ; A3,E5","ORIGINAL","Survey to corporates"],
+  [137,"Number of joint ventures between corporates and startups","","ORIGINAL","Existing reports"],
+  [138,"Number of Open Innovation Challenges","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [139,"Number of Technology Accelerators Launched by Corporates","A4-A,E4 ; A4-A,E5 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [140,"Percentage of Startups in Corporates' Supply Chain","","ORIGINAL","Existing reports"],
+  [141,"Number of Startups Targeting New Markets","","ORIGINAL","Existing reports"],
+  [142,"Number of Startups with Active Advisory Boards","","ORIGINAL","Existing reports"],
+  [143,"Number of Startup Ecosystems Partnerships","","ORIGINAL","Existing reports"],
+  [144,"Number of Startups Receiving Government Grants","","ORIGINAL","Existing reports"],
+  [145,"Number of Ecosystem-Wide Challenges Solved","A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [146,"Number of Startups using Open-Source Technologies","","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [147,"Number of Collaborative R&D Initiatives","A1,E2 ; A1,E3 ; A1,E4 ; A1,E5","ORIGINAL","Survey to academic & R&D"],
+  [148,"Number of Ecosystem-Wide Communication Campaigns","A3,E0 ; A6,E0 ; A6,E1","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [149,"Number of Startup Mentorship Programs","A3,E3 ; A3,E4 ; A4-A,E3 ; A4-A,E4 ; A4-A,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5","ORIGINAL","Existing reports"],
+  [150,"Number of Industry Consortiums","A2,E3 ; A2,E4 ; A2,E5","ORIGINAL","Survey to corporates"],
+  [151,"Number of Spin-Offs from Research Projects","A1,E3 ; A1,E4 ; A1,E5","ORIGINAL","Survey to academic & R&D"],
+  [152,"Number of Startups Emerging from University Programs","A1,E3 ; A1,E4 ; A1,E5","ORIGINAL","Survey to academic & R&D"],
+  [153,"Number of Local-Global Partnerships in the Ecosystem","A6,E3","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [154,"Number of Ecosystem Leaders Trained","A3,E2 ; A6,E3","ORIGINAL","Existing reports"],
+  [155,"Number of Ecosystem-Wide Social Responsibility Initiatives","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [156,"Number of Diversity and Inclusion Programs","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [157,"Number of Entrepreneurship Programs for Underrepresented Groups","A6,E1 ; A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [158,"Number of Ecosystem-Level Educational Initiatives","A6,E2","ORIGINAL","Open Survey to Ecosystem Leaders"],
+  [159,"Number of Entrepreneurship Courses Offered Online","A1,E1","RECUPERADO","Survey to academic & R&D"],
+  [160,"Percentage of High School Students Exposed to Entrepreneurship","A1,E1","RECUPERADO","Survey to academic & R&D"],
+  [161,"Number of Workshops Organized by Corporations","A2,E1","RECUPERADO","Survey to corporates (suggested)"],
+  [162,"Percentage of Employees Participating in Corporate Entrepreneurship","A2,E1","RECUPERADO","Survey to corporates (suggested)"],
+  [163,"Number of Corporate Sponsorships for Entrepreneurship Events","A2,E1","RECUPERADO","Survey to corporates (suggested)"],
+  [164,"Corporate Brand Mentions in Entrepreneurship Media","A2,E1","RECUPERADO","Survey to corporates (suggested)"],
+  [165,"Number of Mentoring Relationships Established","","RECUPERADO","Survey to founders (suggested)"],
+  [166,"Number of Investors Participating in Awareness Programs","A5,E1","RECUPERADO","Survey to Capital"],
+  [167,"Number of High-Impact Startups in the Ecosystem","","RECUPERADO","Survey to founders (suggested)"],
+  [168,"Percentage of Startups with Formalized Operations","","RECUPERADO","Survey to founders (suggested)"],
+  [169,"Percentage of Enrolled Students in STEM and Entrepreneurship Programs","A1,E2","RECUPERADO","Survey to academic & R&D"],
+  [170,"Number of Research Grants Awarded to Startups","A1,E2","RECUPERADO","Survey to academic & R&D"],
+  [171,"Number of Corporate-Sponsored Scholarships in Entrepreneurship","A2,E2","RECUPERADO","Survey to corporates (suggested)"],
+  [172,"Number of Entrepreneurs with Active Mentors","","RECUPERADO","Survey to founders (suggested)"],
+  [173,"Number of Prototype Competitions Organized","A1,E3","RECUPERADO","Survey to academic & R&D (suggested)"],
+  [174,"Number of VC Investments in Prototype Stage","A5,E3","RECUPERADO","Survey to Capital"],
+  [175,"Amount of Funding for Prototype Development","A5,E3","RECUPERADO","Survey to Capital"],
+  [176,"Number of Ecosystem-Supported Prototypes Developed","A6,E3","RECUPERADO","Open Survey to Ecosystem Leaders (suggested)"],
+  [177,"Number of Startups Supported by Academia","A1,E4","RECUPERADO","Survey to academic & R&D (suggested)"],
+  [178,"Number of Startups Emerging from Corporate Incubators","A2,E4","RECUPERADO","Survey to corporates (suggested)"],
+  [179,"Number of Entrepreneurs Who Pivot Successfully","","RECUPERADO","Survey to founders (suggested)"],
+  [180,"Number of Startups Supported by Community Networks","A6,E4","RECUPERADO","Open Survey to Ecosystem Leaders (suggested)"],
+  [181,"Number of Scale-Ups Supported by Networks","A5,E5","RECUPERADO","Survey to Capital"],
+  [182,"Number of Corporations with Corporate Venture Capital","A2,E5","RECUPERADO","Survey to corporates"],
+  [183,"Number of Research Labs with Shared Infrastructure","A1,E6","RECUPERADO","Survey to academic & R&D"],
+  [184,"Number of Research Facilities Available for Public Use","A1,E6","RECUPERADO","Survey to academic & R&D"],
+  [185,"Percentage of University Labs Open to Startups","A1,E6","RECUPERADO","Survey to academic & R&D"],
+  [186,"Number of Joint University-Industry Research Centers","A1,E6","RECUPERADO","Survey to academic & R&D"],
+  [187,"Number of Government-Funded Shared Facilities","A3,E6","RECUPERADO","Survey to Government actors (suggested)"],
+  [188,"Number of Government Initiatives Promoting Shared Infrastructure","A3,E6","RECUPERADO","Survey to Government actors (suggested)"],
+  [189,"Number of Founders Who Attended Awareness Events","A0,E1","NUEVO","Survey to founders"],
+  [190,"Percentage of Founders Exposed to Entrepreneurship Before Starting","A0,E1","NUEVO","Survey to founders"],
+  [191,"Number of Founders Who Completed Formal Training","A0,E2","NUEVO","Survey to founders"],
+  [192,"Number of Startups Formally Registered","A0,E4","NUEVO","Survey to founders"],
+  [193,"Average Time from Idea to Company Launch","A0,E4","NUEVO","Survey to founders"],
+  [194,"Percentage of Startups with Co-Founders","A0,E4","NUEVO","Survey to founders"],
+  [195,"Number of Startups with a Dedicated Technical Team","A0,E4","NUEVO","Survey to founders"],
+  [196,"Percentage of Startups with Validated Business Model","A0,E4","NUEVO","Survey to founders"],
+  [197,"Number of Startups Achieving Their First Sale","A0,E4","NUEVO","Survey to founders"],
+  [198,"Number of Startups with Product-Market Fit","A0,E4","NUEVO","Survey to founders"],
+  [199,"Percentage of Founders with Prior Business Experience","A0,E4","NUEVO","Survey to founders"],
+  [200,"Percentage of Investors Actively Scouting for Deals","A5,E1","NUEVO","Survey to Capital"],
+  [201,"Number of Investor Networks Focused on Early-Stage Startups","A5,E1","NUEVO","Survey to Capital"],
+  [202,"Number of Investors Providing Seed Funding","A5,E2","NUEVO","Survey to Capital"],
+  [203,"Average Seed Funding Amount Provided","A5,E2","NUEVO","Survey to Capital"],
+  [204,"Percentage of Investors Supporting Female-Led Startups","A5,E2","NUEVO","Survey to Capital"],
+  [205,"Number of Investors in Idea Validation Stage","A5,E3","NUEVO","Survey to Capital"],
+  [206,"Amount of Funding Provided for Idea Validation","A5,E3","NUEVO","Survey to Capital"],
+  [207,"Number of Investors in Early-Stage Startups","A5,E4","NUEVO","Survey to Capital"],
+  [208,"Average Early-Stage Investment Size","A5,E4","NUEVO","Survey to Capital"],
+  [209,"Number of Startups Backed by Institutional Investors","A5,E4","NUEVO","Survey to Capital"],
+  [210,"Number of Series A/B Investments Closed","A5,E5","NUEVO","Survey to Capital"],
+  [211,"Average Growth Rate of Portfolio Companies","A5,E5","NUEVO","Survey to Capital"],
+  [212,"Number of Scale-Ups Achieving Unicorn Status","A5,E5","NUEVO","Survey to Capital"],
+  [213,"Number of Awareness Programs Supported by Communities","A6,E1","NUEVO","Survey to Connectors"],
+  [214,"Number of Community Events Promoting Entrepreneurship","A6,E1","NUEVO","Survey to Connectors"],
+  [215,"Number of Influencers Supporting Entrepreneurship Awareness","A6,E1","NUEVO","Survey to Connectors"],
+  [216,"Number of Communities Providing Knowledge Resources","A6,E2","NUEVO","Survey to Connectors"],
+  [217,"Number of Online Platforms for Knowledge Sharing","A6,E2","NUEVO","Survey to Connectors"],
+  [218,"Number of Community Networks Supporting Ideation","A6,E3","NUEVO","Survey to Connectors"],
+  [219,"Number of Online Communities for Startup Validation","A6,E3","NUEVO","Survey to Connectors"],
+  [220,"Number of Communities Supporting Company Formation","A6,E4","NUEVO","Survey to Connectors"],
+  [221,"Number of Networking Events for New Startups","A6,E4","NUEVO","Survey to Connectors"],
+  [222,"Number of Mentorship Programs for New Founders","A6,E4","NUEVO","Survey to Connectors"],
+  [223,"Number of Communities Providing Access to Resources for Startups","A6,E4","NUEVO","Survey to Connectors"],
+  [224,"Number of Scale-Up Support Networks","A6,E5","NUEVO","Survey to Connectors"],
+  [225,"Number of Shared Workspaces Available for Entrepreneurs","A4-A,E6","NUEVO","Survey to Service providers"],
+  [226,"Number of Incubators with Shared Infrastructure","A4-B,E6","NUEVO","Survey to incubators - accelerators"],
+  [227,"Number of Capital Providers Funding Infrastructure","A5,E6","NUEVO","Survey to Capital"],
+  [228,"Number of Connector Networks Supporting Infrastructure Development","A6,E6","NUEVO","Survey to Connectors"]
+];
+
+/* ── Map source keywords for filtering ── */
+function getFuenteKey(fuente){
+  const f = (fuente||'').toLowerCase();
+  if(f.includes('web scraping')) return 'web scraping';
+  if(f.includes('existing reports')) return 'existing reports';
+  if(f.includes('open survey')) return 'open survey';
+  if(f.includes('founders') || f.includes('founder')) return 'founders';
+  if(f.includes('academic')) return 'academic';
+  if(f.includes('corporates')||f.includes('corporate')) return 'corporates';
+  if(f.includes('government')) return 'government';
+  if(f.includes('incubator')||f.includes('accelerator')) return 'incubators';
+  if(f.includes('capital')) return 'capital';
+  if(f.includes('connector')||f.includes('media')) return 'connectors';
+  if(f.includes('backbone')) return 'backbone';
+  if(f.includes('formula')) return 'formula';
+  if(f.includes('providers')||f.includes('service')) return 'proveedores';
+  return '';
+}
+
+/* ── Map source to CSS tag class ── */
+function getFuenteTagClass(fuente){
+  const k = getFuenteKey(fuente);
+  const map = {
+    'web scraping':'ft-web','existing reports':'ft-reportes',
+    'open survey':'ft-abierta','founders':'ft-founders',
+    'academic':'ft-academia','corporates':'ft-corporates',
+    'government':'ft-gobierno','incubators':'ft-incubadoras',
+    'capital':'ft-capital','connectors':'ft-conectores',
+    'backbone':'ft-backbone','formula':'ft-formula',
+    'proveedores':'ft-proveedores'
+  };
+  return map[k]||'ft-reportes';
+}
+
+function getTipoClass(tipo){
+  if(tipo==='ORIGINAL') return 'tag-original';
+  if(tipo==='RECUPERADO') return 'tag-recuperado';
+  if(tipo==='NUEVO') return 'tag-nuevo';
+  return '';
+}
+
+function filtrarKPIs(){
+  const fuente = document.getElementById('filtroFuente').value.toLowerCase();
+  const tipo   = document.getElementById('filtroTipo').value;
+  const busq   = document.getElementById('busqueda').value.toLowerCase();
+  let count=0;
+  const rows = document.querySelectorAll('#kpiBody tr');
+  rows.forEach(tr=>{
+    const f = tr.dataset.fuente||'';
+    const t = tr.dataset.tipo||'';
+    const d = tr.dataset.desc||'';
+    const matchF = !fuente || f.includes(fuente);
+    const matchT = !tipo   || t===tipo;
+    const matchD = !busq   || d.includes(busq);
+    const show = matchF && matchT && matchD;
+    tr.style.display = show?'':'none';
+    if(show) count++;
+  });
+  document.getElementById('contadorKPIs').textContent = count+' de 228 KPIs';
+}
+
+/* ── Render KPI table ── */
+function renderKPIs(){
+  const tbody = document.getElementById('kpiBody');
+  tbody.innerHTML = kpis.map(([num,desc,coords,tipo,fuente])=>{
+    const fk = getFuenteKey(fuente);
+    const fShort = (fuente||'').replace('Survey to ','').replace(' (suggested)','');
+    return `<tr data-fuente="${fk}" data-tipo="${tipo}" data-desc="${(desc||'').toLowerCase()}">
+      <td class="num">${num}</td>
+      <td class="desc">${desc}</td>
+      <td><span class="tag ${getTipoClass(tipo)}">${tipo}</span></td>
+      <td><span class="fuente-tag ${getFuenteTagClass(fuente)}">${fShort||fuente}</span></td>
+      <td class="coords">${coords||'—'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('contadorKPIs').textContent = '228 de 228 KPIs';
+}
+
+renderKPIs();
+</script>
+</body>
+</html>

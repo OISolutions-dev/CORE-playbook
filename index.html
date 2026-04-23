@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORE · Iteración 1 · Playbook Train the Trainers</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --negro:#0F172A; --cyan:#2563EB; --lime:#10B981; --purple:#7C3AED;
+  --amber:#D97706; --rose:#E11D48; --gris:#334155; --teal:#0D9488;
+  --gris-100:#F1F5F9; --gris-200:#E2E8F0; --gris-300:#CBD5E1; --white:#FFFFFF;
+  --bg-cyan:#EFF6FF; --bg-lime:#F0FDF4; --bg-purple:#F5F3FF;
+  --bg-amber:#FFFBEB; --bg-rose:#FFF1F2; --bg-teal:#F0FDFA;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8FAFC;color:var(--negro);line-height:1.5}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(15,23,42,0.97);
+  backdrop-filter:blur(8px);height:48px;display:flex;align-items:center;
+  gap:4px;padding:0 32px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.nav-logo{font-size:10px;font-weight:900;letter-spacing:2.5px;color:#fff;
+  text-transform:uppercase;margin-right:12px;white-space:nowrap}
+.nav-logo em{font-style:normal;color:#38BDF8}
+nav a{font-size:9.5px;font-weight:600;color:rgba(255,255,255,0.45);text-decoration:none;
+  padding:3px 9px;border-radius:5px;white-space:nowrap;transition:all .12s}
+nav a:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.nav-sep{width:1px;height:16px;background:rgba(255,255,255,0.12);margin:0 2px;flex-shrink:0}
+.nav-badge{font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  padding:2px 8px;border-radius:20px;background:#2563EB;color:#fff;margin-left:4px}
+
+/* PORTADA */
+#portada{background:var(--white);padding:80px 80px 72px;border-bottom:1px solid var(--gris-200);
+  min-height:88vh;display:flex;flex-direction:column;justify-content:space-between}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start}
+.cover-eyebrow{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--cyan)}
+.cover-iter{font-size:9px;font-weight:700;color:var(--gris-300);letter-spacing:1px;text-transform:uppercase}
+.cover-main{margin:auto 0;padding:60px 0 48px}
+.cover-title{font-size:64px;font-weight:900;line-height:1.0;color:var(--negro);margin-bottom:6px;letter-spacing:-1px}
+.cover-title span{color:var(--cyan)}
+.cover-iter-label{font-size:18px;font-weight:700;color:var(--gris-300);margin-bottom:32px;letter-spacing:.5px}
+.cover-increment{background:var(--gris-100);border-left:3px solid var(--cyan);
+  border-radius:0 10px 10px 0;padding:18px 24px;margin-bottom:16px;max-width:600px}
+.ci-label{font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:6px}
+.ci-val{font-size:14px;font-weight:700;color:var(--negro);line-height:1.45}
+.cover-desc{font-size:15px;color:var(--gris);max-width:580px;line-height:1.7}
+.cover-footer{display:flex;gap:0;border-top:1px solid var(--gris-200);padding-top:28px}
+.cf{padding:0 32px 0 0;border-right:1px solid var(--gris-200);margin-right:32px}
+.cf:last-child{border-right:none;margin-right:0}
+.cf-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-300);margin-bottom:5px}
+.cf-val{font-size:13px;font-weight:700;color:var(--negro)}
+
+/* SECCIÓN WRAPPER */
+.section{padding:60px 80px;border-bottom:1px solid var(--gris-200)}
+.section.alt{background:var(--white)}
+
+/* BLOQUE HEADER */
+.bloque-header{background:var(--white);padding:40px 80px 34px;
+  border-bottom:1px solid var(--gris-200);border-top:1px solid var(--gris-200)}
+.bloque-header.bh-cyan{border-left:4px solid var(--cyan)}
+.bloque-header.bh-purple{border-left:4px solid var(--purple)}
+.bloque-header.bh-lime{border-left:4px solid var(--lime)}
+.bloque-header.bh-amber{border-left:4px solid var(--amber)}
+.bh-num{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gris-300);margin-bottom:7px}
+.bh-title{font-size:28px;font-weight:900;color:var(--negro);line-height:1.1;margin-bottom:7px}
+.bh-sub{font-size:15px;color:var(--gris);max-width:620px;line-height:1.7}
+
+/* COMPONENTES GENERALES */
+.kicker{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:10px}
+h2{font-size:26px;font-weight:900;line-height:1.1;margin-bottom:8px}
+h2 em{font-style:normal;color:var(--cyan)}
+h3{font-size:16px;font-weight:800;line-height:1.2;margin-bottom:5px}
+.sub{font-size:15px;color:var(--gris);line-height:1.7;max-width:680px;margin-bottom:0}
+.divider{width:32px;height:3px;border-radius:2px;background:var(--cyan);margin:12px 0 24px}
+
+.sec-row{display:flex;align-items:center;gap:10px;margin:36px 0 16px}
+.sec-tag{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;color:#fff;white-space:nowrap}
+.sec-label{font-size:12px;font-weight:600;color:var(--gris)}
+.sec-line{flex:1;height:1px;background:var(--gris-200)}
+
+.tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.tc{background:var(--bg-cyan);color:var(--cyan);border:1px solid rgba(37,99,235,0.2)}
+.tl{background:var(--bg-lime);color:#15803D;border:1px solid rgba(16,185,129,0.2)}
+.tp{background:var(--bg-purple);color:var(--purple);border:1px solid rgba(124,58,237,0.2)}
+.ta{background:var(--bg-amber);color:var(--amber);border:1px solid rgba(217,119,6,0.2)}
+.tr{background:var(--bg-rose);color:var(--rose);border:1px solid rgba(225,29,72,0.2)}
+
+/* METODOLOGÍA FUSIONADA */
+.met-section{display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+  border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;margin-top:24px}
+.met-col{border-right:1px solid var(--gris-200)}
+.met-col:last-child{border-right:none}
+.met-head{padding:14px 14px 12px;border-bottom:1px solid var(--gris-200)}
+.met-phase-num{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-300);margin-bottom:3px}
+.met-phase-name{font-size:13px;font-weight:800;color:var(--negro)}
+.met-head.active{background:var(--bg-cyan)}
+.met-head.active .met-phase-name{color:var(--cyan)}
+.met-head.active .met-phase-num{color:rgba(37,99,235,0.5)}
+.met-head.todo .met-phase-name{color:var(--gris-300)}
+.met-items{padding:10px}
+.met-item{font-size:11px;color:var(--gris);padding:5px 8px;border-radius:5px;
+  margin-bottom:3px;line-height:1.4;background:var(--gris-100)}
+.met-item.done{background:var(--bg-lime);color:#065F46;padding-left:20px;position:relative}
+.met-item.done::before{content:'✓';position:absolute;left:7px;top:5px;
+  font-size:9px;font-weight:800;color:var(--lime)}
+.met-item.pending{background:var(--white);border:1px solid var(--gris-200);color:var(--gris-300)}
+
+/* CUSTOMER PERSONA */
+.persona-card{background:var(--white);border:1px solid var(--gris-200);border-radius:12px;overflow:hidden}
+.pc-head{padding:18px 22px 14px;border-bottom:1px solid var(--gris-200);background:var(--bg-cyan)}
+.pc-tag{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:5px}
+.pc-title{font-size:15px;font-weight:800;color:var(--negro)}
+.pc-body{padding:20px 22px}
+.pc-def{font-size:15px;color:var(--gris);line-height:1.75;margin-bottom:18px}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;
+  padding-top:14px;border-top:1px solid var(--gris-200)}
+.pc-item .pi-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-300);margin-bottom:4px}
+.pc-item .pi-val{font-size:14px;color:var(--gris);line-height:1.6}
+.pc-ref{margin-top:12px;padding-top:10px;border-top:1px solid var(--gris-200);
+  font-size:11px;color:var(--gris)}
+.pc-ref span{font-weight:700;color:var(--negro);margin-right:6px}
+
+/* PROCESO DEL CONSULTOR */
+.subsection-title{font-size:13px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;color:var(--gris);margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid var(--gris-200)}
+.fuentes-text{font-size:14px;color:var(--gris);line-height:1.7;
+  margin-bottom:22px;max-width:680px}
+
+
+.mapa-link{margin-top:16px;font-size:12px;color:var(--gris)}
+.mapa-link a{color:var(--cyan);font-weight:700;text-decoration:none}
+.mapa-link a:hover{text-decoration:underline}
+/* Proceso CORE fases */
+.core-process{display:grid;grid-template-columns:repeat(7,1fr);gap:0;
+  border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;margin-top:20px}
+.cp-fase{border-right:1px solid var(--gris-200);display:flex;flex-direction:column}
+.cp-fase:last-child{border-right:none}
+.cp-head{padding:12px 10px 10px;border-bottom:1px solid var(--gris-200);
+  position:relative;overflow:hidden}
+.cp-head::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.cp-f0 .cp-head::before{background:var(--gris-300)}
+.cp-f1 .cp-head::before{background:var(--cyan)}
+.cp-f2 .cp-head::before{background:var(--lime)}
+.cp-f3 .cp-head::before{background:var(--amber)}
+.cp-f4 .cp-head::before{background:var(--rose)}
+.cp-f5 .cp-head::before{background:var(--purple)}
+.cp-f6 .cp-head::before{background:var(--teal)}
+.cp-num{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-300);margin-bottom:3px}
+.cp-f0 .cp-name{color:var(--gris-300)}
+.cp-f1 .cp-name{color:var(--cyan)}
+.cp-f2 .cp-name{color:var(--lime)}
+.cp-f3 .cp-name{color:var(--amber)}
+.cp-f4 .cp-name{color:var(--rose)}
+.cp-f5 .cp-name{color:var(--purple)}
+.cp-f6 .cp-name{color:var(--teal)}
+.cp-name{font-size:10px;font-weight:800;line-height:1.2;color:var(--negro)}
+.cp-items{padding:10px;flex:1}
+.cp-item{font-size:10px;color:var(--gris);line-height:1.4;padding:3px 0;
+  border-bottom:1px solid var(--gris-200);display:flex;gap:5px}
+.cp-item:last-child{border-bottom:none}
+.cp-item::before{content:'·';color:var(--gris-300);flex-shrink:0;font-weight:800}
+
+/* BENCHMARKING */
+.bench-table-wrap{background:var(--white);border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.bench-table{width:100%;border-collapse:collapse;font-size:12px}
+.bench-table thead th{background:var(--bg-cyan);color:var(--cyan);font-size:9px;
+  font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:10px 12px;text-align:left;
+  border-bottom:1px solid rgba(37,99,235,0.2)}
+.bench-table tbody td{padding:10px 12px;border-bottom:1px solid var(--gris-200);
+  color:var(--gris);vertical-align:top;line-height:1.45;font-size:13px}
+.bench-table tbody tr:last-child td{border-bottom:none}
+.bench-table tbody td:first-child{font-weight:700;color:var(--negro)}
+.bench-synthesis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.bsy{background:var(--white);border:1px solid var(--gris-200);border-radius:10px;padding:16px}
+.bsy-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:7px}
+.bsy-val{font-size:14px;color:var(--gris);line-height:1.6}
+
+/* MERCADO */
+.mkt-table-wrap{background:var(--white);border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;margin-bottom:22px}
+.mkt-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.mkt-table thead th{background:var(--bg-cyan);color:var(--cyan);font-size:9px;
+  font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:10px 13px;text-align:left;
+  border-bottom:1px solid rgba(37,99,235,0.2)}
+.mkt-table tbody td{padding:10px 13px;border-bottom:1px solid var(--gris-200);
+  color:var(--gris);vertical-align:top;line-height:1.5;font-size:13px}
+.mkt-table tbody tr:last-child td{border-bottom:none}
+.mkt-table tbody td:first-child{font-weight:700;color:var(--negro);font-size:12px}
+.mkt-table .core-td{background:#F0FDF4;color:#065F46;font-weight:700}
+.gaps-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:22px}
+.gap-card{background:var(--white);border:1px solid var(--gris-200);border-radius:10px;
+  padding:18px;border-left:3px solid var(--rose)}
+.gap-num{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-300);margin-bottom:6px}
+.gap-title{font-size:13px;font-weight:700;color:var(--negro);margin-bottom:5px}
+.gap-desc{font-size:13px;color:var(--gris);line-height:1.6}
+
+/* POV */
+.pov-box{background:var(--gris-100);border-radius:12px;padding:30px 36px;margin:22px 0;
+  border:1px solid var(--gris-200);border-left:4px solid var(--cyan)}
+.pov-text{font-size:18px;font-weight:600;color:var(--negro);line-height:1.8;max-width:820px}
+.pov-text .u{color:var(--cyan)}
+.pov-text .n{color:var(--lime)}
+.pov-text .i{color:var(--amber)}
+.pov-legend{display:flex;gap:24px;margin-top:16px;padding-top:12px;border-top:1px solid var(--gris-200)}
+.pov-leg{display:flex;align-items:center;gap:7px}
+.pov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pd-u{background:var(--cyan)}
+.pd-n{background:var(--lime)}
+.pd-i{background:var(--amber)}
+.pov-leg-label{font-size:10px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:1px}
+.anatomy{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:22px}
+.ana-card{border-radius:12px;padding:20px;border:1px solid}
+.ana-u{background:var(--bg-cyan);border-color:rgba(37,99,235,0.2)}
+.ana-n{background:var(--bg-lime);border-color:rgba(16,185,129,0.2)}
+.ana-i{background:var(--bg-amber);border-color:rgba(217,119,6,0.2)}
+.ana-tag{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.ana-u .ana-tag{color:var(--cyan)}
+.ana-n .ana-tag{color:var(--lime)}
+.ana-i .ana-tag{color:var(--amber)}
+.ana-title{font-size:13px;font-weight:800;color:var(--negro);margin-bottom:6px;line-height:1.3}
+.ana-desc{font-size:13px;color:var(--gris);line-height:1.65}
+
+/* HMW */
+.hmw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px}
+.hmw-card{background:var(--white);border-radius:10px;padding:16px;
+  border:1px solid var(--gris-200);position:relative;overflow:hidden;
+  transition:box-shadow .15s,transform .15s}
+.hmw-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.08);transform:translateY(-2px)}
+.hmw-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.hmw-card.cyan::before{background:var(--cyan)}
+.hmw-card.purple::before{background:var(--purple)}
+.hmw-card.lime::before{background:var(--lime)}
+.hmw-card.amber::before{background:var(--amber)}
+.hmw-num{font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:6px;color:var(--gris-300)}
+.hmw-card.cyan .hmw-num{color:var(--cyan)}
+.hmw-card.purple .hmw-num{color:var(--purple)}
+.hmw-card.lime .hmw-num{color:var(--lime)}
+.hmw-card.amber .hmw-num{color:var(--amber)}
+.hmw-q{font-size:14px;font-weight:600;color:var(--negro);line-height:1.55;margin-bottom:8px}
+.hmw-q em{font-style:normal;font-weight:800}
+.hmw-impl{font-size:12px;color:var(--gris);line-height:1.5;padding-top:7px;
+  border-top:1px solid var(--gris-200)}
+
+
+/* PROPUESTAS OUTLINE */
+.prop-outline{background:var(--white);border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.prop-outline.po-rec{border:2px solid var(--lime)}
+.po-head{padding:18px 22px 14px;border-bottom:1px solid var(--gris-200)}
+.po-badge{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:8px}
+.po-a .po-badge{background:var(--bg-cyan);color:var(--cyan)}
+.po-b .po-badge{background:var(--bg-purple);color:var(--purple)}
+.po-c .po-badge{background:var(--bg-lime);color:var(--lime)}
+.po-rec-tag{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:var(--lime);color:#fff;margin-left:8px;display:inline-block}
+.po-title{font-size:15px;font-weight:800;color:var(--negro);margin-bottom:5px}
+.po-desc{font-size:13px;color:var(--gris);line-height:1.65;max-width:640px}
+.po-meta{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--gris-200)}
+.po-met{padding:10px 16px;border-right:1px solid var(--gris-200)}
+.po-met:last-child{border-right:none}
+.po-met-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gris-300);margin-bottom:3px}
+.po-met-val{font-size:12px;font-weight:600;color:var(--negro)}
+.po-toc{padding:16px 22px 18px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.po-toc-section{margin-bottom:12px}
+.po-toc-section:last-child{margin-bottom:0}
+.po-sec-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.po-sec-num{font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;color:#fff;flex-shrink:0}
+.po-a .po-sec-num{background:var(--cyan)}
+.po-b .po-sec-num{background:var(--purple)}
+.po-c .po-sec-num{background:var(--lime)}
+.po-a{border-left:3px solid var(--cyan)}
+.po-b{border-left:3px solid var(--purple)}
+.po-c{border-left:3px solid var(--lime)}
+.po-items{display:flex;flex-direction:column;gap:3px}
+.po-item{font-size:12px;color:var(--gris);line-height:1.4;display:flex;gap:5px;align-items:flex-start}
+.po-item::before{content:'—';color:var(--gris-300);flex-shrink:0;font-size:10px}
+
+
+/* MET-SECTION 4 COLS */
+.met-section-4{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;margin-top:24px}
+.met-section-4 .met-col{border-right:1px solid var(--gris-200)}
+.met-section-4 .met-col:last-child{border-right:none}
+
+/* ROADMAP */
+.roadmap{position:relative;padding:8px 0 0}
+.roadmap-track{position:relative;display:flex;align-items:flex-start;gap:0}
+.roadmap-track::before{content:'';position:absolute;top:20px;left:20px;right:20px;
+  height:2px;background:var(--gris-200);z-index:0}
+.rm-col{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
+.rm-node-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:14px}
+.rm-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:9px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;border:2px solid;margin-bottom:6px}
+.rm-node.active{background:var(--bg-cyan);border-color:var(--cyan);color:var(--cyan)}
+.rm-node.buffer{background:var(--gris-100);border-color:var(--gris-200);color:var(--gris-300)}
+.rm-period{font-size:9px;font-weight:700;color:var(--gris-300);letter-spacing:.5px;text-align:center;white-space:nowrap}
+.rm-card{background:var(--white);border:1px solid var(--gris-200);border-radius:10px;
+  padding:14px 12px;width:100%;box-sizing:border-box}
+.rm-card.buffer{background:var(--gris-100)}
+.rm-tag{font-size:8px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:6px}
+.rm-card:not(.buffer) .rm-tag{color:var(--cyan)}
+.rm-card.buffer .rm-tag{color:var(--gris-300)}
+.rm-goal{font-size:11px;font-weight:700;color:var(--negro);line-height:1.35;margin-bottom:8px}
+.rm-card.buffer .rm-goal{color:var(--gris)}
+.rm-items{display:flex;flex-direction:column;gap:3px;padding-top:8px;
+  border-top:1px solid var(--gris-200)}
+.rm-item{font-size:10px;color:var(--gris);line-height:1.35;
+  display:flex;gap:5px;align-items:flex-start}
+.rm-item::before{content:'·';color:var(--gris-300);font-weight:800;flex-shrink:0}
+.rm-card.buffer .rm-item{color:var(--gris-300)}
+
+/* FOOTER */
+footer{padding:26px 80px;border-top:1px solid var(--gris-200);display:flex;
+  justify-content:space-between;align-items:center;background:var(--white)}
+.ft-brand{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gris-300)}
+.ft-brand em{font-style:normal;color:var(--cyan)}
+.ft-date{font-size:11px;color:var(--gris-300);font-weight:600}
+
+@media print{
+  nav{display:none}
+  #portada{min-height:auto;padding:60px}
+  .section,.bloque-header{padding:36px 60px}
+  .hmw-grid{grid-template-columns:1fr 1fr}
+  .anatomy{grid-template-columns:1fr 1fr 1fr}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">CORE · <em>Playbook</em></span>
+  <div class="nav-sep"></div>
+  <a href="#metodologia">Metodología</a>
+  <a href="#empatizar">Empatizar</a>
+  <a href="#definir">Definir</a>
+  <a href="#idear">Idear</a>
+  <a href="#nextsteps">Next Steps</a>
+  <a href="#nextsteps-roadmap">Roadmap</a>
+  <span class="nav-badge">Iteración 1</span>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PORTADA
+══════════════════════════════════════════════════════════════ -->
+<section id="portada">
+  <div class="cover-top">
+    <span class="cover-eyebrow">OI Solutions · Proyecto Playbook</span>
+    <span class="cover-iter">Abril 2026</span>
+  </div>
+  <div class="cover-main">
+    <div class="cover-title">CORE</div>
+    <div class="cover-iter-label">Iteración 1</div>
+    <div class="cover-increment">
+      <div class="ci-label">Valor del incremento</div>
+      <div class="ci-val">3 outlines del Playbook CORE</div>
+    </div>
+    <p class="cover-desc">Proceso de diseño del prototipo del Playbook Train the Trainers a partir de la metodología Design Thinking, centrada en el usuario.</p>
+  </div>
+  <div class="cover-footer">
+    <div class="cf">
+      <div class="cf-label">Elaborado por</div>
+      <div class="cf-val">Anaric González</div>
+    </div>
+    <div class="cf">
+      <div class="cf-label">Iteración</div>
+      <div class="cf-val">Iteración 1: Design Thinking Playbook Train the Trainers</div>
+    </div>
+    <div class="cf">
+      <div class="cf-label">Periodo</div>
+      <div class="cf-val">30 Marzo – 17 Abril 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BLOQUE 1: METODOLOGÍA
+══════════════════════════════════════════════════════════════ -->
+<div class="bloque-header bh-cyan" id="metodologia">
+  <div class="bh-num">Bloque 1</div>
+  <div class="bh-title">La Metodología</div>
+  <div class="bh-sub">Estamos diseñando a partir de la metodología del Design Thinking para llevar a cabo un proceso de diseño centrado en el usuario.</div>
+</div>
+
+<section class="section alt">
+  <div class="kicker">Design Thinking · 5 Fases</div>
+  <h2>Elementos desarrollados en la <em>iteración del Playbook CORE</em></h2>
+  <div class="divider"></div>
+
+  <div class="met-section">
+    <div class="met-col">
+      <div class="met-head active">
+        <div class="met-phase-num">Fase 01</div>
+        <div class="met-phase-name">Empatizar</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item done">Perfil del Facilitador</div>
+        <div class="met-item done">Proceso del consultor</div>
+        <div class="met-item done">Benchmarking de inspiración</div>
+        <div class="met-item done">Entendimiento del mercado</div>
+        <div class="met-item done">Mapa de Stakeholders</div>
+        <div class="met-item done">Sesión de Empatizar</div>
+        <div class="met-item done">Journey del consultor</div>
+        <div class="met-item done">Comparación CORE vs. ANDE</div>
+        <div class="met-item done">Aprendizajes de Playbooks</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head active">
+        <div class="met-phase-num">Fase 02</div>
+        <div class="met-phase-name">Definir</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item done">POV Statement</div>
+        <div class="met-item done">12 preguntas HMW</div>
+        <div class="met-item done">Problem-Solution Fit</div>
+        <div class="met-item done">Sesión de Convergencia</div>
+        <div class="met-item done">Product Backlog</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head active">
+        <div class="met-phase-num">Fase 03</div>
+        <div class="met-phase-name">Idear</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item done">Outline del Playbook</div>
+        <div class="met-item done">Manual de Referencia CORE</div>
+        <div class="met-item done">Apertura del Curso Guiado</div>
+        <div class="met-item pending">Draft landing page</div>
+        <div class="met-item pending">Draft deck de ventas</div>
+        <div class="met-item pending">Draft one-pager para Luis</div>
+        <div class="met-item pending">Brief de logo</div>
+        <div class="met-item pending">Draft propuesta comercial</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head todo">
+        <div class="met-phase-num">Fase 04</div>
+        <div class="met-phase-name">Prototipar</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item pending">One-pager para Luis</div>
+        <div class="met-item pending">Capabilities deck</div>
+        <div class="met-item pending">Landing page</div>
+        <div class="met-item pending">Guía del consultor (Mód. 0–3)</div>
+        <div class="met-item pending">Propuesta comercial</div>
+        <div class="met-item pending">Toolbox del consultor</div>
+        <div class="met-item pending">Deck de entrega al cliente</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head todo">
+        <div class="met-phase-num">Fase 05</div>
+        <div class="met-phase-name">Probar</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item pending">Primer engagement vía Luis</div>
+        <div class="met-item pending">Landing page en producción</div>
+        <div class="met-item pending">Playbook CORE Primera iteración</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BLOQUE 2: EMPATIZAR
+══════════════════════════════════════════════════════════════ -->
+<div class="bloque-header bh-cyan" id="empatizar">
+  <div class="bh-num">Bloque 2</div>
+  <div class="bh-title">Empatizar</div>
+  <div class="bh-sub">¿Quién es el Facilitador y qué hace hoy? Investigación sobre el perfil del usuario, su proceso de trabajo y el panorama de soluciones existentes.</div>
+</div>
+
+<!-- Perfil del Facilitador -->
+<section class="section alt">
+  <div class="kicker">Perfil del Facilitador</div>
+  <h2>El <em>Facilitador CORE</em></h2>
+  <div class="divider"></div>
+  <p class="sub" style="margin-bottom:20px">Se evaluaron 3 opciones de definición (A: consultor, B: funcionario, C: amplia). Se eligió la Opción C por su capacidad de capturar todos los perfiles relevantes sin excluir segmentos con poder de compra.</p>
+
+  <div class="persona-card">
+    <div class="pc-head">
+      <div class="pc-tag">Opción C seleccionada · Definición amplia</div>
+      <div class="pc-title">Cubre todos los perfiles del Facilitador</div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-def">
+        Este programa es ideal para consultores, funcionarios de gobierno, directores de aceleradoras e incubadoras, y líderes institucionales que están construyendo o asesorando ecosistemas de emprendimiento en sus ciudades o regiones, ya sea desde una dependencia pública, una universidad, una incubadora o como Facilitadores independientes, y que están comprometidos con pasar de un desarrollo de ecosistemas basado en actividades a uno basado en resultados.
+      </div>
+      <div class="pc-grid">
+        <div class="pc-item">
+          <div class="pi-label">¿Quién es?</div>
+          <div class="pi-val">Consultor, funcionario de gobierno, director de aceleradora, líder institucional, Facilitador independiente</div>
+        </div>
+        <div class="pc-item">
+          <div class="pi-label">¿Qué hace hoy?</div>
+          <div class="pi-val">Construye o asesora ecosistemas de emprendimiento desde distintos roles: público, privado, academia o consultoría independiente</div>
+        </div>
+        <div class="pc-item">
+          <div class="pi-label">¿Qué busca?</div>
+          <div class="pi-val">Pasar de medir actividades a medir resultados reales, con un método validado, transferible y reconocido</div>
+        </div>
+      </div>
+      <div class="pc-ref">
+        <span>Inspiración académica:</span>
+        Babson College, Building an Entrepreneurship Education Ecosystem
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- El proceso del consultor hoy -->
+<section class="section">
+  <div class="kicker">El proceso del consultor hoy</div>
+  <h2>Proceso Macro General</h2>
+  <div class="divider"></div>
+
+  <p class="fuentes-text">Para entender el proceso general de CORE analizamos el Capítulo 5 y 6 de la Tesis de Odille, el Proyecto Miro, el Proyecto Barbacoa y el Proyecto Tlalpan.</p>
+
+  <div class="subsection-title">Proceso de Levantamiento CORE</div>
+
+  <div class="core-process">
+    <div class="cp-fase cp-f0">
+      <div class="cp-head">
+        <div class="cp-num">Fase 0</div>
+        <div class="cp-name">Preparación</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Revisar contexto: ciudad, sector, madurez</div>
+        <div class="cp-item">Listar actores disponibles A0–A6</div>
+        <div class="cp-item">Confirmar si existe backbone G1/G2/G3</div>
+        <div class="cp-item">Definir alcance del levantamiento</div>
+        <div class="cp-item">Agendar entrevistas y recolección</div>
+      </div>
+    </div>
+    <div class="cp-fase cp-f1">
+      <div class="cp-head">
+        <div class="cp-num">Fase 1</div>
+        <div class="cp-name">Mapeo de Intersecciones</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Construir Matriz Actor × Etapa</div>
+        <div class="cp-item">Marcar celdas activas por ecosistema</div>
+        <div class="cp-item">Identificar intersecciones vacías</div>
+        <div class="cp-item">Priorizar celdas según disponibilidad</div>
+      </div>
+    </div>
+    <div class="cp-fase cp-f2">
+      <div class="cp-head">
+        <div class="cp-num">Fase 2</div>
+        <div class="cp-name">Selección de KPIs</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Filtrar Catálogo 228 KPIs por intersección</div>
+        <div class="cp-item">Seleccionar KPIs primarios y de soporte</div>
+        <div class="cp-item">Clasificar por fuente de datos</div>
+        <div class="cp-item">Adaptar a disponibilidad local</div>
+      </div>
+    </div>
+    <div class="cp-fase cp-f3">
+      <div class="cp-head">
+        <div class="cp-num">Fase 3</div>
+        <div class="cp-name">Recolección de Datos</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Encuestas por tipo de actor</div>
+        <div class="cp-item">Web scraping (21 KPIs)</div>
+        <div class="cp-item">Reportes públicos (38 KPIs)</div>
+        <div class="cp-item">Encuesta a líderes (35 KPIs)</div>
+        <div class="cp-item">Registrar fuente y fecha por dato</div>
+      </div>
+    </div>
+    <div class="cp-fase cp-f4">
+      <div class="cp-head">
+        <div class="cp-num">Fase 4</div>
+        <div class="cp-name">Integración y Verificación</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Compilar datos por KPI e intersección</div>
+        <div class="cp-item">Calcular indicadores derivados</div>
+        <div class="cp-item">Verificar consistencia entre fuentes</div>
+        <div class="cp-item">Documentar gaps y definir proxies</div>
+      </div>
+    </div>
+    <div class="cp-fase cp-f5">
+      <div class="cp-head">
+        <div class="cp-num">Fase 5</div>
+        <div class="cp-name">Análisis y Diagnóstico</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Llenar el Heatmap Actor × Etapa</div>
+        <div class="cp-item">Identificar brechas críticas</div>
+        <div class="cp-item">Detectar puntos ciegos de medición</div>
+        <div class="cp-item">Comparar vs. estado ideal CORE</div>
+      </div>
+    </div>
+    <div class="cp-fase cp-f6">
+      <div class="cp-head">
+        <div class="cp-num">Fase 6</div>
+        <div class="cp-name">Reporte y Entrega</div>
+      </div>
+      <div class="cp-items">
+        <div class="cp-item">Dashboard de salud del ecosistema</div>
+        <div class="cp-item">Diagnóstico de brechas con evidencia</div>
+        <div class="cp-item">Recomendaciones de intervención</div>
+        <div class="cp-item">Plan de monitoreo continuo</div>
+      </div>
+    </div>
+  </div>
+  <div class="mapa-link">
+    Ver mapa interactivo completo:
+    <a href="mapa-del-proceso-CORE.html" target="_blank">mapa del proceso CORE</a>
+  </div>
+</section>
+
+<!-- Benchmarking -->
+<section class="section alt">
+  <div class="kicker">Benchmarking de inspiración</div>
+  <h2>Benchmarking</h2>
+  <div class="divider"></div>
+  <p class="sub" style="margin-bottom:22px">5 ideas de playbooks o certificaciones de inspiración. Es un entendimiento de cómo se estructuran y cómo operan.</p>
+
+  <div class="bench-table-wrap">
+    <table class="bench-table">
+      <thead>
+        <tr>
+          <th style="width:13%">Programa</th>
+          <th style="width:13%">Formato</th>
+          <th style="width:16%">Currícula</th>
+          <th style="width:16%">Comunidad</th>
+          <th style="width:16%">Modelo de ingresos</th>
+          <th style="width:13%">Credencial</th>
+          <th style="width:13%">Diferenciador</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GrowthWheel</td>
+          <td>3 días online, Toolbox físico</td>
+          <td>4 módulos secuenciales, 5 niveles</td>
+          <td>Slack, workshops mensuales, coaching</td>
+          <td>Licencia anual SaaS</td>
+          <td>Certified Business Advisor, LinkedIn</td>
+          <td>Software y certificación inseparables</td>
+        </tr>
+        <tr>
+          <td>MIT REAP</td>
+          <td>Plataforma online, sesiones en vivo</td>
+          <td>Módulos con objetivos de aprendizaje</td>
+          <td>Cohortes de ciudades, Alumni regional</td>
+          <td>Institucional</td>
+          <td>Sin credencial individual</td>
+          <td>Único a nivel sistémico: equipo de ciudad</td>
+        </tr>
+        <tr>
+          <td>ANDE Global</td>
+          <td>PDF descargable, eventos</td>
+          <td>Guías técnicas por componente</td>
+          <td>300 orgs, capítulos regionales</td>
+          <td>Cuota de membresía org</td>
+          <td>Sin credencial formal</td>
+          <td>Mayor red global de SGB</td>
+        </tr>
+        <tr>
+          <td>Scrum.org</td>
+          <td>Autoestudio, examen online</td>
+          <td>Guías abiertas, assessment</td>
+          <td>Directorio público, sin membresía</td>
+          <td>Por examen ($200 a $500)</td>
+          <td>Vitalicia sin renovación</td>
+          <td>Sin asistencia obligatoria</td>
+        </tr>
+        <tr>
+          <td>Prosci</td>
+          <td>3 días, plataforma e-learning</td>
+          <td>Proceso ADKAR, aplicación a proyecto real</td>
+          <td>267,000 Facilitadores, vocabulario común</td>
+          <td>Colegiatura única $4,500 y partners</td>
+          <td>Badge digital Credly verificable</td>
+          <td>Adopción Fortune 100</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bench-synthesis">
+    <div class="bsy">
+      <div class="bsy-label">Aprendizaje 1 · Estructura</div>
+      <div class="bsy-val">La división en días (GrowthWheel, Prosci) hace el programa vendible. Un argumento de venta de una línea: "3 días, Toolbox, Certificación". Adoptamos esta estructura en la Propuesta C.</div>
+    </div>
+    <div class="bsy">
+      <div class="bsy-label">Aprendizaje 2 · Ingresos</div>
+      <div class="bsy-val">Los mejores programas combinan certificación única y licencia anual (GrowthWheel) o certificación y membresía activa (Prosci). El ingreso recurrente viene de la comunidad, no solo del curso.</div>
+    </div>
+    <div class="bsy">
+      <div class="bsy-label">Aprendizaje 3 · Credencial</div>
+      <div class="bsy-val">La credencial verificable en LinkedIn (Prosci via Credly, GrowthWheel) es hoy el estándar de legitimidad. Sin badge digital, la certificación no existe en el mercado profesional.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Entendimiento del Mercado -->
+<section class="section">
+  <div class="kicker">Entendimiento del Mercado</div>
+  <h2>El panorama <em>global</em> de frameworks</h2>
+  <div class="divider"></div>
+  <p class="sub" style="margin-bottom:22px">9 frameworks globales de medición de ecosistemas y la brecha que ninguno cubre: la formación de Facilitadores locales con capacidad de diagnóstico independiente.</p>
+
+  <div class="mkt-table-wrap">
+    <table class="mkt-table">
+      <thead>
+        <tr>
+          <th>Framework</th>
+          <th>Organización</th>
+          <th>Unidad geográfica</th>
+          <th>Nivel de detalle</th>
+          <th>Formación de Facilitadores</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Babson BEEP</td>
+          <td>Babson College</td>
+          <td>Nacional o sub-nacional</td>
+          <td>Medio-bajo. Sin indicadores fijos. 6 dominios conceptuales</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>CoC Asset Mapping</td>
+          <td>Council on Competitiveness</td>
+          <td>Local o sub-nacional</td>
+          <td>Alto. 150 indicadores. 8 categorías de activos</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>GEDI</td>
+          <td>George Mason University</td>
+          <td>Nacional o cross-country</td>
+          <td>Medio-alto. 15 pilares. Índice compuesto</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>Koltai Six+Six</td>
+          <td>Koltai y Company</td>
+          <td>Nacional o sub-nacional</td>
+          <td>Bajo. 6 actividades x 6 actores. Cualitativo</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>OECD Framework</td>
+          <td>OCDE y Kauffman Foundation</td>
+          <td>Nacional o cross-country</td>
+          <td>Alto. 57 indicadores clave</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>WEF Ecosystem</td>
+          <td>World Economic Forum</td>
+          <td>Nacional o global</td>
+          <td>Medio. 4 enablers. Reportes anuales</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>GEM</td>
+          <td>Babson / GERA</td>
+          <td>Nacional. 50 países</td>
+          <td>Encuesta estandarizada más larga del mundo</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <td>GSMA ICT</td>
+          <td>GSM Association</td>
+          <td>Nacional o regional</td>
+          <td>Medio. Foco en sector ICT</td>
+          <td style="color:var(--gris-300)">Sin certificación</td>
+          <td>Sectorial</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-row">
+    <span class="sec-tag" style="background:var(--gris)">3 Brechas del mercado</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="gaps-grid">
+    <div class="gap-card">
+      <div class="gap-num">Brecha 1</div>
+      <div class="gap-title">Ningún framework forma Facilitadores locales</div>
+      <div class="gap-desc">Los 9 frameworks globales generan datos, pero no forman las personas que los interpretan a nivel local. El conocimiento se queda en la organización que mide, no en el territorio.</div>
+    </div>
+    <div class="gap-card">
+      <div class="gap-num">Brecha 2</div>
+      <div class="gap-title">Sin modelo de certificación transferible</div>
+      <div class="gap-desc">No existe un camino para que un consultor local aplique el framework de forma independiente y certificada. Cada organización debe contratar su propio proceso.</div>
+    </div>
+    <div class="gap-card">
+      <div class="gap-num">Brecha 3</div>
+      <div class="gap-title">Ninguno fue diseñado para LATAM</div>
+      <div class="gap-desc">CORE fue diseñado específicamente para la realidad de ecosistemas latinoamericanos: actores híbridos, datos incompletos, Backbone débil.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BLOQUE 3: DEFINIR
+══════════════════════════════════════════════════════════════ -->
+<div class="bloque-header bh-purple" id="definir">
+  <div class="bh-num">Bloque 3</div>
+  <div class="bh-title">Definir</div>
+  <div class="bh-sub">El POV Statement sintetiza el problema central en una sola oración. Las preguntas HMW abren el espacio de diseño para la solución.</div>
+</div>
+
+<!-- POV Statement -->
+<section class="section alt">
+  <div class="kicker">Point of View Statement</div>
+  <h2>El problema que el <em>Playbook resuelve</em></h2>
+  <div class="divider"></div>
+
+  <div class="pov-box">
+    <div class="pov-text">
+      <span class="u">El facilitador que opera, desarrolla y construye ecosistemas de emprendimiento</span>
+      necesita
+      <span class="n">una metodología para organizar, medir y evaluar el ecosistema de emprendimiento en el que se encuentra actualmente</span>
+      con el fin de poder diseñar o impulsar su ecosistema a un
+      <span class="i">enfoque de resultados,</span>
+      porque los facilitadores no solo quieren conocer el estado de la red del ecosistema sino que quieren hacer un cambio basado en resultados, no en actividades.
+    </div>
+    <div class="pov-legend">
+      <div class="pov-leg"><div class="pov-dot pd-u"></div><div class="pov-leg-label">Usuario</div></div>
+      <div class="pov-leg"><div class="pov-dot pd-n"></div><div class="pov-leg-label">Necesidad</div></div>
+      <div class="pov-leg"><div class="pov-dot pd-i"></div><div class="pov-leg-label">Enfoque</div></div>
+    </div>
+  </div>
+
+  <div class="anatomy">
+    <div class="ana-card ana-u">
+      <div class="ana-tag">Usuario</div>
+      <div class="ana-title">El facilitador que opera, desarrolla y construye ecosistemas de emprendimiento</div>
+      <div class="ana-desc">Consultor, funcionario de gobierno, director de aceleradora o incubadora, líder institucional o Facilitador independiente. Construye o asesora ecosistemas de emprendimiento en ciudades o regiones desde el sector público, privado, academia o consultoría.</div>
+    </div>
+    <div class="ana-card ana-n">
+      <div class="ana-tag">Necesidad</div>
+      <div class="ana-title">Una metodología para organizar, medir y evaluar el ecosistema</div>
+      <div class="ana-desc">El Facilitador necesita un método que le permita conocer con rigor el estado actual del ecosistema: qué actores existen, qué etapas están cubiertas y qué indicadores muestran avance real hacia los resultados.</div>
+    </div>
+    <div class="ana-card ana-i">
+      <div class="ana-tag">Enfoque de resultados</div>
+      <div class="ana-title">No quieren conocer el estado. Quieren cambiar el ecosistema.</div>
+      <div class="ana-desc">Los facilitadores buscan las palancas de cambio: pasar de un ecosistema medido por actividades a uno medido por resultados sostenibles. El diagnóstico es el punto de partida, no el destino.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HMW -->
+<section class="section">
+  <div class="kicker">Design Thinking · Definir</div>
+  <h2>How Might We</h2>
+  <div class="divider"></div>
+  <p class="sub" style="margin-bottom:26px">3 preguntas orientadas al contenido del Playbook: cómo estructurar el conocimiento para que el Facilitador lo aprenda y aplique desde el primer día.</p>
+
+  <div class="hmw-grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="hmw-card cyan">
+      <div class="hmw-num">C1</div>
+      <div class="hmw-q">¿Cómo podríamos convertir el proceso de 6 pasos del consultor en un Playbook que cualquier Facilitador pueda aprender y aplicar desde el Día 1?</div>
+      <div class="hmw-impl">Abre: estructura de días, toolbox por día, entregable al final de cada sesión.</div>
+    </div>
+    <div class="hmw-card cyan">
+      <div class="hmw-num">C2</div>
+      <div class="hmw-q">¿Cómo podríamos integrar los 228 KPIs en el Playbook de manera que el Facilitador los entienda, los use y los explique a su cliente sin abrumarlo?</div>
+      <div class="hmw-impl">Abre: catálogo visual, jerarquía primarios y soporte, fichas de KPI accionables.</div>
+    </div>
+    <div class="hmw-card cyan">
+      <div class="hmw-num">C3</div>
+      <div class="hmw-q">¿Cómo podríamos diseñar un formato del Playbook que sea fácil de seguir paso a paso, funcione como guía en campo y pueda convertirse directamente en un curso online?</div>
+      <div class="hmw-impl">Abre: estructura por días, toolbox físico o digital, correspondencia entre secciones del PDF y lecciones de video.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BLOQUE 4: IDEAR
+══════════════════════════════════════════════════════════════ -->
+<div class="bloque-header bh-lime" id="idear">
+  <div class="bh-num">Bloque 4</div>
+  <div class="bh-title">Idear · El Outline del Playbook</div>
+</div>
+
+<!-- Tabla comparativa -->
+<section class="section alt">
+  <div class="kicker">Benchmark de estructura</div>
+  <h2>Tabla comparativa de <em>referentes</em></h2>
+  <div class="divider"></div>
+  <p class="sub" style="margin-bottom:22px">ANDE, Babson y GrowthWheel como base. La columna CORE sintetiza lo que tomamos de cada uno.</p>
+
+  <div class="mkt-table-wrap">
+    <table class="mkt-table">
+      <thead>
+        <tr>
+          <th style="width:15%">Dimensión</th>
+          <th style="width:21%">ANDE</th>
+          <th style="width:21%">Babson</th>
+          <th style="width:21%">GrowthWheel</th>
+          <th style="width:22%">CORE (síntesis)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Formato primario</td>
+          <td>PDF descargable</td>
+          <td>Plataforma y sesiones en vivo</td>
+          <td>3 días online y Toolbox</td>
+          <td class="core-td">PDF primero, curso online después</td>
+        </tr>
+        <tr>
+          <td>Unidad de estructura</td>
+          <td>Capítulos y apéndices</td>
+          <td>Módulos con objetivos</td>
+          <td>Días y sesiones</td>
+          <td class="core-td">Días, Sesiones, Herramientas</td>
+        </tr>
+        <tr>
+          <td>Narrativa de entrada</td>
+          <td>Contexto académico</td>
+          <td>"Qué aprenderás / Para quién"</td>
+          <td>"Qué incluye / Para quién"</td>
+          <td class="core-td">POV y propuesta de valor</td>
+        </tr>
+        <tr>
+          <td>Herramientas</td>
+          <td>Survey y datasets</td>
+          <td>Canvas y pre-materiales</td>
+          <td>Toolbox físico y SaaS</td>
+          <td class="core-td">Toolbox: plantillas, KPIs, guías</td>
+        </tr>
+        <tr>
+          <td>Certificación</td>
+          <td>No aplica</td>
+          <td>Certificado de participación</td>
+          <td>Certified Business Advisor, LinkedIn</td>
+          <td class="core-td">Facilitador, Advisor, Facilitador Senior</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 3 Propuestas de Outline -->
+<section class="section">
+  <div class="kicker">Propuestas de outline · Idear</div>
+  <h2>3 propuestas de estructura para el <em>Playbook CORE</em></h2>
+  <div class="divider"></div>
+  <p class="sub" style="margin-bottom:24px">Tres opciones con distintas filosofías de estructura. Seleccionar una como base para el desarrollo del Playbook.</p>
+
+  <!-- Propuesta A -->
+  <div class="prop-outline po-a">
+    <div class="po-head">
+      <span class="po-badge">Propuesta A · Inspirado en ANDE</span>
+      <div class="po-title">"El Manual de Referencia"</div>
+      <div class="po-desc">Estructura de documento técnico autorizado: capítulos y apéndices. El Playbook como obra de referencia académica-operativa que se consulta, se cita y se comparte con financiadoras y gobierno.</div>
+    </div>
+    <div class="po-meta">
+      <div class="po-met"><div class="po-met-label">Audiencia</div><div class="po-met-val">Financiadoras, Gobierno, Academia</div></div>
+      <div class="po-met"><div class="po-met-label">Formato</div><div class="po-met-val">PDF técnico, aprox. 80 páginas</div></div>
+      <div class="po-met"><div class="po-met-label">Inspirado en</div><div class="po-met-val">ANDE</div></div>
+      <div class="po-met"><div class="po-met-label">Fortaleza central</div><div class="po-met-val">Credibilidad institucional</div></div>
+    </div>
+    <div class="po-toc">
+      <div class="po-toc-col">
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">INTRO</span>Prefacio y Contexto</div>
+          <div class="po-items">
+            <div class="po-item">Por qué existe este manual</div>
+            <div class="po-item">El problema de los ecosistemas no medidos</div>
+            <div class="po-item">Para quién y cómo usar este manual</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">CAP 1</span>El Modelo CORE — Arquitectura</div>
+          <div class="po-items">
+            <div class="po-item">Los 8 actores del ecosistema (A0–A6)</div>
+            <div class="po-item">Las 7 etapas del embudo (E0–E6)</div>
+            <div class="po-item">El Backbone: G1, G2, G3</div>
+            <div class="po-item">La Matriz Actor x Etapa (8 x 7)</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">CAP 2</span>El Framework de Medición</div>
+          <div class="po-items">
+            <div class="po-item">Los 228 KPIs — lógica y estructura</div>
+            <div class="po-item">KPIs primarios vs. de soporte</div>
+            <div class="po-item">Fuentes de datos por tipo de actor</div>
+          </div>
+        </div>
+      </div>
+      <div class="po-toc-col">
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">CAP 3</span>Las 6 Fases del Diagnóstico</div>
+          <div class="po-items">
+            <div class="po-item">F0: Preparación del ecosistema</div>
+            <div class="po-item">F1–F3: Mapeo, selección y recolección</div>
+            <div class="po-item">F4–F6: Integración, análisis y reporte</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">CAP 4–5</span>Guía por Actor y Casos</div>
+          <div class="po-items">
+            <div class="po-item">Perfil, KPIs y protocolo por A0–A6</div>
+            <div class="po-item">Querétaro, Sinaloa, Tlalpan</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">APX</span>Apéndices</div>
+          <div class="po-items">
+            <div class="po-item">A: Catálogo completo de KPIs (228)</div>
+            <div class="po-item">B: Instrumentos de encuesta por actor</div>
+            <div class="po-item">C: Glosario del ecosistema CORE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Propuesta B -->
+  <div class="prop-outline po-b">
+    <div class="po-head">
+      <span class="po-badge">Propuesta B · Inspirado en Babson</span>
+      <div class="po-title">"El Curso Guiado"</div>
+      <div class="po-desc">Estructura de programa educativo: cada módulo tiene título, audiencia, objetivos de aprendizaje, contenidos y entregable. El Playbook como experiencia de aprendizaje diseñada para transformar al Facilitador, no solo informarlo.</div>
+    </div>
+    <div class="po-meta">
+      <div class="po-met"><div class="po-met-label">Audiencia</div><div class="po-met-val">Facilitadores, Consultores</div></div>
+      <div class="po-met"><div class="po-met-label">Formato</div><div class="po-met-val">PDF modular, aprox. 60 páginas</div></div>
+      <div class="po-met"><div class="po-met-label">Inspirado en</div><div class="po-met-val">Babson</div></div>
+      <div class="po-met"><div class="po-met-label">Fortaleza central</div><div class="po-met-val">Pedagogía progresiva</div></div>
+    </div>
+    <div class="po-toc">
+      <div class="po-toc-col">
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">APERTURA</span>Presentación del Programa</div>
+          <div class="po-items">
+            <div class="po-item">Para quién es este Playbook</div>
+            <div class="po-item">Qué vas a aprender</div>
+            <div class="po-item">¿Qué te diferencia al terminar?</div>
+            <div class="po-item">La ruta de aprendizaje (mapa visual)</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">MÓD 0</span>El Ecosistema que no se mide</div>
+          <div class="po-items">
+            <div class="po-item">Por qué la medición importa</div>
+            <div class="po-item">El rol del Facilitador CORE</div>
+            <div class="po-item">Actividad: diagnóstico inicial de tu ecosistema</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">MÓD 1</span>Conoce el Modelo CORE</div>
+          <div class="po-items">
+            <div class="po-item">Los actores: A0–A6 + Backbone</div>
+            <div class="po-item">Las etapas: E0–E6 del embudo</div>
+            <div class="po-item">Ejercicio: construye tu primera Matriz</div>
+          </div>
+        </div>
+      </div>
+      <div class="po-toc-col">
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">MÓD 2</span>Los KPIs del Ecosistema</div>
+          <div class="po-items">
+            <div class="po-item">Los 228 KPIs: lógica y uso</div>
+            <div class="po-item">Tipos de fuente: encuesta, web, reportes</div>
+            <div class="po-item">Ejercicio: selecciona los KPIs de tu caso</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">MÓD 3</span>El Proceso de Diagnóstico</div>
+          <div class="po-items">
+            <div class="po-item">F0–F3: Preparación, mapeo, selección y recolección</div>
+            <div class="po-item">F4–F6: Integración, análisis y entrega</div>
+            <div class="po-item">Cada fase: objetivo + actividad + entregable</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">MÓD 4</span>Tu Práctica como Facilitador</div>
+          <div class="po-items">
+            <div class="po-item">Ética del diagnóstico de ecosistemas</div>
+            <div class="po-item">Cómo construir tu portafolio de proyectos</div>
+            <div class="po-item">El camino a la certificación CORE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Propuesta C -->
+  <div class="prop-outline po-c po-rec">
+    <div class="po-head">
+      <span class="po-badge">Propuesta C · Síntesis de los 3 referentes</span>
+      <span class="po-rec-tag">Recomendada</span>
+      <div class="po-title">"El Programa Certificado"</div>
+      <div class="po-desc">La estructura de GrowthWheel aplicada a ecosistemas: 3 días de aprendizaje con agenda clara, Toolbox, coaching y comunidad. Con la narrativa de Babson y las tablas visuales de ANDE integradas en cada sesión. Diseñado como PDF y estructurado para convertirse en curso online sin rediseño.</div>
+    </div>
+    <div class="po-meta">
+      <div class="po-met"><div class="po-met-label">Audiencia</div><div class="po-met-val">Facilitadores, Instituciones</div></div>
+      <div class="po-met"><div class="po-met-label">Formato</div><div class="po-met-val">PDF 3 días, aprox. 70 páginas</div></div>
+      <div class="po-met"><div class="po-met-label">Inspirado en</div><div class="po-met-val">GrowthWheel + Babson + ANDE</div></div>
+      <div class="po-met"><div class="po-met-label">Fortaleza central</div><div class="po-met-val">Comercializable y operativo</div></div>
+    </div>
+    <div class="po-toc">
+      <div class="po-toc-col">
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">APERTURA</span>Presentación del Programa CORE</div>
+          <div class="po-items">
+            <div class="po-item">Para quién es / Qué vas a aprender</div>
+            <div class="po-item">¿Qué te diferencia al terminar?</div>
+            <div class="po-item">Qué incluye: 3 días, Toolbox, Coaching, Comunidad</div>
+            <div class="po-item">La ruta de certificación (Facilitador, Advisor, Facilitador Senior)</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">DÍA 1</span>Conoce el Modelo — 8 hrs</div>
+          <div class="po-items">
+            <div class="po-item">Sesión 1.1 · El problema: ecosistemas sin brújula</div>
+            <div class="po-item">Sesión 1.2 · Los actores A0–A6 y el Backbone</div>
+            <div class="po-item">Sesión 1.3 · Las etapas E0–E6 y la Matriz</div>
+            <div class="po-item">Sesión 1.4 · Los 228 KPIs: lógica y uso</div>
+            <div class="po-item">Toolbox Día 1: Plantilla Matriz + Catálogo KPIs</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">DÍA 2</span>Conduce el Levantamiento — 8 hrs</div>
+          <div class="po-items">
+            <div class="po-item">Sesión 2.1 · F0–F1: Preparación y mapeo de actores</div>
+            <div class="po-item">Sesión 2.2 · F2–F3: Selección y recolección de KPIs</div>
+            <div class="po-item">Sesión 2.3 · F4: Integración y verificación de datos</div>
+            <div class="po-item">Sesión 2.4 · Caso en vivo: análisis de ecosistema real</div>
+            <div class="po-item">Toolbox Día 2: Guías de encuesta por actor x 8 tipos</div>
+          </div>
+        </div>
+      </div>
+      <div class="po-toc-col">
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">DÍA 3</span>Analiza y Entrega — 8 hrs</div>
+          <div class="po-items">
+            <div class="po-item">Sesión 3.1 · F5: Heatmap y diagnóstico de brechas</div>
+            <div class="po-item">Sesión 3.2 · F6: La Radiografía del Ecosistema</div>
+            <div class="po-item">Sesión 3.3 · Cómo presentar resultados al cliente</div>
+            <div class="po-item">Sesión 3.4 · Tu camino como Facilitador certificado</div>
+            <div class="po-item">Toolbox Día 3: Plantilla de reporte + Deck cliente</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">POST</span>Seguimiento y Comunidad</div>
+          <div class="po-items">
+            <div class="po-item">Coaching call de onboarding (30 min)</div>
+            <div class="po-item">Acceso a la comunidad de Facilitadores CORE</div>
+            <div class="po-item">Membresía anual: plataforma y actualizaciones</div>
+            <div class="po-item">Workshops mensuales de certificación continua</div>
+          </div>
+        </div>
+        <div class="po-toc-section">
+          <div class="po-sec-title"><span class="po-sec-num">APX</span>Apéndices (estilo ANDE)</div>
+          <div class="po-items">
+            <div class="po-item">A: Catálogo completo de los 228 KPIs</div>
+            <div class="po-item">B: Instrumentos de encuesta por actor (8 guías)</div>
+            <div class="po-item">C: Casos completos: Querétaro, Sinaloa, Tlalpan</div>
+            <div class="po-item">D: Glosario del ecosistema CORE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NEXT STEPS
+══════════════════════════════════════════════════════════════ -->
+<div class="bloque-header bh-amber" id="nextsteps">
+  <div class="bh-num">Siguientes pasos</div>
+  <div class="bh-title">Elementos pendientes por iteración</div>
+  <div class="bh-sub">Distribución de los entregables pendientes del Playbook CORE a lo largo de las 4 iteraciones planificadas.</div>
+</div>
+
+<section class="section alt">
+  <div class="kicker">Design Thinking · 5 Fases</div>
+  <h2>Elementos desarrollados en la <em>iteración del Playbook CORE</em></h2>
+  <div class="divider"></div>
+
+  <div class="met-section">
+    <div class="met-col">
+      <div class="met-head active">
+        <div class="met-phase-num">Fase 01</div>
+        <div class="met-phase-name">Empatizar</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item done">Perfil del Facilitador</div>
+        <div class="met-item done">Proceso del consultor</div>
+        <div class="met-item done">Benchmarking de inspiración</div>
+        <div class="met-item done">Entendimiento del mercado</div>
+        <div class="met-item done">Mapa de Stakeholders</div>
+        <div class="met-item done">Sesión de Empatizar</div>
+        <div class="met-item done">Journey del consultor</div>
+        <div class="met-item done">Comparación CORE vs. ANDE</div>
+        <div class="met-item done">Aprendizajes de Playbooks</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head active">
+        <div class="met-phase-num">Fase 02</div>
+        <div class="met-phase-name">Definir</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item done">POV Statement</div>
+        <div class="met-item done">12 preguntas HMW</div>
+        <div class="met-item done">Problem-Solution Fit</div>
+        <div class="met-item done">Sesión de Convergencia</div>
+        <div class="met-item done">Product Backlog</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head active">
+        <div class="met-phase-num">Fase 03</div>
+        <div class="met-phase-name">Idear</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item done">Outline del Playbook</div>
+        <div class="met-item done">Manual de Referencia CORE</div>
+        <div class="met-item done">Apertura del Curso Guiado</div>
+        <div class="met-item pending">Draft landing page</div>
+        <div class="met-item pending">Draft deck de ventas</div>
+        <div class="met-item pending">Draft one-pager para Luis</div>
+        <div class="met-item pending">Brief de logo</div>
+        <div class="met-item pending">Draft propuesta comercial</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head todo">
+        <div class="met-phase-num">Fase 04</div>
+        <div class="met-phase-name">Prototipar</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item pending">One-pager para Luis</div>
+        <div class="met-item pending">Capabilities deck</div>
+        <div class="met-item pending">Landing page</div>
+        <div class="met-item pending">Guía del consultor (Mód. 0–3)</div>
+        <div class="met-item pending">Propuesta comercial</div>
+        <div class="met-item pending">Toolbox del consultor</div>
+        <div class="met-item pending">Deck de entrega al cliente</div>
+      </div>
+    </div>
+    <div class="met-col">
+      <div class="met-head todo">
+        <div class="met-phase-num">Fase 05</div>
+        <div class="met-phase-name">Probar</div>
+      </div>
+      <div class="met-items">
+        <div class="met-item pending">Primer engagement vía Luis</div>
+        <div class="met-item pending">Landing page en producción</div>
+        <div class="met-item pending">Playbook CORE Primera iteración</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bloque-header bh-amber" id="nextsteps-roadmap">
+  <div class="bh-num">Siguientes pasos</div>
+  <div class="bh-title">Roadmap MVP · Iteraciones planificadas</div>
+</div>
+
+<section class="section alt">
+  <div class="roadmap">
+    <div class="roadmap-track">
+
+      <!-- IT1 -->
+      <div class="rm-col">
+        <div class="rm-node-wrap">
+          <div class="rm-node active">IT1</div>
+          <div class="rm-period">Apr 17–30</div>
+        </div>
+        <div class="rm-card">
+          <div class="rm-tag">Desbloquear</div>
+          <div class="rm-goal">Desbloquear proveedores e inicio de desarrollo de playbook</div>
+          <div class="rm-items">
+            <div class="rm-item">Draft landing page</div>
+            <div class="rm-item">Precio y modelo de venta</div>
+            <div class="rm-item">Brief para proveedor de logo</div>
+            <div class="rm-item">One-pager para Luis y Odille</div>
+            <div class="rm-item">Propuesta comercial template</div>
+            <div class="rm-item">Módulo 0 — El Ecosistema</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IT2 -->
+      <div class="rm-col">
+        <div class="rm-node-wrap">
+          <div class="rm-node active">IT2</div>
+          <div class="rm-period">May 1–14</div>
+        </div>
+        <div class="rm-card">
+          <div class="rm-tag">Núcleo</div>
+          <div class="rm-goal">Desarrollo de playbook e inicio de materiales de venta</div>
+          <div class="rm-items">
+            <div class="rm-item">Módulo 1 — Conoce el Modelo</div>
+            <div class="rm-item">Módulo 2 — Los KPIs</div>
+            <div class="rm-item">Deck de ventas / brochure</div>
+            <div class="rm-item">Proceso de inscripción</div>
+            <div class="rm-item">Inicio desarrollo landing page</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IT3 -->
+      <div class="rm-col">
+        <div class="rm-node-wrap">
+          <div class="rm-node active">IT3</div>
+          <div class="rm-period">May 15–28</div>
+        </div>
+        <div class="rm-card">
+          <div class="rm-tag">Piloto</div>
+          <div class="rm-goal">Enfoque en materiales de venta</div>
+          <div class="rm-items">
+            <div class="rm-item">Módulo 3 — Diagnóstico</div>
+            <div class="rm-item">Desarrollo landing page</div>
+            <div class="rm-item">Casos de estudio</div>
+            <div class="rm-item">Deck de presentación para impartir el curso</div>
+            <div class="rm-item">Modelo de ventas</div>
+            <div class="rm-item">Primer piloto — finales de Mayo</div>
+            <div class="rm-item">Toolbox del alumno</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IT4 -->
+      <div class="rm-col">
+        <div class="rm-node-wrap">
+          <div class="rm-node active">IT4</div>
+          <div class="rm-period">May 29–Jun 11</div>
+        </div>
+        <div class="rm-card">
+          <div class="rm-tag">MVP</div>
+          <div class="rm-goal">Primera iteración de playbook lista y modelo de negocio</div>
+          <div class="rm-items">
+            <div class="rm-item">Módulo 4 — Práctica Practitioner</div>
+            <div class="rm-item">Revisión y pulido del curso</div>
+            <div class="rm-item">Piloto con 1er participante</div>
+            <div class="rm-item">Criterios de certificación</div>
+            <div class="rm-item">Precio versión final</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="ft-brand">CORE · <em>Playbook</em> · Iteración 1 · Design Thinking</span>
+  <span class="ft-date">Elaborado por Anaric González · OI Solutions · Abril 2026</span>
+</footer>
+
+</body>
+</html>
