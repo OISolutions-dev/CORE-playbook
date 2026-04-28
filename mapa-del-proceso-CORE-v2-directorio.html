@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Catálogo de KPIs CORE — V2 Directorio</title>
+<style>
+  :root {
+    --azul:#1B3A6B; --azul-med:#2A5BA8; --naranja:#E87722;
+    --gris-bg:#F2F5FA; --texto:#1A1A2E; --borde:#D0D8E8; --borde-med:#B0BDD0;
+    --a0:#E8F4FD; --a0b:#2980B9;
+    --a1:#EAF7EA; --a1b:#27AE60;
+    --a2:#FEF9E7; --a2b:#D4AC0D;
+    --a3:#FDEDEC; --a3b:#C0392B;
+    --a4a:#F5EEF8; --a4ab:#8E44AD;
+    --a4b:#FFF0F5; --a4bb:#C0396B;
+    --a5:#FEF5E7; --a5b:#E67E22;
+    --a6:#E8F8F5; --a6b:#1ABC9C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--gris-bg);color:var(--texto);min-height:100vh}
+
+  header{background:linear-gradient(135deg,var(--azul) 0%,var(--azul-med) 100%);color:white;padding:28px 48px}
+  header h1{font-size:1.5rem;font-weight:800;letter-spacing:-.3px}
+  header p{margin-top:8px;font-size:.88rem;opacity:.85;max-width:780px;line-height:1.5}
+  .badge{display:inline-block;background:var(--naranja);color:white;padding:4px 12px;border-radius:14px;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+
+  main{padding:32px 48px}
+  .source-note{background:#FFF8E1;border-left:4px solid #F9A825;padding:12px 18px;border-radius:6px;font-size:.82rem;color:#5D4037;margin-bottom:24px;line-height:1.5}
+
+  .filter-bar{background:white;border:1px solid var(--borde);border-radius:10px;padding:16px 20px;margin-bottom:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .filter-bar label{font-size:.82rem;font-weight:700;color:var(--azul)}
+  .filter-bar select,.filter-bar input{border:1px solid var(--borde-med);border-radius:6px;padding:7px 11px;font-size:.85rem;color:var(--texto);background:white}
+  .filter-bar input{min-width:240px}
+  #contadorKPIs{font-size:.8rem;color:#555;margin-left:auto;font-weight:600}
+
+  .kpi-table-wrap{background:white;border:1px solid var(--borde);border-radius:10px;overflow:hidden}
+  .kpi-table{width:100%;border-collapse:collapse;font-size:.82rem}
+  .kpi-table thead tr{background:var(--azul);color:white}
+  .kpi-table th{padding:11px 14px;text-align:left;font-weight:600;font-size:.78rem;letter-spacing:.3px;text-transform:uppercase}
+  .kpi-table tbody tr{border-bottom:1px solid var(--borde)}
+  .kpi-table tbody tr:nth-child(even){background:#FAFBFD}
+  .kpi-table tbody tr:hover{background:#EEF3FB}
+  .kpi-table td{padding:10px 14px;vertical-align:top;line-height:1.45}
+  .kpi-table .num{font-weight:700;color:var(--azul);text-align:center;white-space:nowrap}
+  .kpi-table .desc{color:var(--texto)}
+  .kpi-table .coords{font-size:.72rem;color:var(--azul-med);font-family:'SF Mono',Menlo,monospace}
+
+  .tag{display:inline-block;padding:3px 9px;border-radius:11px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+  .tag-original{background:#E3F2FD;color:#1565C0}
+  .tag-recuperado{background:#FFF9C4;color:#827717}
+  .tag-nuevo{background:#E8F5E9;color:#1B5E20}
+
+  .fuente-tag{display:inline-block;padding:3px 9px;border-radius:11px;font-size:.68rem;font-weight:600;border:1px solid;white-space:nowrap}
+  .ft-default{background:#F5F5F5;color:#555;border-color:#999}
+  .ft-academia{background:var(--a1);color:var(--a1b);border-color:var(--a1b)}
+  .ft-corporates{background:var(--a2);color:var(--a2b);border-color:var(--a2b)}
+  .ft-gobierno{background:var(--a3);color:var(--a3b);border-color:var(--a3b)}
+  .ft-providers{background:var(--a4a);color:var(--a4ab);border-color:var(--a4ab)}
+  .ft-incubadoras{background:var(--a4b);color:var(--a4bb);border-color:var(--a4bb)}
+  .ft-capital{background:var(--a5);color:var(--a5b);border-color:var(--a5b)}
+  .ft-conectores{background:var(--a6);color:var(--a6b);border-color:var(--a6b)}
+  .ft-founders{background:var(--a0);color:var(--a0b);border-color:var(--a0b)}
+  .ft-backbone{background:#E8EAF6;color:#283593;border-color:#283593}
+  .ft-web{background:#E0F7FA;color:#006064;border-color:#006064}
+  .ft-reportes{background:#F3E5F5;color:#6A1B9A;border-color:#6A1B9A}
+  .ft-abierta{background:#FFF3E0;color:#E65100;border-color:#E65100}
+  .ft-formula{background:#FBE9E7;color:#BF360C;border-color:#BF360C}
+  .ft-media{background:#E0F2F1;color:#004D40;border-color:#004D40}
+
+  footer{padding:24px 48px;text-align:center;color:#666;font-size:.78rem}
+
+  @media(max-width:768px){
+    header,main,footer{padding-left:20px;padding-right:20px}
+    .filter-bar{padding:14px;gap:10px}
+    .filter-bar input{min-width:100%}
+    .kpi-table{font-size:.75rem}
+    .kpi-table th,.kpi-table td{padding:8px 10px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">V2 · Directorio filtrable</span>
+  <h1>Catálogo de KPIs CORE — 228 indicadores</h1>
+  <p>Listado completo del catálogo (revisión Diciembre 2025) en formato directorio. Usa los filtros para encontrar los indicadores relevantes según fuente de datos, tipo o palabra clave en la descripción. Cada KPI muestra el actor y la etapa donde aplica (coordenadas A×E).</p>
+</header>
+
+<main>
+  <div class="source-note"><strong>Nota sobre idioma:</strong> las descripciones están en inglés tal como aparecen en el catálogo fuente (<em>Revisión de KPIS Ecosistema Diciembre 2025.xlsx</em>, hoja "Índice (completo)").</div>
+
+  <div class="filter-bar">
+    <label for="filtroFuente">Fuente:</label>
+    <select id="filtroFuente" onchange="filtrarKPIs()">
+      <option value="">Todas</option>
+      <option value="web scraping">Web Scraping</option>
+      <option value="existing reports">Reportes Existentes</option>
+      <option value="open survey">Encuesta Abierta a Líderes</option>
+      <option value="founders">Founders (A0)</option>
+      <option value="academic">Academia (A1)</option>
+      <option value="corporates">Corporativos (A2)</option>
+      <option value="government">Gobierno (A3)</option>
+      <option value="providers">Proveedores (A4-A)</option>
+      <option value="incubators">Incubadoras (A4-B)</option>
+      <option value="capital">Capital (A5)</option>
+      <option value="connectors">Conectores (A6)</option>
+      <option value="backbone">Backbone</option>
+      <option value="formula">Fórmula</option>
+      <option value="media">Media</option>
+    </select>
+
+    <label for="filtroTipo">Tipo:</label>
+    <select id="filtroTipo" onchange="filtrarKPIs()">
+      <option value="">Todos</option>
+      <option value="ORIGINAL">Original</option>
+      <option value="RECUPERADO">Recuperado</option>
+      <option value="NUEVO">Nuevo</option>
+    </select>
+
+    <label for="busqueda">Buscar:</label>
+    <input type="text" id="busqueda" placeholder="Buscar en descripción..." oninput="filtrarKPIs()"/>
+
+    <span id="contadorKPIs"></span>
+  </div>
+
+  <div class="kpi-table-wrap">
+    <table class="kpi-table" id="tablaKPIs">
+      <thead>
+        <tr>
+          <th style="width:60px;text-align:center">#</th>
+          <th>KPI · Descripción</th>
+          <th style="width:120px">Tipo</th>
+          <th style="width:230px">Fuente de datos</th>
+          <th style="width:200px">Coordenadas A×E</th>
+        </tr>
+      </thead>
+      <tbody id="kpiBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  Catálogo CORE · V2 Directorio · Generado desde el catálogo de Diciembre 2025.
+</footer>
+
+<script>
+const kpis = [
+  [1, "Number of Research Outputs Transferred to the Ecosystem", "A1,E2 ; A1,E3 ; A1,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [2, "Number of Students Engaged in Entrepreneurship Programs", "A1,E1 ; A1,E2 ; A1,E3", "ORIGINAL", "Survey to academic & R&D"],
+  [3, "Number of Academic-Industry Collaborations Initiated", "A1,E2 ; A1,E3 ; A1,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [4, "Number of Research Publications in High-Impact Journals", "A1,E2 ; A1,E3", "ORIGINAL", "Web scraping"],
+  [5, "Number of patents and R&D collaborations", "A1,E3 ; A1,E4 ; A3,E3 ; A3,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [6, "R&D centers of multinational companies", "A1,E1 ; A1,E5 ; A3,E1 ; A3,E5", "ORIGINAL", "Existing reports"],
+  [7, "R&D Expenditure", "A1,E3 ; A1,E4 ; A1,E5", "ORIGINAL", "Survey to academic & R&D"],
+  [8, "STEM and entrepreneurship education enrollment", "A1,E1 ; A1,E2 ; A3,E1 ; A3,E2", "ORIGINAL", "Survey to academic & R&D"],
+  [9, "Top Universities", "A1,E1 ; A1,E2", "ORIGINAL", "Existing reports"],
+  [10, "Number of Collaborative Initiatives Facilitated", "A6,E2  ; A6,E3", "ORIGINAL", "Survey to Backbone if exists"],
+  [11, "Ecosystem Actor Engagement Rate", "A6,E1 ; A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [12, "Number of Ecosystem Data Points Tracked", "A6,E3", "ORIGINAL", "Survey to Backbone if exists"],
+  [13, "Number of People Completing Skills Development Programs", "A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [14, "Number of Programs Designed for Emerging Skills", "A4-B,E1 ; A4-B,E2 ; A4-B,E3 ; A6,E1 ; A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [15, "Number of Students Completing Entrepreneurship Programs", "A1,E2 ; A1,E3 ; A3,E2 ; A3,E3", "ORIGINAL", "Survey to academic & R&D"],
+  [16, "Number of Faculty Members Trained in Entrepreneurship Education", "A1,E2 ; A1,E3", "ORIGINAL", "Survey to academic & R&D"],
+  [17, "Total Funding Allocated to Training and Development Programs", "A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [18, "Percentage of Training Programs Supported by Corporate Funding", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [19, "Number of Community-Supported Training Programs", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [20, "Collaborative Skill-Building Activities Organized", "A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [21, "Number of Government-Funded Skill Development Programs", "A3,E1 ; A3,E2 ; A4-B,E1 ; A4-B,E2", "ORIGINAL", "Survey to Government actors"],
+  [22, "Number of Regulations Simplified to Promote Training Accessibility", "A3,E4", "ORIGINAL", "Survey to Government actors"],
+  [23, "Percentage of Target Population Benefiting from Government-Funded Training Programs", "A3,E2", "ORIGINAL", "Survey to Government actors"],
+  [24, "Number of Employee-Led Innovation Initiatives", "A2,E2 ; A2,E3 ; A2,E4", "ORIGINAL", "Survey to corporates"],
+  [25, "Number of Training or Incubation Programs Delivered", "A1,E2 ; A1,E3 ; A3,E2 ; A3,E3 ; A4-B,E2 ; A4-B,E3 ; A4-B,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [26, "Total Capital Invested in Startups and Scaleups", "A3,E4 ; A3,E5 ; A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to Government actors"],
+  [27, "Number of Funding Rounds Closed", "A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to founders"],
+  [28, "Average Time to Close a Funding Round", "A4-B,E4 ; A5,E4", "ORIGINAL", "Web scraping"],
+  [29, "Percentage of Startups Receiving Investment", "A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to incubators - accelerators"],
+  [30, "Total Grants Allocated to Startups", "A3,E3 ; A3,E4 ; A4-B,E3 ; A4-B,E4 ; A6,E3 ; A6,E4", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [31, "Investment Diversity Index", "A5,E4 ; A5,E5", "ORIGINAL", "Existing reports"],
+  [32, "Bank credit to SMEs", "A3,E4", "ORIGINAL", "Survey to Backbone if exists"],
+  [33, "Early stage Funding Volume: Sum of value of investments", "A4-B,E3 ; A4-B,E4", "ORIGINAL", "Survey to founders"],
+  [34, "Early-Stage Funding Growth: Number of investments", "A4-B,E3 ; A4-B,E4 ; A4-B,E5 ; A6,E3 ; A6,E4", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [35, "Emerging Investor Base: New Investors with less than 5 years of activity", "A5,E2 ; A5,E3", "ORIGINAL", "Web scraping"],
+  [36, "Number of Investors / Venture Capitals", "A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to founders"],
+  [37, "Public capital market activity", "A3,E5 ; A5,E5", "ORIGINAL", "Existing reports"],
+  [38, "Number of Ecosystem Events Facilitated", "A4-A,E0 ; A4-A,E1 ; A4-A,E2 ; A5,E1 ; A5,E2 ; A6,E0 ; A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [39, "Number of Active Ecosystem Members", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [40, "Media Reach and Engagement", "A6,E0 ; A6,E1", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [41, "Number of Mentions or Features in National or International Media", "A6,E0 ; A6,E1", "ORIGINAL", "Web scraping"],
+  [42, "Ecosystem Networking Activity", "A1,E1 ; A1,E2 ; A1,E3 ; A3,E1 ; A3,E2 ; A3,E3 ; A6,E1 ; A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [43, "Industry association memberships", "A2,E1 ; A2,E2 ; A3,E1 ; A3,E2 ; A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [44, "Number of global startup events", "A6,E1", "ORIGINAL", "Web scraping"],
+  [45, "Number of startup competitions", "A1,E1 ; A1,E2 ; A4-B,E1 ; A4-B,E2 ; A4-B,E3 ; A6,E1 ; A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [46, "Access to utilities (electricity, water, internet penetration)", "A3,E4", "ORIGINAL", "Existing reports"],
+  [47, "Youth Labor Participation Rate", "A3,E1", "ORIGINAL", "Existing reports"],
+  [48, "Corporate tax rate", "A3,E4", "ORIGINAL", "Existing reports"],
+  [49, "Cost of internet", "A3,E6", "ORIGINAL", "Existing reports"],
+  [50, "Cost starting a business (% of income per capita)", "A4-B,E4 ; A6,E4", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [51, "Domestic market size index", "A3,E5", "ORIGINAL", "Existing reports"],
+  [52, "Ease of starting a business index", "A4-B,E4 ; A4-B,E5", "ORIGINAL", "Existing reports"],
+  [53, "English proficiency", "A2,E1 ; A2,E2 ; A3,E1 ; A4-B,E1 ; A4-B,E2 ; A6,E1", "ORIGINAL", "Existing reports"],
+  [54, "GDP growth.", "A3,E5", "ORIGINAL", "Existing reports"],
+  [55, "Informal Employment", "A3,E1 ; A3,E5 ; A4-B,E1 ; A4-B,E5", "ORIGINAL", "Existing reports"],
+  [56, "Innovation Index", "A3,E3 ; A3,E4", "ORIGINAL", "Existing reports"],
+  [57, "Labor force participation rate by gender, ethnicity, and disability status", "A3,E1 ; A3,E5 ; A6,E1 ; A6,E5", "ORIGINAL", "Existing reports"],
+  [58, "Major obstacles perceived by entrepreneurs", "A4-B,E1 ; A4-B,E4 ; A6,E1 ; A6,E3", "ORIGINAL", "Existing reports"],
+  [59, "Salary of software engineers", "A2,E5 ; A3,E5 ; A6,E5", "ORIGINAL", "Existing reports"],
+  [60, "Tax incentives - young companies", "A3,E4 ; A4-B,E4", "ORIGINAL", "Existing reports"],
+  [61, "Time and cost to start a business", "A6,E4", "ORIGINAL", "Existing reports"],
+  [62, "Unemployment Rate", "A3,E1 ; A3,E5 ; A6,E1 ; A6,E5", "ORIGINAL", "Existing reports"],
+  [63, "Youth Development Index", "A3,E1", "ORIGINAL", "Existing reports"],
+  [64, "Market Size and Scalability Potential", "A4-B,E5", "ORIGINAL", "Existing reports"],
+  [65, "Total Public Funding Allocated to Innovation and Entrepreneurship", "A3,E3", "ORIGINAL", "Existing reports"],
+  [66, "Number of Policies Implemented to Support Innovation", "A3,E1 ; A3,E4", "ORIGINAL", "Survey to Government actors"],
+  [67, "Number of Public-Private Partnerships Established", "A3,E3 ; A3,E4", "ORIGINAL", "Existing reports"],
+  [68, "Ease of Doing Business Index", "A2,E4 ; A2,E5 ; A4-B,E4 ; A4-B,E5", "ORIGINAL", "Existing reports"],
+  [69, "Total Infrastructure Investment for Innovation Hubs", "A3,E4", "ORIGINAL", "Survey to Government actors"],
+  [70, "Percentage of Public Services Digitalized", "A3,E3 ; A3,E4", "ORIGINAL", "Existing reports"],
+  [71, "Number of People Engaged in Inspiration Activities", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [72, "Number of Awareness Campaigns Conducted", "A6,E0 ; A6,E1", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [73, "Diversity of Participants in Inspiration Activities", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [74, "Number of Students Engaged in Entrepreneurship Inspiration Activities", "A1,E1 ; A1,E2", "ORIGINAL", "Survey to academic & R&D"],
+  [75, "Number of Ecosystem Networking Events Organized", "A4-A,E1 ; A4-A,E2 ; A4-A,E3 ; A4-B,E1 ; A4-B,E2 ; A4-B,E3 ; A5,E1 ; A5,E2 ; A6,E1 ; A6,E2 ; A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [76, "Number of Influencers or Ambassadors Engaged in Inspiration Activities", "A6,E0 ; A6,E1", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [77, "Total Public Funding Allocated to Inspiration Programs", "A3,E1", "ORIGINAL", "Survey to Government actors"],
+  [78, "Number of Public Campaigns Promoting Entrepreneurship Awareness", "A3,E1", "ORIGINAL", "Survey to Government actors"],
+  [79, "Number of Business Leaders Participating in Inspirational Activities", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [80, "Total Economic Impact ($) of the Ecosystem", "A3,E5  ; A5,E5", "ORIGINAL", "Formula"],
+  [81, "Total Number of Startups and Scaleups", "A1,E4 ; A1,E5 ; A3,E4 ; A3,E5", "ORIGINAL", "Survey to academic & R&D"],
+  [82, "Total Jobs Created by Startups and Scaleups", "A1,E4 ; A1,E5 ; A3,E4 ; A3,E5 ; A4-B,E4 ; A4-B,E5 ; A5,E5 ; A6,E5", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [83, "Total Funding Raised by Startups and Scaleups", "A2,E4 ; A2,E5 ; A4-B,E4 ; A4-B,E5 ; A5,E4 ; A5,E5", "ORIGINAL", "Existing reports"],
+  [84, "Number of Startups Expanding to International Markets", "A3,E5 ; A4-B,E4 ; A4-B,E5 ; A5,E5", "ORIGINAL", "Survey to founders"],
+  [85, "Total Investment in R&D by Industry", "A1,E3 ; A1,E4 ; A1,E5 ; A2,E3 ; A2,E4 ; A2,E5", "ORIGINAL", "Survey to Backbone if exists"],
+  [86, "Number of Industry-Academia Collaborative Projects", "A1,E3 ; A1,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [87, "Percentage of Revenue Allocated to Innovation", "A2,E3 ; A2,E4", "ORIGINAL", "Survey to corporates"],
+  [88, "Number of New Products or Services Launched by Companies", "A2,E3 ; A2,E4 ; A2,E5", "ORIGINAL", "Survey to corporates"],
+  [89, "Number of Corporate Innovation Challenges or Hackathons Hosted", "A2,E1  ; A2,E3", "ORIGINAL", "Web scraping"],
+  [90, "Branches of multinational companies", "A3,E5 ; A4-B,E1 ; A4-B,E5 ; A5,E5", "ORIGINAL", "Survey to founders"],
+  [91, "Globally leading companies: Ratio of exits over $50M to Series A", "A4-B,E5", "ORIGINAL", "Survey to incubators - accelerators"],
+  [92, "Introduction of new products/services in the past three years", "A2,E3; A2,E4", "ORIGINAL", "Web scraping"],
+  [93, "Share of women and minorities in high-growth industries", "A1,E1 ; A1,E2 ; A3,E1 ; A3,E2 ; A4-B,E1 ; A4-B,E2", "ORIGINAL", "Existing reports"],
+  [94, "Number of Scaleups Achieving High Growth", "A5,E5", "ORIGINAL", "Web scraping"],
+  [95, "Total Revenue Generated by Scaleups", "A5,E5", "ORIGINAL", "Survey to founders"],
+  [96, "Number of Scaleups Expanding Internationally", "A5,E5", "ORIGINAL", "Survey to founders"],
+  [97, "Number of Scaleups Raising Series B or Later Funding", "A4-B,E5 ; A5,E5", "ORIGINAL", "Existing reports"],
+  [98, "Average Time to Scale for Startups", "A4-B,E5  ; A5,E5", "ORIGINAL", "Web scraping"],
+  [99, "Job Creation by Scaleups", "A5,E5", "ORIGINAL", "Survey to founders"],
+  [100, "Total Growth-Stage Capital Invested in Scaleups", "A5,E5", "ORIGINAL", "Web scraping"],
+  [101, "Availability of Growth-Stage Capital for Scaleups", "A4-B,E5", "ORIGINAL", "Existing reports"],
+  [102, "Number of Scaleups Accessing International Funding", "A5,E5", "ORIGINAL", "Web scraping"],
+  [103, "Number of Scaleups Featured in National or International Media", "A6,E5", "ORIGINAL", "Web scraping"],
+  [104, "Number of Infrastructure Projects Supporting Scaleups", "A6,E5", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [105, "Number of Scaleups Partnering with Private Companies", "A5,E4 ; A5,E5", "ORIGINAL", "Survey to founders"],
+  [106, "Total Investment by Private Companies in Scaleups", "A2,E5 ; A5,E5", "ORIGINAL", "Web scraping"],
+  [107, "Percentage of Scaleup-Ready Service Providers", "A4-A,E4  ; A4-A,E5", "ORIGINAL", "Web scraping"],
+  [108, "Number of Startups and Projects Supported by Service Providers", "A4-A,E4", "ORIGINAL", "Web scraping"],
+  [109, "Number of Startup or Innovation-Ready Service Providers", "A4-A,E2  ; A4-A,E3", "ORIGINAL", "Web scraping"],
+  [110, "Availability of legal and accounting services for entrepreneurs", "A4-A,E2  ; A4-A,E3", "ORIGINAL", "Web scraping"],
+  [111, "Number and performance of business incubators and accelerators", "A4-B,E1 ; A4-B,E2 ; A4-B,E3", "ORIGINAL", "Survey to incubators - accelerators"],
+  [112, "Number of Accelerators", "A1,E1 ; A1,E2 ; A3,E1 ; A3,E2 ; A4-B,E1 ; A4-B,E2", "ORIGINAL", "Survey to academic & R&D"],
+  [113, "Number of coworking spaces", "A3,E2 ; A3,E3 ; A4-A,E2 ; A4-A,E3 ; A4-A,E4 ; A4-B,E2 ; A4-B,E3 ; A4-B,E4 ; A6,E2 ; A6,E3 ; A6,E4", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [114, "Proportion of women and minorities in incubator/accelerator programs", "A4-B,E1 ; A4-B,E2", "ORIGINAL", "Survey to incubators - accelerators"],
+  [115, "Startup Survival Rate (2+ Years)", "A1,E4 ; A1,E5 ; A3,E4 ; A3,E5 ; A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to academic & R&D"],
+  [116, "Number of Startups Created", "A1,E4 ; A3,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [117, "Percentage of Startups Achieving Market Entry", "A4-B,E4 ; A5,E4", "ORIGINAL", "Survey to founders"],
+  [118, "Total Funding Raised by Startups", "A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to incubators - accelerators"],
+  [119, "Average Time to Market for Startups", "A4-B,E4 ; A5,E4", "ORIGINAL", "Survey to founders"],
+  [120, "Number of Startups Scaling Beyond Local Markets", "A5,E5", "ORIGINAL", "Survey to founders"],
+  [121, "Employment generated by startups", "A3,E4 ; A3,E5 ; A5,E4 ; A5,E5", "ORIGINAL", "Survey to founders"],
+  [122, "Female entrepreneurship rates (% of total entrepreneurs)", "A3,E1 ; A3,E4 ; A4-B,E1 ; A4-B,E4 ; A5,E1 ; A5,E5", "ORIGINAL", "Existing reports"],
+  [123, "Early Stage Growth: Ratio of Series A startups to Seed", "A4-B,E4 ; A4-B,E5 ; A5,E4 ; A5,E5", "ORIGINAL", "Existing reports"],
+  [124, "Startup and survival rates", "A3,E4 ; A3,E5 ; A4-B,E4 ; A4-B,E5 ; A5,E4 ; A5,E5", "ORIGINAL", "Survey to founders"],
+  [125, "ratio of number of startups to metro population", "A3,E4  ; A3,E5", "ORIGINAL", "Formula"],
+  [126, "Number of Academic Spin-Offs Created", "A1,E3 ; A1,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [127, "Revenue Generated by Academic Spin-Offs", "A1,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [128, "Total Capital Invested in Startups", "A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to incubators - accelerators"],
+  [129, "Percentage of Startups with Access to Seed or Early-Stage Funding", "A4-B,E3 ; A4-B,E4", "ORIGINAL", "Existing reports"],
+  [130, "Number of Angel Investors Supporting Startups", "A4-B,E4 ; A4-B,E5 ; A5,E4 ; A5,E5", "ORIGINAL", "Survey to founders"],
+  [131, "Diversity of Startup Funding Sources", "A4-B,E4 ; A4-B,E5 ; A5,E4 ; A5,E5 ; A6,E4 ; A6,E5", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [132, "Number of Business Groups Supporting Startups", "A6,E1 ; A6,E2", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [133, "Number of Government Incentives for Startups", "A3,E4", "ORIGINAL", "Survey to Government actors"],
+  [134, "Number of Startup-Focused Policies Implemented", "A3,E1 ; A3,E4 ; A4-B,E1 ; A4-B,E4", "ORIGINAL", "Survey to founders"],
+  [135, "Number of Spin-Offs from Corporate R&D", "A2,E3 ; A2,E4", "ORIGINAL", "Survey to corporates"],
+  [136, "Number of Startups Supported Through Corporate Programs", "A2,E3 ; A2,E4 ; A2,E5 ; A3,E3 ; A3,E4 ; A3,E5 ; A4-B,E3 ; A4-B,E4 ; A4-B,E5", "ORIGINAL", "Survey to corporates"],
+  [137, "Speed to exit: average age of company at exit", "A4-B,E5 ; A5,E5", "ORIGINAL", "Web scraping"],
+  [138, "Number of exits above 1B", "A4-B,E5", "ORIGINAL", "Existing reports"],
+  [139, "Number of exits above 50M", "A4-B,E5", "ORIGINAL", "Existing reports"],
+  [140, "Ecosystem Valuation: sum of all startup valuations", "A5,E5", "ORIGINAL", "Formula"],
+  [141, "Number of Startups Supported Through Service Provider Programs", "A4-A,E3 ; A4-A,E4 ; A4-A,E5", "ORIGINAL", "Survey to Service providers"],
+  [142, "Number of Startup-Ready Service Providers", "A4-A,E2  ; A4-A,E3", "ORIGINAL", "Web scraping"],
+  [143, "Percentage of Startups Accessing Local Legal, Financial, or Marketing Support", "A4-A,E3 ; A4-A,E4", "ORIGINAL", "Existing reports"],
+  [144, "Number of Co-Working Spaces Supporting Startups", "A4-A,E4", "ORIGINAL", "Web scraping"],
+  [145, "Total Investment in Technological Validation or R&D Projects", "A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [146, "Availability of Capital for Technological Validation and R&D", "A6,E3 ; A6,E4", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [147, "Number of Grants Allocated to University-Led Technological Projects", "A1,E3", "ORIGINAL", "Survey to academic & R&D"],
+  [148, "Percentage of Media Coverage Dedicated to Ecosystem Innovations", "A6,E0 ; A6,E1", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [149, "Number of Government Grants for Technology Validation", "A3,E3 ; A3,E4 ; A4-B,E3 ; A4-B,E4", "ORIGINAL", "Survey to founders"],
+  [150, "Number of Industry-Led Innovation Projects", "A2,E3 ; A2,E4", "ORIGINAL", "Survey to corporates"],
+  [151, "Number of Industry-Academia Collaborative R&D Projects", "A1,E3 ; A1,E4", "ORIGINAL", "Survey to academic & R&D"],
+  [152, "Number of Patents Filed by Companies", "A1,E3 ; A1,E4", "ORIGINAL", "Existing reports"],
+  [153, "Percentage of Service Providers Offering Validation or Prototyping Support", "A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [154, "Number of Total Patents Filed", "A3,E3", "ORIGINAL", "Existing reports"],
+  [155, "Number of Validated Technological or Scientific Projects", "A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [156, "Number of Prototypes Developed", "A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [157, "Success Rate of Technological Validation", "A6,E3", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [158, "Funding Secured for Technological Projects", "A6,E3 ; A6,E4", "ORIGINAL", "Open Survey to Ecosystem Leaders"],
+  [159, "% of students and professors with 8+ hours of ecosystem event experience", "A1,E1", "RECUPERADO", "Survey to academic & R&D (suggested)"],
+  [160, "% of students and professors with international experience", "A1,E1", "RECUPERADO", "Survey to academic & R&D (suggested)"],
+  [161, "% of corporate leaders sensitized in innovation strategy", "A2,E1", "RECUPERADO", "Survey to corporates (suggested)"],
+  [162, "Number of employees certified in entrepreneurship", "A2,E1", "RECUPERADO", "Survey to corporates (suggested)"],
+  [163, "Number of employees certified in technology", "A2,E1", "RECUPERADO", "Survey to corporates (suggested)"],
+  [164, "% of foreign talent in Science, Technology and Innovation roles", "A2,E1", "RECUPERADO", "Survey to corporates (suggested)"],
+  [165, "% of government employees sensitized in scientific-technological entrepreneurship", "A3,E1", "RECUPERADO", "Survey to Government actors (suggested)"],
+  [166, "% of investors sensitized in ecosystem strategy", "A5,E1", "RECUPERADO", "Survey to Capital (suggested)"],
+  [167, "% of population attending a STEAM or entrepreneurship community", "A6,E1", "RECUPERADO", "Survey to Connectors (suggested)"],
+  [168, "Number of success cases promoted in local, national and international media", "A6,E1", "RECUPERADO", "Survey to Connectors (suggested)"],
+  [169, "% of professors certified in science- and technology-based entrepreneurship", "A1,E2", "RECUPERADO", "Survey to academic & R&D (suggested)"],
+  [170, "% of people dedicated to R&D linked to companies", "A1,E2", "RECUPERADO", "Survey to academic & R&D (suggested)"],
+  [171, "% of employees involved in intrapreneurship projects", "A2,E2", "RECUPERADO", "Survey to corporates (suggested)"],
+  [172, "% of investors trained in frustration tolerance and project management", "A5,E2", "RECUPERADO", "Survey to Capital (suggested)"],
+  [173, "Number of science-technology patents with identified market potential", "A1,E3", "RECUPERADO", "Survey to academic & R&D (suggested)"],
+  [174, "Number of deals and amount invested in Pre-seed stage", "A5,E3", "RECUPERADO", "Survey to Capital (suggested)"],
+  [175, "Number of mentors and advisors linked to Pre-seed projects", "A5,E3", "RECUPERADO", "Survey to Capital (suggested)"],
+  [176, "% of entrepreneurship projects originating from a community", "A6,E3", "RECUPERADO", "Survey to Connectors (suggested)"],
+  [177, "Number of startups older than 3 years originated from universities", "A1,E4", "RECUPERADO", "Survey to academic & R&D (suggested)"],
+  [178, "% of technological spin-offs successfully launched within companies", "A2,E4", "RECUPERADO", "Survey to corporates (suggested)"],
+  [179, "Number of deals and amount invested in Seed and Series A", "A5,E4", "RECUPERADO", "Survey to Capital (suggested)"],
+  [180, "% of startups involved in a local STEAM community", "A6,E4", "RECUPERADO", "Survey to Connectors (suggested)"],
+  [181, "Number of deals and amount invested in Series B and later", "A5,E5", "RECUPERADO", "Survey to Capital (suggested)"],
+  [182, "% of jobs generated by science- and technology-based companies", "A2,E5", "RECUPERADO", "Survey to corporates (suggested)"],
+  [183, "Number of spaces dedicated to Science, Technology and Innovation promotion", "A1-A6,E6", "RECUPERADO", "Open Survey to Ecosystem Leaders (suggested)"],
+  [184, "% of spaces open to the public", "A1-A6,E6", "RECUPERADO", "Open Survey to Ecosystem Leaders (suggested)"],
+  [185, "NPS of ecosystem space and infrastructure usage", "A1-A6,E6", "RECUPERADO", "Open Survey to Ecosystem Leaders (suggested)"],
+  [186, "% of spaces hosting entrepreneurs and startups", "A1-A6,E6", "RECUPERADO", "Open Survey to Ecosystem Leaders (suggested)"],
+  [187, "% of population with access to broadband internet", "A3,E6", "RECUPERADO", "Survey to Government actors (suggested)"],
+  [188, "Number of direct flights to major global innovation hubs", "A3,E6", "RECUPERADO", "Survey to Government actors (suggested)"],
+  [189, "% of entrepreneurs with emotional support (family, friends, professional)", "A0,E1", "RECUPERADO", "Survey to founders (suggested)"],
+  [190, "% of entrepreneurs with international experiences", "A0,E1", "RECUPERADO", "Survey to founders (suggested)"],
+  [191, "% of entrepreneurs with high-technology certifications", "A0,E2", "RECUPERADO", "Survey to founders (suggested)"],
+  [192, "% of startups that used fab labs, research centers or makerspaces", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [193, "% of startups that used a local technology park", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [194, "% of startups that used coworking spaces", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [195, "% of startups operating in home office", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [196, "Total public investment or grants received", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [197, "Total debt received (aggregated amount)", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [198, "Perception of available administrative talent", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [199, "Perception of available technical talent", "A0,E4", "RECUPERADO", "Survey to founders (suggested)"],
+  [200, "Number of financial education events organized by investors", "A5,E1", "NUEVO", "Survey to Capital"],
+  [201, "Number of investors participating as role models or speakers", "A5,E1", "NUEVO", "Survey to Capital"],
+  [202, "Number of new angel investor training programs", "A5,E2", "NUEVO", "Survey to Capital"],
+  [203, "Hours of financial mentoring provided to entrepreneurs", "A5,E2", "NUEVO", "Survey to Capital"],
+  [204, "Number of investors certified or trained during the year", "A5,E2", "NUEVO", "Survey to Capital"],
+  [205, "Number of due diligence processes initiated by stage", "A5,E3", "NUEVO", "Survey to Capital"],
+  [206, "Deal pipeline under active evaluation (by sector)", "A5,E3", "NUEVO", "Survey to Capital"],
+  [207, "Number of term sheets issued", "A5,E4", "NUEVO", "Survey to Capital"],
+  [208, "Average time to close an investment", "A5,E4", "NUEVO", "Survey to Capital"],
+  [209, "Committed capital vs deployed capital", "A5,E4", "NUEVO", "Survey to Capital"],
+  [210, "Number of follow-on investments executed", "A5,E5", "NUEVO", "Survey to Capital"],
+  [211, "Average fund return multiple (TVPI, DPI)", "A5,E5", "NUEVO", "Survey to Capital"],
+  [212, "% of portfolio companies reaching Series B or later", "A5,E5", "NUEVO", "Survey to Capital"],
+  [213, "Number of active entrepreneurship communities or meetups", "A6,E1", "NUEVO", "Survey to Connectors"],
+  [214, "Aggregated reach of specialized media (reach/month)", "A6,E1", "NUEVO", "Survey to Media"],
+  [215, "Number of local podcasts or newsletters on entrepreneurship", "A6,E1", "NUEVO", "Web scraping"],
+  [216, "Number of training programs organized by communities", "A6,E2", "NUEVO", "Survey to Connectors"],
+  [217, "Active memberships in entrepreneurship communities", "A6,E2", "NUEVO", "Survey to Connectors"],
+  [218, "Number of founder-to-founder connections facilitated (matchmaking)", "A6,E3", "NUEVO", "Survey to Connectors"],
+  [219, "Number of media coverages on projects under development", "A6,E3", "NUEVO", "Survey to Media"],
+  [220, "Number of demo days or launch events organized by communities", "A6,E4", "NUEVO", "Survey to Connectors"],
+  [221, "Media coverage of newly launched startups", "A6,E4", "NUEVO", "Survey to Media"],
+  [222, "Number of founders connected with investors through communities", "A6,E4", "NUEVO", "Survey to Connectors"],
+  [223, "Engagement rate on community platforms", "A6,E4", "NUEVO", "Survey to Connectors"],
+  [224, "Number of international connections facilitated by communities", "A6,E5", "NUEVO", "Survey to Connectors"],
+  [225, "Number of makerspaces and fab labs", "A4-A,E6", "NUEVO", "Survey to Providers"],
+  [226, "Number of incubation spaces available", "A4-B,E6", "NUEVO", "Survey to Incubators"],
+  [227, "Number of co-investment or syndicate spaces", "A5,E6", "NUEVO", "Survey to Capital"],
+  [228, "Number of community spaces (meetup venues)", "A6,E6", "NUEVO", "Survey to Connectors"]
+];
+
+function tipoTag(t) {
+  const cls = 'tag-' + t.toLowerCase();
+  return `<span class="tag ${cls}">${t}</span>`;
+}
+
+function fuenteTag(f) {
+  const fl = f.toLowerCase();
+  let cls = 'ft-default';
+  if (fl.includes('founders')) cls = 'ft-founders';
+  else if (fl.includes('academic')) cls = 'ft-academia';
+  else if (fl.includes('corporat')) cls = 'ft-corporates';
+  else if (fl.includes('government')) cls = 'ft-gobierno';
+  else if (fl.includes('incubator')) cls = 'ft-incubadoras';
+  else if (fl.includes('service provider') || fl.includes('providers')) cls = 'ft-providers';
+  else if (fl.includes('capital')) cls = 'ft-capital';
+  else if (fl.includes('connector')) cls = 'ft-conectores';
+  else if (fl.includes('backbone')) cls = 'ft-backbone';
+  else if (fl.includes('web scraping')) cls = 'ft-web';
+  else if (fl.includes('existing reports')) cls = 'ft-reportes';
+  else if (fl.includes('open survey')) cls = 'ft-abierta';
+  else if (fl.includes('formula')) cls = 'ft-formula';
+  else if (fl.includes('media')) cls = 'ft-media';
+  return `<span class="fuente-tag ${cls}">${f}</span>`;
+}
+
+function fuenteMatchKey(f, key) {
+  const fl = f.toLowerCase();
+  if (key === 'web scraping') return fl.includes('web scraping');
+  if (key === 'existing reports') return fl.includes('existing reports');
+  if (key === 'open survey') return fl.includes('open survey');
+  if (key === 'founders') return fl.includes('founders');
+  if (key === 'academic') return fl.includes('academic');
+  if (key === 'corporates') return fl.includes('corporat');
+  if (key === 'government') return fl.includes('government');
+  if (key === 'providers') return fl.includes('providers') || fl.includes('service provider');
+  if (key === 'incubators') return fl.includes('incubator');
+  if (key === 'capital') return fl.includes('capital');
+  if (key === 'connectors') return fl.includes('connector');
+  if (key === 'backbone') return fl.includes('backbone');
+  if (key === 'formula') return fl.includes('formula');
+  if (key === 'media') return fl.includes('media');
+  return true;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function render(rows) {
+  const body = document.getElementById('kpiBody');
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td class="num">${r[0]}</td>
+      <td class="desc">${escapeHtml(r[1])}</td>
+      <td>${tipoTag(r[3])}</td>
+      <td>${fuenteTag(r[4])}</td>
+      <td class="coords">${escapeHtml(r[2])}</td>
+    </tr>
+  `).join('');
+  document.getElementById('contadorKPIs').textContent = rows.length + ' de ' + kpis.length + ' KPIs';
+}
+
+function filtrarKPIs() {
+  const fuente = document.getElementById('filtroFuente').value;
+  const tipo = document.getElementById('filtroTipo').value;
+  const q = document.getElementById('busqueda').value.toLowerCase().trim();
+  const filtered = kpis.filter(r => {
+    if (fuente && !fuenteMatchKey(r[4], fuente)) return false;
+    if (tipo && r[3] !== tipo) return false;
+    if (q && !r[1].toLowerCase().includes(q) && !r[2].toLowerCase().includes(q)) return false;
+    return true;
+  });
+  render(filtered);
+}
+
+render(kpis);
+</script>
+
+</body>
+</html>
