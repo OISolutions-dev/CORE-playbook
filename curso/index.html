@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORE · Metodología de diagnóstico por resultados · Curso Guiado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --negro:#0F172A; --cyan:#2563EB; --lime:#10B981; --purple:#7C3AED;
+  --amber:#D97706; --rose:#E11D48; --gris:#475569; --teal:#0D9488;
+  --gris-100:#F1F5F9; --gris-200:#E2E8F0; --gris-300:#CBD5E1; --white:#FFFFFF;
+  --bg-cyan:#EFF6FF; --bg-lime:#F0FDF4; --bg-purple:#F5F3FF;
+  --bg-amber:#FFFBEB; --bg-rose:#FFF1F2;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:#F1F5F9;color:var(--negro)}
+
+/* ── SIDEBAR NAV (Skilljar-style · tema claro) ────────── */
+body{display:grid;grid-template-columns:288px 1fr;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:288px;
+  background:#FFFFFF;color:var(--negro);overflow-y:auto;
+  z-index:200;display:flex;flex-direction:column;
+  border-right:1px solid var(--gris-200);box-shadow:1px 0 3px rgba(15,23,42,.03)}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--gris-200);border-radius:3px}
+.sidebar-header{padding:24px 24px 20px;border-bottom:1px solid var(--gris-200);background:#F8FAFC}
+.sidebar-brand{font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--cyan);line-height:1}
+.sidebar-brand em{font-style:normal;color:var(--negro)}
+.sidebar-title{font-size:13px;font-weight:600;color:var(--gris);margin-top:8px;line-height:1.45}
+.sidebar-progress{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#94A3B8;margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+.sidebar-progress .sp-count{color:var(--lime)}
+.nav-tree{list-style:none;margin:0;padding:12px 0 40px;flex:1}
+.nav-module{border-bottom:1px solid var(--gris-100);list-style:none}
+.nav-module > button{width:100%;display:flex;align-items:center;gap:10px;
+  padding:14px 24px;background:transparent;border:0;color:var(--negro);
+  font:600 11.5px/1.3 'Inter',sans-serif;letter-spacing:.4px;text-transform:uppercase;
+  cursor:pointer;text-align:left;transition:background .15s}
+.nav-module > button:hover{background:var(--gris-100)}
+.nav-module .nav-num{display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:6px;background:var(--gris-100);
+  font-size:10px;font-weight:800;color:var(--gris);flex-shrink:0;transition:all .2s}
+.nav-module.current > button{color:var(--cyan)}
+.nav-module.current .nav-num{background:var(--cyan);color:#fff}
+.nav-module .nav-label{flex:1;white-space:normal}
+.nav-module .chev{font-size:16px;opacity:.35;transition:transform .2s;flex-shrink:0;color:var(--gris)}
+.nav-module[aria-expanded="true"] .chev{transform:rotate(90deg);opacity:.85;color:var(--cyan)}
+.nav-sublist{list-style:none;margin:0;padding:0;max-height:0;overflow:hidden;
+  transition:max-height .28s ease}
+.nav-module[aria-expanded="true"] .nav-sublist{max-height:800px;padding:4px 0 12px}
+.nav-sublist li{margin:0;list-style:none}
+.nav-sublist a{display:flex;align-items:center;gap:10px;
+  padding:8px 24px 8px 58px;font-size:12px;color:var(--gris);
+  text-decoration:none;border-left:3px solid transparent;transition:all .15s;line-height:1.4}
+.nav-sublist a::before{content:"";width:5px;height:5px;border-radius:50%;
+  background:var(--gris-300);flex-shrink:0;transition:all .15s}
+.nav-sublist a:hover{color:var(--negro);background:var(--gris-100)}
+.nav-sublist a:hover::before{background:var(--gris)}
+.nav-sublist a.active{color:var(--negro);background:var(--bg-cyan);
+  border-left-color:var(--cyan);font-weight:700}
+.nav-sublist a.active::before{background:var(--cyan);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+
+main{grid-column:2;min-width:0}
+
+.sidebar-toggle{display:none;position:fixed;top:14px;left:14px;z-index:300;
+  width:44px;height:44px;border-radius:10px;background:#fff;color:var(--negro);
+  border:1px solid var(--gris-200);align-items:center;justify-content:center;font-size:20px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(15,23,42,.08)}
+
+@media (max-width:960px){
+  body{grid-template-columns:1fr}
+  .sidebar{transform:translateX(-100%);transition:transform .25s;width:300px;z-index:300;box-shadow:4px 0 24px rgba(15,23,42,.12)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-toggle{display:flex}
+  main{padding-top:72px}
+}
+
+/* ── COVER ───────────────────────────────────────────── */
+.cover{background:var(--white);min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;padding:80px 100px;position:relative;overflow:hidden;
+  border-bottom:1px solid var(--gris-200)}
+.cover-blob{position:absolute;right:-80px;top:50%;transform:translateY(-50%);
+  width:580px;height:580px;border-radius:50%;
+  background:radial-gradient(circle at 40% 40%,
+    rgba(37,99,235,0.09) 0%,
+    rgba(16,185,129,0.10) 50%,
+    rgba(124,58,237,0.04) 100%);
+  pointer-events:none}
+.cover-tag{display:inline-flex;align-items:center;gap:8px;background:var(--bg-cyan);
+  color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:3px;
+  text-transform:uppercase;padding:6px 14px;border-radius:20px;margin-bottom:28px;
+  border:1px solid rgba(37,99,235,0.2);width:fit-content}
+.cover-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+.cover h1{font-size:64px;font-weight:900;line-height:1.0;color:var(--negro);
+  margin-bottom:24px;max-width:680px;letter-spacing:-1.5px}
+.cover h1 em{font-style:normal;color:var(--cyan)}
+.cover-sub{font-size:17px;color:var(--gris);margin-bottom:44px;max-width:520px;line-height:1.65}
+.cert-path{display:flex;align-items:center;gap:8px;margin-bottom:44px;flex-wrap:wrap}
+.cert-badge{font-size:11px;font-weight:800;letter-spacing:0.5px;
+  padding:7px 18px;border-radius:20px;background:var(--gris-100);
+  color:var(--gris);border:1px solid var(--gris-200)}
+.cert-badge.first{background:var(--bg-cyan);color:var(--cyan);border-color:rgba(37,99,235,0.2)}
+.cert-arrow{color:var(--gris-300);font-size:15px;font-weight:700}
+.cover-stats{display:flex;border:1px solid var(--gris-200);border-radius:12px;
+  overflow:hidden;width:fit-content}
+.stat-cell{padding:14px 22px;border-right:1px solid var(--gris-200)}
+.stat-cell:last-child{border-right:none}
+.stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:#94A3B8;margin-bottom:4px;font-weight:700}
+.stat-val{font-size:13px;font-weight:800;color:var(--negro)}
+.cover-oi{position:absolute;bottom:22px;right:32px;font-size:10px;
+  color:var(--gris-300);letter-spacing:2px;font-weight:700;text-transform:uppercase}
+
+/* ── MÓDULO SECTIONS ─────────────────────────────────── */
+.mod-section{background:var(--white);padding:72px 100px;border-bottom:1px solid var(--gris-200)}
+.mod-section.alt{background:var(--gris-100)}
+
+/* ── KICKERS + HEADINGS ──────────────────────────────── */
+.kicker{font-size:9px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;
+  color:#94A3B8;margin-bottom:8px}
+.sec-heading{font-size:40px;font-weight:900;line-height:1.05;color:var(--negro);
+  margin-bottom:12px;letter-spacing:-0.5px}
+.sec-heading em{font-style:normal;color:var(--cyan)}
+.sec-lead{font-size:16px;color:var(--gris);line-height:1.7;max-width:640px;margin-bottom:36px}
+.divider{width:36px;height:3px;background:var(--cyan);border-radius:2px;margin-bottom:24px}
+
+/* ── PROSE ───────────────────────────────────────────── */
+.prose{font-size:16px;color:var(--gris);line-height:1.85;max-width:720px;margin-bottom:18px}
+.prose strong{color:var(--negro);font-weight:700}
+.prose em{font-style:italic}
+
+/* ── CALLOUTS ────────────────────────────────────────── */
+.quote-block{background:var(--bg-cyan);border:1px solid rgba(37,99,235,0.15);
+  border-left:4px solid var(--cyan);border-radius:0 10px 10px 0;
+  padding:20px 24px;margin:28px 0;max-width:720px}
+.quote-text{font-size:15px;color:var(--negro);line-height:1.8;font-style:italic;font-weight:500}
+.quote-source{font-size:11px;color:#94A3B8;margin-top:8px;font-weight:700;letter-spacing:0.5px}
+.callout-lime{background:var(--bg-lime);border:1px solid rgba(16,185,129,0.2);
+  border-left:4px solid var(--lime);border-radius:0 10px 10px 0;
+  padding:20px 24px;margin:24px 0;max-width:720px}
+.cl-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:#065F46;margin-bottom:8px}
+.cl-body{font-size:15px;color:var(--negro);line-height:1.75}
+.cl-body strong{font-weight:700}
+
+/* ── SÍNTOMAS ────────────────────────────────────────── */
+.sintoma-list{display:flex;flex-direction:column;gap:14px;margin:20px 0;max-width:720px}
+.sintoma-item{display:flex;gap:16px;padding:18px 20px;border-radius:10px;
+  background:var(--white);border:1px solid var(--gris-200)}
+.mod-section.alt .sintoma-item{background:var(--white)}
+.sintoma-num{font-size:20px;font-weight:900;color:var(--gris-200);
+  flex-shrink:0;line-height:1;width:28px;margin-top:2px}
+.sintoma-content{}
+.sintoma-title{font-size:14px;font-weight:800;color:var(--negro);margin-bottom:6px;line-height:1.3}
+.sintoma-text{font-size:13px;color:var(--gris);line-height:1.65}
+.sintoma-text strong{color:var(--negro);font-weight:700}
+.sintoma-text cite{font-style:normal;color:#94A3B8;font-size:11px}
+
+/* ── PERFIL CARDS ────────────────────────────────────── */
+.perfil-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:4px}
+.perfil-card{border:1px solid var(--gris-200);border-radius:14px;overflow:hidden;
+  background:var(--white);transition:transform .18s,box-shadow .18s}
+.perfil-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.09)}
+.pc-top{height:4px}
+.pc-cyan .pc-top{background:var(--cyan)}
+.pc-lime .pc-top{background:var(--lime)}
+.pc-amber .pc-top{background:var(--amber)}
+.perfil-body{padding:24px}
+.perfil-num{font-size:10px;font-weight:800;letter-spacing:2px;color:var(--gris-300);margin-bottom:12px}
+.perfil-name{font-size:17px;font-weight:900;color:var(--negro);margin-bottom:20px;line-height:1.2}
+.perfil-row{margin-bottom:14px}
+.perfil-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.pc-cyan .perfil-label{color:var(--cyan)}
+.pc-lime .perfil-label{color:#065F46}
+.pc-amber .perfil-label{color:var(--amber)}
+.perfil-text{font-size:13px;color:var(--gris);line-height:1.6}
+.perfil-intro{font-size:14px;color:var(--gris);line-height:1.7;margin-bottom:18px}
+.perfil-logro{margin-top:18px;padding:13px 15px;border-radius:9px;
+  font-size:13px;color:var(--negro);line-height:1.55;font-weight:600}
+.pc-cyan .perfil-logro{background:var(--bg-cyan)}
+.pc-lime .perfil-logro{background:var(--bg-lime)}
+.pc-amber .perfil-logro{background:var(--bg-amber)}
+
+/* ── OBJETIVO GRID ───────────────────────────────────── */
+.objetivo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4px}
+.objetivo-card{padding:22px 20px;border-radius:12px;border:1px solid var(--gris-200);
+  background:var(--white);display:flex;gap:14px;align-items:flex-start;
+  transition:box-shadow .15s}
+.objetivo-card:hover{box-shadow:0 6px 18px rgba(0,0,0,0.07)}
+.obj-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;letter-spacing:0}
+.obj-1 .obj-num,.obj-2 .obj-num{background:var(--bg-cyan);color:var(--cyan)}
+.obj-3 .obj-num,.obj-4 .obj-num{background:var(--bg-lime);color:#065F46}
+.obj-5 .obj-num,.obj-6 .obj-num{background:var(--bg-amber);color:var(--amber)}
+.obj-title{font-size:13px;font-weight:800;color:var(--negro);margin-bottom:5px;line-height:1.3}
+.obj-text{font-size:12px;color:var(--gris);line-height:1.6}
+.obj-bullets{font-size:12px;color:var(--gris);line-height:1.6;margin:0;padding-left:16px}
+.obj-bullets li{margin-bottom:3px}
+.obj-bullets li:last-child{margin-bottom:0}
+
+/* ── ENTREGABLES ─────────────────────────────────────── */
+.entregable-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:820px}
+@media(max-width:600px){.entregable-grid{grid-template-columns:1fr}}
+.entregable-card{border-radius:12px;padding:28px 28px 24px;border:1px solid var(--gris-200)}
+.ec-num{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.ec-title{font-size:18px;font-weight:800;color:var(--negro);margin-bottom:10px;line-height:1.25}
+.ec-desc{font-size:14px;color:var(--gris);line-height:1.6}
+.ec-bullets{font-size:14px;color:var(--gris);line-height:1.65;margin:0;padding-left:18px}
+.ec-bullets li{margin-bottom:4px}
+.ec-bullets li:last-child{margin-bottom:0}
+.ec-cyan{background:var(--bg-cyan);border-color:rgba(37,99,235,0.15)}
+.ec-cyan .ec-num{color:var(--cyan)}
+.ec-lime{background:var(--bg-lime);border-color:rgba(16,185,129,0.2)}
+.ec-lime .ec-num{color:var(--lime)}
+.ec-amber{background:var(--bg-amber);border-color:rgba(217,119,6,0.2)}
+.ec-amber .ec-num{color:var(--amber)}
+.ec-purple{background:var(--bg-purple);border-color:rgba(124,58,237,0.2)}
+.ec-purple .ec-num{color:var(--purple)}
+
+/* ── RUTA PATH ───────────────────────────────────────── */
+.ruta-wrap{display:flex;align-items:flex-start;overflow-x:auto;
+  padding-bottom:12px;margin-top:8px;gap:0}
+.ruta-node{display:flex;flex-direction:column;align-items:center;min-width:130px}
+.ruta-connector{flex:1;min-width:20px;height:2px;background:var(--gris-200);
+  align-self:flex-start;margin-top:21px;flex-shrink:0}
+.rn-dot{width:42px;height:42px;border-radius:50%;background:var(--white);
+  border:2px solid var(--gris-200);display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:900;color:var(--gris-300);margin-bottom:10px;
+  flex-shrink:0;letter-spacing:0}
+.rn-active .rn-dot{background:var(--cyan);border-color:var(--cyan);color:var(--white)}
+.rn-cert .rn-dot{background:var(--lime);border-color:var(--lime);color:var(--white)}
+.rn-name{font-size:11px;font-weight:800;color:var(--negro);text-align:center;
+  margin-bottom:4px;line-height:1.2;padding:0 8px}
+.rn-desc{font-size:10px;color:var(--gris);text-align:center;line-height:1.4;
+  padding:0 8px;max-width:130px}
+
+/* ── CAMINO CARDS ────────────────────────────────────── */
+.camino-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:4px}
+.camino-card{border:1px solid var(--gris-200);border-radius:12px;padding:24px;
+  background:var(--white)}
+.camino-badge{display:inline-block;font-size:9px;font-weight:800;
+  letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border-radius:20px;
+  margin-bottom:14px;border:1px solid transparent}
+.cb-cyan{background:var(--bg-cyan);color:var(--cyan);border-color:rgba(37,99,235,0.2)}
+.cb-lime{background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2)}
+.cb-amber{background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2)}
+.camino-title{font-size:15px;font-weight:900;color:var(--negro);margin-bottom:12px;line-height:1.2}
+.camino-text{font-size:13px;color:var(--gris);line-height:1.65}
+.camino-text strong{color:var(--negro);font-weight:700}
+
+/* ── EJERCICIO ───────────────────────────────────────── */
+.ejercicio-wrap{background:var(--white);border-radius:14px;padding:36px;
+  max-width:720px;border:1px solid var(--gris-200);border-left:5px solid var(--negro)}
+.mod-section.alt .ejercicio-wrap{background:var(--white)}
+.ejercicio-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.ej-badge{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  padding:5px 14px;border-radius:20px;background:var(--negro);color:var(--white)}
+.ej-title{font-size:18px;font-weight:900;color:var(--negro)}
+.ej-instruccion{font-size:15px;color:var(--gris);line-height:1.7;margin-bottom:24px}
+.ej-preguntas{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.ej-pregunta{display:flex;gap:12px;padding:14px 18px;border-radius:9px;
+  background:var(--gris-100);border:1px solid var(--gris-200);align-items:flex-start}
+.ej-pnum{font-size:12px;font-weight:900;color:var(--cyan);flex-shrink:0;
+  width:22px;padding-top:1px}
+.ej-ptexto{font-size:14px;color:var(--negro);line-height:1.5;font-weight:500}
+.ej-nota{font-size:12px;color:var(--gris);line-height:1.65;font-style:italic;
+  padding:13px 16px;border-radius:8px;border:1px solid var(--gris-200);background:var(--gris-100)}
+
+/* ── PLACEHOLDER MÓDULOS ─────────────────────────────── */
+.mod-placeholder{min-height:36vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:flex-start;padding:60px 100px;
+  background:var(--gris-100);border-bottom:1px solid var(--gris-200)}
+.mod-placeholder.white{background:var(--white)}
+.ph-label{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  color:#94A3B8;margin-bottom:10px}
+.ph-title{font-size:28px;font-weight:900;color:var(--gris-200);margin-bottom:14px}
+.ph-note{font-size:13px;color:var(--gris-300);border:1px dashed var(--gris-200);
+  border-radius:8px;padding:10px 16px;width:fit-content;font-weight:500}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+footer{padding:24px 100px;border-top:1px solid var(--gris-200);
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--white)}
+.ft-brand{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-300)}
+.ft-brand em{font-style:normal;color:var(--cyan)}
+.ft-copy{font-size:11px;color:var(--gris-300);font-weight:600}
+
+/* ── TABLA DE REFERENCIAS DE LITERATURA ─────────────────── */
+.lit-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.55}
+.lit-table caption{caption-side:bottom;padding:14px 0 0;font-size:11px;color:var(--gris);font-style:italic;text-align:left}
+.lit-table th{background:var(--negro);color:#fff;padding:12px 14px;text-align:left;font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;vertical-align:top}
+.lit-table td{padding:14px;border-bottom:1px solid var(--gris-200);vertical-align:top;color:var(--negro)}
+.lit-table tbody tr:nth-child(even){background:var(--gris-100)}
+.lit-table td:first-child{font-weight:700;width:22%;color:var(--negro)}
+.lit-table td:nth-child(2){width:53%}
+.lit-table td:last-child{width:25%;color:var(--gris);font-size:12px}
+
+/* ── FIGURA CON PIE DE CITA ─────────────────────────────── */
+.fig-wrap{max-width:640px;margin:36px auto;text-align:center}
+.fig-img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--gris-200);background:#fff}
+.fig-wrap figcaption{margin-top:12px;font-size:11px;color:var(--gris);font-style:italic;text-align:center;line-height:1.5}
+
+/* ── MANDALA ACTIVIDAD (M2 S7) ────────────────────────── */
+.mandala-actividad{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:28px;align-items:start}
+.mandala-pasos h3{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;font-weight:800}
+.mandala-pasos ol{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;counter-reset:step}
+.mandala-pasos li{counter-increment:step;padding:12px 14px 12px 42px;border:1px solid var(--gris-200);border-radius:10px;background:#fff;cursor:pointer;position:relative;font-size:12px;line-height:1.45;transition:all .15s}
+.mandala-pasos li::before{content:counter(step);position:absolute;left:12px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--gris-100);color:var(--gris);font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center}
+.mandala-pasos li.active{border-color:var(--cyan);background:var(--bg-cyan);box-shadow:0 2px 8px rgba(37,99,235,.08)}
+.mandala-pasos li.active::before{background:var(--cyan);color:#fff}
+.mandala-pasos li strong{display:block;color:var(--negro);margin-bottom:2px;font-weight:700}
+.mandala-pasos li span{color:var(--gris);font-size:11px}
+.mandala-acciones{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+.ma-btn{padding:10px 14px;border-radius:8px;border:1px solid var(--gris-200);background:#fff;color:var(--negro);font:600 11.5px/1 'Inter',sans-serif;cursor:pointer;letter-spacing:.3px;text-transform:uppercase;transition:all .15s}
+.ma-btn:hover{background:var(--gris-100)}
+.ma-btn.ma-primary{background:var(--cyan);color:#fff;border-color:var(--cyan)}
+.ma-btn.ma-primary:hover{background:#1D4ED8}
+.ma-btn.ma-danger{color:var(--rose);border-color:rgba(225,29,72,.2)}
+.ma-btn.ma-danger:hover{background:#FFF1F2}
+.mandala-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.mandala-svg{width:100%;max-width:640px;height:auto;filter:drop-shadow(0 4px 18px rgba(15,23,42,.06))}
+.mandala-svg .cell{cursor:pointer;transition:all .15s}
+.mandala-svg .cell:hover{filter:brightness(.94)}
+.mandala-svg .cell.filled{stroke:var(--cyan);stroke-width:2}
+.mandala-svg .mandala-center{fill:var(--negro)}
+.mandala-svg .mandala-core-label{fill:#fff;font-size:18px;font-weight:900;letter-spacing:2px}
+.mandala-svg .mandala-core-sub{fill:rgba(255,255,255,.7);font-size:8px;letter-spacing:1.5px;text-transform:uppercase}
+.mandala-svg .actor-label{font-size:12px;font-weight:800;fill:var(--negro);letter-spacing:.5px}
+.mandala-hint{font-size:11px;color:var(--gris);font-style:italic;margin:0}
+.mandala-modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:400;padding:20px}
+.mandala-modal[hidden]{display:none}
+.mandala-modal-card{background:#fff;border-radius:14px;width:100%;max-width:520px;padding:24px;box-shadow:0 20px 60px rgba(15,23,42,.25)}
+.mandala-modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mmh-kicker{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);font-weight:800}
+.mm-close{background:transparent;border:0;font-size:24px;cursor:pointer;color:var(--gris);line-height:1;padding:0 4px}
+.mandala-modal textarea{width:100%;padding:12px;border:1px solid var(--gris-200);border-radius:8px;font:400 13px/1.55 'Inter',sans-serif;resize:vertical;min-height:120px;color:var(--negro)}
+.mandala-modal-foot{display:flex;justify-content:space-between;margin-top:14px}
+@media (max-width:860px){
+  .mandala-actividad{grid-template-columns:1fr}
+  .mandala-pasos ol{flex-direction:row;flex-wrap:wrap}
+  .mandala-pasos li{flex:1 1 45%}
+}
+@media print{
+  .mandala-acciones,.mandala-hint{display:none}
+  .mandala-modal{display:none!important}
+  .mandala-pasos li:not(.active){opacity:.4}
+}
+
+/* ── VERSIÓN CLIENTE · ENTRADAS Y SECCIONES BLOQUEADAS ─── */
+.nav-module.nav-locked{padding:8px 0;border-top:1px dashed #E2E8F0;margin-top:6px}
+.nav-locked-link{display:flex;align-items:center;gap:10px;padding:10px 14px;text-decoration:none;color:#94A3B8;opacity:.85;transition:opacity .15s}
+.nav-locked-link:hover{opacity:1;background:#F8FAFC}
+.nav-locked-link .nav-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#E2E8F0;color:#64748B;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.nav-locked-link .nav-label{flex:1;font-size:13px;font-weight:600;color:#64748B}
+.nav-lock-icon{width:14px;height:14px;flex-shrink:0;color:#94A3B8}
+.nav-locked-tag{margin:4px 14px 2px 50px;font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#F59E0B;background:#FEF3C7;display:inline-block;padding:2px 8px;border-radius:8px}
+
+.locked-section{max-width:720px;margin:80px auto;padding:56px 40px;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:16px;text-align:center}
+.locked-icon{display:inline-flex;width:72px;height:72px;align-items:center;justify-content:center;background:#E2E8F0;border-radius:50%;margin-bottom:24px;color:#64748B}
+.locked-icon svg{width:32px;height:32px}
+.locked-kicker{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:10px}
+.locked-title{font-size:32px;font-weight:800;color:#1E293B;line-height:1.15;margin-bottom:18px;letter-spacing:-.5px}
+.locked-sub{font-size:15px;color:#475569;line-height:1.65;max-width:580px;margin:0 auto 28px}
+.locked-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px}
+.locked-tags span{font-size:11px;font-weight:600;padding:5px 12px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:20px;color:#64748B}
+.locked-note{font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#F59E0B;margin:0}
+@media (max-width:600px){
+  .locked-section{margin:48px 20px;padding:40px 24px}
+  .locked-title{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR NAV (Skilljar-style) ──────────────────────── -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menú">☰</button>
+<aside class="sidebar" id="sidebar" aria-label="Navegación del curso">
+  <div class="sidebar-header">
+    <div class="sidebar-brand"><em>CORE</em> · Curso Guiado</div>
+    <div class="sidebar-title">Metodología de diagnóstico de ecosistemas de emprendimiento por resultados</div>
+    <div class="sidebar-progress">
+      <span>Tu progreso</span>
+      <span class="sp-count"><span id="progressCount">0</span> / 26</span>
+    </div>
+  </div>
+  <ul class="nav-tree">
+    <li class="nav-module" data-mod="apertura" aria-expanded="true">
+      <button type="button"><span class="nav-num">A</span><span class="nav-label">Sobre el curso</span><span class="chev">›</span></button>
+      <ul class="nav-sublist">
+        <li><a href="#portada">Portada</a></li>
+        <li><a href="#sobre-curso">Sobre el curso</a></li>
+        <li><a href="#para-quien">Para quién es este curso</a></li>
+        <li><a href="#aprender">Qué vas a aprender</a></li>
+        <li><a href="#diferencia">Qué te diferencia al terminar</a></li>
+        <li><a href="#mapa">Mapa de aprendizaje</a></li>
+        <li><a href="#actividad-0">Tu primer ejercicio</a></li>
+      </ul>
+    </li>
+    <li class="nav-module" data-mod="mod1" aria-expanded="false">
+      <button type="button"><span class="nav-num">1</span><span class="nav-label">El Ecosistema que no se mide</span><span class="chev">›</span></button>
+      <ul class="nav-sublist">
+        <li><a href="#mod1-s1">Qué es un ecosistema</a></li>
+        <li><a href="#mod1-s2">Lo que la literatura ya sabía</a></li>
+        <li><a href="#mod1-s3">La Espiral de Desalineación</a></li>
+        <li><a href="#mod1-s4">El problema que nadie estaba midiendo</a></li>
+        <li><a href="#mod1-s5">Actividad</a></li>
+      </ul>
+    </li>
+    <li class="nav-module" data-mod="mod2" aria-expanded="false">
+      <button type="button"><span class="nav-num">2</span><span class="nav-label">Conoce el Modelo CORE</span><span class="chev">›</span></button>
+      <ul class="nav-sublist">
+        <li><a href="#mod2-s1">Los 4 pilares teóricos</a></li>
+        <li><a href="#mod2-s2">El Embudo de 5 etapas</a></li>
+        <li><a href="#mod2-s3">Los 6 actores</a></li>
+        <li><a href="#mod2-s4">La Organización Backbone</a></li>
+        <li><a href="#mod2-s5">La Matriz Actor × Etapa</a></li>
+        <li><a href="#mod2-s6">Por qué resultados, no actividades</a></li>
+        <li><a href="#mod2-s7">Actividad</a></li>
+      </ul>
+    </li>
+    <li class="nav-module" data-mod="mod3" aria-expanded="false">
+      <button type="button"><span class="nav-num">3</span><span class="nav-label">Los KPIs del Ecosistema</span><span class="chev">›</span></button>
+      <ul class="nav-sublist">
+        <li><a href="#mod3-s1">Cómo se lee la Matriz</a></li>
+        <li><a href="#mod3-s2">Las 7 etapas del embudo</a></li>
+        <li><a href="#mod3-s3">Los 8 tipos de actor</a></li>
+        <li><a href="#mod3-s4">Cómo se recopilan los datos</a></li>
+        <li><a href="#mod3-s5">Vista 1 · Matriz desplegada</a></li>
+        <li><a href="#mod3-s6">Vista 2 · Directorio filtrable</a></li>
+        <li><a href="#mod3-s7">Actividad</a></li>
+      </ul>
+    </li>
+    <li class="nav-module nav-locked" data-mod="mod4">
+      <a href="#mod4" class="nav-locked-link"><span class="nav-num">4</span><span class="nav-label">El Proceso de Diagnóstico</span><svg class="nav-lock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></a>
+      <div class="nav-locked-tag">En construcción</div>
+    </li>
+    <li class="nav-module nav-locked" data-mod="casos">
+      <a href="#casos" class="nav-locked-link"><span class="nav-num">C</span><span class="nav-label">Casos de Estudio</span><svg class="nav-lock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></a>
+      <div class="nav-locked-tag">En construcción</div>
+    </li>
+  </ul>
+</aside>
+<main>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SOBRE EL CURSO
+═══════════════════════════════════════════════════════ -->
+<div id="apertura">
+
+<!-- ── S1 · PORTADA ──────────────────────────────────── -->
+<div id="portada" class="cover">
+  <div class="cover-blob"></div>
+
+  <div class="cover-tag">
+    <span class="cover-tag-dot"></span>
+    SOBRE EL CURSO
+  </div>
+
+  <h1><em>CORE</em> · Playbook · Curso</h1>
+
+  <p class="cover-sub">Metodología de diagnóstico de ecosistemas de emprendimiento por resultados.</p>
+
+  <div class="cover-stats">
+    <div class="stat-cell">
+      <div class="stat-lbl">Módulos</div>
+      <div class="stat-val">5</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-lbl">KPIs</div>
+      <div class="stat-val">228</div>
+    </div>
+  </div>
+
+  <span class="cover-oi">OI Solutions</span>
+</div>
+
+
+<!-- ── S2 · SOBRE EL CURSO ───────────────────────────── -->
+<div id="sobre-curso" class="mod-section alt">
+  <div class="kicker">Sección 02</div>
+  <h2 class="sec-heading">Sobre el curso</h2>
+  <div class="divider"></div>
+
+  <p class="sec-lead">El Curso Guiado CORE es un recorrido autoaplicado para aprender a diagnosticar un ecosistema de emprendimiento por resultados, no por actividad. Aquí se explica cómo está estructurado, qué vas a hacer en cada módulo y cuánto te va a tomar.</p>
+
+  <div class="entregable-grid" style="margin-top:28px">
+
+    <div class="entregable-card ec-cyan">
+      <div class="ec-num">01</div>
+      <div class="ec-title">Cuatro módulos secuenciales</div>
+      <ul class="ec-bullets">
+        <li>MÓD 1 · El ecosistema que no se mide</li>
+        <li>MÓD 2 · Conoce el Modelo CORE</li>
+        <li>MÓD 3 · Los KPIs del Ecosistema</li>
+        <li>MÓD 4 · El Proceso de Diagnóstico</li>
+      </ul>
+    </div>
+
+    <div class="entregable-card ec-lime">
+      <div class="ec-num">02</div>
+      <div class="ec-title">Casos de estudio</div>
+      <ul class="ec-bullets">
+        <li>Sinaloa</li>
+        <li>Tlalpan</li>
+        <li>Chihuahua</li>
+      </ul>
+    </div>
+
+    <div class="entregable-card ec-amber">
+      <div class="ec-num">03</div>
+      <div class="ec-title">Formato de cada módulo</div>
+      <ul class="ec-bullets">
+        <li>Lectura corta con conceptos y ejemplos</li>
+        <li>Visualizaciones del modelo (embudo, matriz, heatmap)</li>
+        <li>Una actividad aplicada al ecosistema que vas a diagnosticar</li>
+      </ul>
+    </div>
+
+    <div class="entregable-card ec-purple">
+      <div class="ec-num">04</div>
+      <div class="ec-title">Cómo recorrerlo</div>
+      <ul class="ec-bullets">
+        <li>Avanza de forma lineal usando el menú lateral</li>
+        <li>Tu progreso se va marcando automáticamente</li>
+        <li>Las actividades guardan tus respuestas en el navegador</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="prose" style="margin-top:32px">Al terminar vas a contar con la base conceptual y el método operativo para producir un diagnóstico CORE completo del ecosistema que decidas estudiar. El siguiente paso es la sección "Para quién es este curso", donde se describen los perfiles a los que está dirigido.</p>
+</div>
+
+
+<!-- ── S3 · PARA QUIÉN ────────────────────────────────── -->
+<div id="para-quien" class="mod-section">
+  <div class="kicker">Sección 03</div>
+  <h2 class="sec-heading">Para quién<br>es este curso</h2>
+  <div class="divider"></div>
+  <p class="sec-lead">Estas son las tres preguntas que cualquier tomador de decisión en un ecosistema necesita responder. CORE es el método para hacerlo con evidencia.</p>
+
+  <div style="display:flex;flex-direction:column;gap:20px;margin-top:28px">
+    <div style="display:flex;gap:20px;align-items:flex-start">
+      <div style="font-size:13px;font-weight:800;color:var(--cyan);min-width:28px;padding-top:3px">01</div>
+      <p style="font-size:18px;color:#1E293B;line-height:1.45;margin:0">¿Quién participa en el ecosistema?</p>
+    </div>
+    <div style="display:flex;gap:20px;align-items:flex-start">
+      <div style="font-size:13px;font-weight:800;color:var(--lime);min-width:28px;padding-top:3px">02</div>
+      <p style="font-size:18px;color:#1E293B;line-height:1.45;margin:0">¿En qué etapa de desarrollo están las empresas que lo habitan?</p>
+    </div>
+    <div style="display:flex;gap:20px;align-items:flex-start">
+      <div style="font-size:13px;font-weight:800;color:var(--amber);min-width:28px;padding-top:3px">03</div>
+      <p style="font-size:18px;color:#1E293B;line-height:1.45;margin:0">¿Qué resultado está generando cada actor en cada etapa?</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── S4 · QUÉ VAS A APRENDER ────────────────────────── -->
+<div id="aprender" class="mod-section alt">
+  <div class="kicker">Sección 04</div>
+  <h2 class="sec-heading">Qué vas<br>a aprender</h2>
+  <div class="divider"></div>
+  <p class="sec-lead">Seis conceptos y competencias que vas a dominar al terminar el curso.</p>
+
+  <div class="objetivo-grid">
+    <div class="objetivo-card obj-1">
+      <div class="obj-num">01</div>
+      <div>
+        <div class="obj-title">Qué es el modelo CORE</div>
+        <ul class="obj-bullets">
+          <li>El Embudo de Densidad de Innovación</li>
+          <li>La Matriz Actor × Etapa</li>
+          <li>Los 228 indicadores de resultado</li>
+        </ul>
+      </div>
+    </div>
+    <div class="objetivo-card obj-2">
+      <div class="obj-num">02</div>
+      <div>
+        <div class="obj-title">Arquitectura CORE completa</div>
+        <ul class="obj-bullets">
+          <li>8 actores del ecosistema</li>
+          <li>7 etapas del embudo</li>
+          <li>El Backbone de gobernanza</li>
+          <li>La Matriz Actor × Etapa</li>
+        </ul>
+      </div>
+    </div>
+    <div class="objetivo-card obj-3">
+      <div class="obj-num">03</div>
+      <div>
+        <div class="obj-title">228 KPIs en campo</div>
+        <ul class="obj-bullets">
+          <li>Seleccionar indicadores del catálogo curado</li>
+          <li>Aplicarlos en diagnósticos de campo reales</li>
+        </ul>
+      </div>
+    </div>
+    <div class="objetivo-card obj-4">
+      <div class="obj-num">04</div>
+      <div>
+        <div class="obj-title">Proceso de diagnóstico en 6 fases</div>
+        <ul class="obj-bullets">
+          <li>Diseñar el proceso por tipo de actor</li>
+          <li>Ejecutar con instrumentos concretos</li>
+        </ul>
+      </div>
+    </div>
+    <div class="objetivo-card obj-5">
+      <div class="obj-num">05</div>
+      <div>
+        <div class="obj-title">Brechas con evidencia verificable</div>
+        <ul class="obj-bullets">
+          <li>Identificar brechas del ecosistema</li>
+          <li>Documentarlas con datos, no con percepciones</li>
+        </ul>
+      </div>
+    </div>
+    <div class="objetivo-card obj-6">
+      <div class="obj-num">06</div>
+      <div>
+        <div class="obj-title">Informe CORE completo</div>
+        <ul class="obj-bullets">
+          <li>Heatmap de salud del ecosistema</li>
+          <li>Diagnóstico de brechas</li>
+          <li>Recomendaciones priorizadas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── S5 · ENTREGABLES ───────────────────────────────── -->
+<div id="diferencia" class="mod-section">
+  <div class="kicker">Sección 05</div>
+  <h2 class="sec-heading">Lo que vas a poder entregar</h2>
+  <div class="divider"></div>
+  <p class="sec-lead">Cuando terminas CORE y completas tu primer diagnóstico, tienes cuatro entregables concretos para presentar a cualquier actor del ecosistema.</p>
+
+  <div class="entregable-grid">
+
+    <div class="entregable-card ec-cyan">
+      <div class="ec-num">01</div>
+      <div class="ec-title">Heatmap de salud del ecosistema</div>
+      <ul class="ec-bullets">
+        <li>Mapa visual del estado de cada actor en cada etapa del embudo</li>
+        <li>Lectura de un vistazo del ecosistema hoy</li>
+        <li>Listo para presentar a cualquier actor del ecosistema</li>
+      </ul>
+    </div>
+
+    <div class="entregable-card ec-lime">
+      <div class="ec-num">02</div>
+      <div class="ec-title">Diagnóstico de brechas</div>
+      <ul class="ec-bullets">
+        <li>Dónde falla el ecosistema, qué actor falla y en qué etapa</li>
+        <li>Por qué falla, con datos verificables</li>
+        <li>Soportado por los 228 KPIs del catálogo CORE</li>
+      </ul>
+    </div>
+
+    <div class="entregable-card ec-amber">
+      <div class="ec-num">03</div>
+      <div class="ec-title">Recomendaciones priorizadas</div>
+      <ul class="ec-bullets">
+        <li>Listado de intervenciones específicas</li>
+        <li>Ordenadas por impacto y viabilidad</li>
+        <li>Plan de acción basado en evidencia, no una lista de deseos</li>
+      </ul>
+    </div>
+
+    <div class="entregable-card ec-purple">
+      <div class="ec-num">04</div>
+      <div class="ec-title">Plan de monitoreo continuo</div>
+      <ul class="ec-bullets">
+        <li>Indicadores para seguir midiendo después del diagnóstico</li>
+        <li>Cadencia de actualización por tipo de actor</li>
+        <li>Punto de partida para el siguiente ciclo de gobernanza</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ── S6 · MAPA DE APRENDIZAJE ───────────────────────── -->
+<div id="mapa" class="mod-section alt">
+  <div class="kicker">Sección 06</div>
+  <h2 class="sec-heading">Mapa de aprendizaje</h2>
+  <div class="divider"></div>
+  <p class="sec-lead">La ruta completa del Curso Guiado CORE, de la brecha conceptual a los KPIs del ecosistema.</p>
+
+  <div class="ruta-wrap">
+
+    <div class="ruta-node rn-active">
+      <div class="rn-dot">APT</div>
+      <div class="rn-name">Sobre el curso</div>
+      <div class="rn-desc">El método, los perfiles y la ruta</div>
+    </div>
+    <div class="ruta-connector"></div>
+
+    <div class="ruta-node">
+      <div class="rn-dot">M1</div>
+      <div class="rn-name">MÓD 1</div>
+      <div class="rn-desc">El ecosistema que no se mide</div>
+    </div>
+    <div class="ruta-connector"></div>
+
+    <div class="ruta-node">
+      <div class="rn-dot">M2</div>
+      <div class="rn-name">MÓD 2</div>
+      <div class="rn-desc">Conoce el Modelo CORE</div>
+    </div>
+    <div class="ruta-connector"></div>
+
+    <div class="ruta-node">
+      <div class="rn-dot">M3</div>
+      <div class="rn-name">MÓD 3</div>
+      <div class="rn-desc">Los KPIs del Ecosistema</div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+<!-- ── S8 · ACTIVIDAD 0 ───────────────────────────────── -->
+<div id="actividad-0" class="mod-section alt">
+  <div class="kicker">Sección 08</div>
+  <h2 class="sec-heading">Tu primer ejercicio</h2>
+  <div class="divider"></div>
+  <p class="sec-lead">Antes de entrar a la sección de El ecosistema que no se mide, dedica 5 minutos a este ejercicio. Introduce el formato que se repetirá en cada módulo.</p>
+
+  <div class="ejercicio-wrap">
+    <div class="ejercicio-header">
+      <span class="ej-badge">Actividad 0</span>
+      <span class="ej-title">Punto de partida: tu ecosistema</span>
+    </div>
+    <p class="ej-instruccion">Antes de continuar, dedica 5 minutos a responder estas 3 preguntas sobre el ecosistema que vas a diagnosticar:</p>
+    <div class="ej-preguntas">
+      <div class="ej-pregunta">
+        <div class="ej-pnum">01</div>
+        <div class="ej-ptexto">¿Qué ciudad, región o sector vas a diagnosticar?</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">02</div>
+        <div class="ej-ptexto">¿Qué tipos de organizaciones o personas participan en ese ecosistema? (Escribe los que te vengan a la mente sin buscar.)</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">03</div>
+        <div class="ej-ptexto">¿Cuál crees que es la brecha principal de ese ecosistema? (Una hipótesis está bien. Es tu punto de partida.)</div>
+      </div>
+    </div>
+    <div class="ej-nota">No hay respuesta correcta. Este ejercicio es tu baseline: al terminar el curso, vas a poder responder estas mismas preguntas con datos.</div>
+  </div>
+</div>
+
+</div><!-- /apertura -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     MÓDULOS — PLACEHOLDER
+═══════════════════════════════════════════════════════ -->
+
+<div id="mod1">
+
+<!-- M0-S1 · Qué es un ecosistema de emprendimiento -->
+<div id="mod1-s1" class="mod-section alt">
+  <div class="kicker">EL ECOSISTEMA QUE NO SE MIDE · Sección 1</div>
+  <h2 class="sec-heading">Qué es un ecosistema<br>de emprendimiento</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Cuando hablamos de un ecosistema de emprendimiento, no hablamos de una lista de actores. Un ecosistema es un sistema de relaciones. Las universidades, los fondos de capital, las aceleradoras y el gobierno ya existen en la mayoría de las ciudades. El problema no es su existencia. Es cómo se relacionan, qué información comparten y a quién apoyan en qué momento.</p>
+
+  <p class="prose">Tres definiciones de la literatura académica capturan esto con precisión:</p>
+
+  <div class="sintoma-list" style="margin-top:32px">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Isenberg (2010)</div>
+        <div class="sintoma-text">Un ecosistema es el conjunto de instituciones, organizaciones, individuos y condiciones culturales que interactúan para promover o inhibir la actividad emprendedora. Isenberg identificó seis dominios que lo componen: política pública, financiamiento, cultura, redes de apoyo, capital humano y mercados. Cada dominio influye en los demás. No hay un ecosistema fuerte si uno de los seis dominios está ausente.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Spigel (2017)</div>
+        <div class="sintoma-text">Los ecosistemas tienen tres tipos de atributos que coevolucionan con la actividad emprendedora: culturales (tolerancia al riesgo, historias de emprendedores que inspiran a otros), sociales (redes de mentores, relaciones de confianza entre actores) y materiales (capital de inversión, talento especializado, infraestructura tecnológica). Estos atributos no se construyen de la noche a la mañana. Se acumulan a lo largo del tiempo a través de interacciones repetidas.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Adner (2017)</div>
+        <div class="sintoma-text">Un ecosistema es una estructura de alineación. Para que una empresa de base tecnológica cree y entregue valor, necesita que múltiples actores coordinen sus acciones en el momento correcto. Si esa coordinación falla, el valor no se genera, aunque cada actor por separado esté haciendo bien su trabajo. El ecosistema no es la suma de sus partes: es la calidad de las interacciones entre ellas.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">La implicación para el diagnóstico</div>
+    <div class="cl-body">Si un ecosistema es un sistema de relaciones e interacciones, diagnosticarlo requiere algo más que contar cuántos actores existen o cuántas actividades realizan. Requiere medir si las interacciones correctas ocurren en el momento correcto del desarrollo de las empresas. Eso es exactamente lo que CORE hace.</div>
+  </div>
+</div>
+
+
+<!-- M0-S2 · Lo que la literatura ya sabía -->
+<div id="mod1-s2" class="mod-section">
+  <div class="kicker">EL ECOSISTEMA QUE NO SE MIDE · Sección 2</div>
+  <h2 class="sec-heading">Lo que la literatura<br>ya sabía y lo que faltaba</h2>
+  <div class="divider"></div>
+
+  <p class="prose">La literatura académica de los últimos 20 años ha desarrollado más de 28 marcos teóricos y modelos específicos sobre ecosistemas de innovación y emprendimiento. La revisión sistemática realizada en la investigación doctoral los organizó en seis categorías (Sánchez-Domínguez &amp; Almanza-Rueda, 2025, §4.5):</p>
+
+  <div class="sintoma-list" style="margin-top:32px">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Modelos basados en actores</div>
+        <div class="sintoma-text">Mapean quién participa en el ecosistema. Definen roles: universidad, gobierno, empresa privada, fondos. Son útiles para identificar actores, pero no explican qué hace cada uno ni en qué momento debe intervenir.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Sistemas de innovación</div>
+        <div class="sintoma-text">Explican cómo fluye el conocimiento entre instituciones, universidades y empresas. Describen bien las condiciones estructurales del ecosistema, pero no capturan el impacto en las trayectorias individuales de las empresas de base tecnológica.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Modelos de proceso</div>
+        <div class="sintoma-text">Describen las etapas por las que pasan las empresas: idea, prototipo, validación, escala. Son útiles para entender el recorrido de una empresa individual, pero no conectan esas etapas con el rol específico que debe jugar cada actor del ecosistema en cada una.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">04</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Modelos de creación de valor</div>
+        <div class="sintoma-text">Analizan cómo el ecosistema genera y distribuye valor económico. Relevantes para política pública y rendición de cuentas, pero operan a nivel macro y no permiten ver qué sucede en el nivel de las empresas individuales ni en las intersecciones actor-etapa.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">05</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Flujos de conocimiento</div>
+        <div class="sintoma-text">Estudian la transferencia de tecnología y conocimiento entre actores: de la universidad a la empresa, de la empresa al mercado. Importantes para entender la densidad de innovación, pero no miden resultados de las empresas de base tecnológica ni la alineación del ecosistema con sus necesidades reales.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num">06</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Modelos orientados a resultados</div>
+        <div class="sintoma-text">El grupo más cercano a lo que CORE busca: medir si el ecosistema produce resultados concretos. Sin embargo, estos modelos miden actividades realizadas agregadas (número de empresas, empleos creados, patentes) y no desagregan por actor, por etapa de desarrollo, ni por tipo de empresa.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tabla-wrap" style="margin-top:40px;overflow-x:auto">
+    <table class="lit-table">
+      <caption>Tabla 4 · Tipos de modelos para ecosistemas de emprendimiento e innovación. Fuente: Sánchez-Domínguez &amp; Almanza-Rueda (2025, §4.5, pp. 90–92).</caption>
+      <thead>
+        <tr>
+          <th>Categoría</th>
+          <th>Modelos y marcos clave</th>
+          <th>Teoría sustentadora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Modelos basados en actores</td>
+          <td>Triple / Quadruple / Quintuple Helix, Stakeholder Mapping (Freeman, 1984), Collective Impact (Kania &amp; Kramer, 2011)</td>
+          <td>Stakeholder Theory, Triple Helix, Collective Impact</td>
+        </tr>
+        <tr>
+          <td>Sistemas de innovación</td>
+          <td>National Innovation Systems (Freeman, 1987; Lundvall, 1992), Regional Innovation Systems, Cluster Theory (Porter, 1990), Innovation Ecosystem Framework (Adner, 2017)</td>
+          <td>Innovation Systems Theory, Cluster Theory</td>
+        </tr>
+        <tr>
+          <td>Modelos de proceso</td>
+          <td>Innovation Diffusion (Rogers, 1962), Innovation Funnel, Dynamic Capabilities (Teece et al., 1997), Lean Startup (Ries, 2011)</td>
+          <td>Dynamic Capabilities, Lean Startup</td>
+        </tr>
+        <tr>
+          <td>Modelos de creación de valor</td>
+          <td>Business Model Canvas (Osterwalder &amp; Pigneur, 2010), Value Chain (Porter, 1985), Value Network Analysis (Allee, 2000), Jobs to Be Done</td>
+          <td>Business Model Theory, Value Chain Theory</td>
+        </tr>
+        <tr>
+          <td>Flujos de conocimiento y recursos</td>
+          <td>Open Innovation (Chesbrough, 2003), Knowledge Spillover Theory (Acs et al., 2009), Resource-Based View (Barney, 1991)</td>
+          <td>Open Innovation, Knowledge Spillover, RBV</td>
+        </tr>
+        <tr>
+          <td>Modelos orientados a resultados</td>
+          <td>Balanced Scorecard (Kaplan &amp; Norton, 1992), OKRs, Theory of Change, Impact Assessment</td>
+          <td>Performance Management, Impact Evaluation, Theory of Change</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">El vacío que todos comparten</div>
+    <div class="cl-body">La literatura se concentra en enfoques basados en actores o en actividades. Eso genera una brecha: no existe, antes de CORE, un sistema de medición que permita ver los resultados concretos de las interacciones entre actores y etapas de desarrollo. Eso es exactamente lo que CORE construye: la traducción de ese vacío en 228 indicadores medibles.</div>
+  </div>
+</div>
+
+
+<!-- M0-S3 · La Espiral de Desalineación -->
+<div id="mod1-s3" class="mod-section alt">
+  <div class="kicker">EL ECOSISTEMA QUE NO SE MIDE · Sección 3</div>
+  <h2 class="sec-heading">La Espiral de<br>Desalineación Emprendedora</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Una revisión sistemática de 53 artículos publicados entre 2004 y 2024 formuló un concepto original: la Espiral de Desalineación Emprendedora (Sánchez-Domínguez &amp; Almanza-Rueda, 2025, §2.6.2). El modelo explica por qué las empresas de base tecnológica fallan incluso en ecosistemas con actores activos.</p>
+
+  <p class="prose">La explicación está en la naturaleza de los desajustes. La literatura asumía que la relación entre los recursos internos de una empresa y los factores externos del ecosistema era estática o lineal. La investigación demuestra que son elementos co-constitutivos y dinámicamente interactivos. Pequeños desajustes iniciales, si no se detectan y atienden, escalan progresivamente en vulnerabilidades que amenazan la supervivencia de la empresa.</p>
+
+  <figure class="fig-wrap">
+    <img src="assets/fig3-misalignment-spiral.png" alt="Espiral de Desalineación Emprendedora: cuatro etapas en trayectoria ascendente, desde desalineación inicial hasta colapso o realineación" class="fig-img">
+    <figcaption>Espiral de Desalineación Emprendedora. Adaptado de Sánchez-Domínguez &amp; Almanza-Rueda (2025, §2.6.2, p. 36).</figcaption>
+  </figure>
+
+  <div class="sintoma-list" style="margin-top:32px">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2)">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Desalineación Inicial</div>
+        <div class="sintoma-text">Pequeños desajustes entre las capacidades de la empresa de base tecnológica y los requisitos del mercado o del ecosistema comienzan a aparecer. En este punto son manejables, pero invisibles sin un sistema de medición. Nadie los detecta. El ecosistema sigue operando como si todo estuviera bien.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2)">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Efectos Compuestos</div>
+        <div class="sintoma-text">Los desajustes se intensifican. La empresa consume recursos respondiendo a síntomas, no a causas estructurales. Se generan brechas estratégicas que se agrandan con el tiempo. El ecosistema continúa ofreciendo los mismos apoyos genéricos que no responden a lo que la empresa necesita en esa etapa.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#FEF2F2;color:#DC2626;border-color:rgba(220,38,38,0.2)">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Desalineación Crítica</div>
+        <div class="sintoma-text">Los desajustes amenazan la viabilidad de la empresa. En ecosistemas fragmentados, ningún actor tiene la información ni el mandato para intervenir. No es que nadie quiera ayudar. Es que nadie sabe exactamente qué está pasando ni a quién le corresponde actuar.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#EFF6FF;color:#1D4ED8;border-color:rgba(29,78,216,0.2)">04</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Colapso o Realineación</div>
+        <div class="sintoma-text">La empresa enfrenta una elección: colapsar bajo el peso de los desajustes acumulados, o adaptarse. Las empresas que sobreviven desarrollan capacidades de alineación: la habilidad de ajustar continuamente sus estructuras internas a las realidades externas cambiantes. Muy pocas lo logran sin apoyo del ecosistema.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">Por qué esto importa para el diagnóstico</div>
+    <div class="cl-body">La Espiral no es un destino inevitable. Es un patrón detectable. Un ecosistema que cuenta con datos oportunos por actor y por etapa puede identificar la Espiral antes de que llegue a la etapa crítica. Esa detección temprana solo es posible si los actores comparten el mismo sistema de indicadores. Eso es lo que CORE habilita.</div>
+  </div>
+</div>
+
+
+<!-- M0-S4 · El problema que nadie estaba midiendo -->
+<div id="mod1-s4" class="mod-section">
+  <div class="kicker">EL ECOSISTEMA QUE NO SE MIDE · Sección 4</div>
+  <h2 class="sec-heading">El problema que<br>nadie estaba midiendo</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Identificar actores y etapas no es suficiente. El ecosistema también necesita saber si está funcionando. Aquí aparece una segunda brecha, igualmente crítica.</p>
+
+  <p class="prose">Los instrumentos de medición más usados a nivel mundial, como el Índice Global de Innovación, los reportes de Startup Genome o los indicadores de la OCDE, agregan el desempeño de países o regiones. Son útiles para comparaciones internacionales. Pero no dicen qué está haciendo cada actor, en qué etapa de desarrollo están las empresas, ni si las acciones del ecosistema generan cambios reales.</p>
+
+  <p class="prose">El problema no es la falta de datos. Es que los indicadores existentes miden actividades realizadas (eventos, recursos desplegados, participantes atendidos) y no resultados sistémicos. Eso impide la rendición de cuentas colectiva y reduce la capacidad de los líderes para coordinar intervenciones efectivas.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px">
+    <div style="padding:24px;border-radius:12px;background:var(--gris-100);border:1px solid var(--gris-200)">
+      <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:16px">Gobernanza basada en actividades</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px">
+        <li style="font-size:14px;color:var(--gris);display:flex;gap:8px;align-items:flex-start"><span style="color:#CBD5E1;flex-shrink:0">✕</span> ¿Cuántos eventos realizamos?</li>
+        <li style="font-size:14px;color:var(--gris);display:flex;gap:8px;align-items:flex-start"><span style="color:#CBD5E1;flex-shrink:0">✕</span> ¿Cuántas empresas atendimos?</li>
+        <li style="font-size:14px;color:var(--gris);display:flex;gap:8px;align-items:flex-start"><span style="color:#CBD5E1;flex-shrink:0">✕</span> ¿Cuántos participantes tuvimos?</li>
+        <li style="font-size:14px;color:var(--gris);display:flex;gap:8px;align-items:flex-start"><span style="color:#CBD5E1;flex-shrink:0">✕</span> Sin conexión con etapas de desarrollo</li>
+        <li style="font-size:14px;color:var(--gris);display:flex;gap:8px;align-items:flex-start"><span style="color:#CBD5E1;flex-shrink:0">✕</span> Sin trazabilidad por actor ni por empresa</li>
+      </ul>
+    </div>
+    <div style="padding:24px;border-radius:12px;background:var(--bg-cyan);border:1px solid rgba(37,99,235,0.15)">
+      <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:16px">Gobernanza basada en resultados CORE</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px">
+        <li style="font-size:14px;color:var(--negro);display:flex;gap:8px;align-items:flex-start"><span style="color:var(--cyan);flex-shrink:0">✓</span> ¿Qué cambió en la empresa?</li>
+        <li style="font-size:14px;color:var(--negro);display:flex;gap:8px;align-items:flex-start"><span style="color:var(--cyan);flex-shrink:0">✓</span> ¿Qué etapa superó?</li>
+        <li style="font-size:14px;color:var(--negro);display:flex;gap:8px;align-items:flex-start"><span style="color:var(--cyan);flex-shrink:0">✓</span> ¿Qué actor contribuyó, en qué momento?</li>
+        <li style="font-size:14px;color:var(--negro);display:flex;gap:8px;align-items:flex-start"><span style="color:var(--cyan);flex-shrink:0">✓</span> 228 KPIs organizados por Actor por Etapa</li>
+        <li style="font-size:14px;color:var(--negro);display:flex;gap:8px;align-items:flex-start"><span style="color:var(--cyan);flex-shrink:0">✓</span> Base para gobernanza basada en evidencia</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout-lime" style="margin-top:32px">
+    <div class="cl-label">CORE como sistema de medición compartido</div>
+    <div class="cl-body">Gobernar sistemas complejos como los ecosistemas de innovación requiere que los actores compartan los mismos datos, en tiempo oportuno, con un marco de referencia común. CORE es exactamente eso: la traducción del modelo de ecosistema basado en resultados en un sistema de indicadores que hace posible la gobernanza compartida entre actores.</div>
+  </div>
+</div>
+
+
+<!-- M0-S5 · Actividad -->
+<div id="mod1-s5" class="mod-section alt">
+  <div class="kicker">EL ECOSISTEMA QUE NO SE MIDE · Actividad</div>
+  <h2 class="sec-heading">Tu ecosistema<br>antes del diagnóstico</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Antes de aplicar el modelo, responde estas cuatro preguntas sobre el ecosistema que vas a diagnosticar. Guarda tus respuestas. Al terminar el curso, el diagnóstico que harás con CORE las responderá con evidencia.</p>
+
+  <div class="ejercicio-wrap">
+    <div class="ejercicio-header">
+      <span class="ej-badge">Actividad 0</span>
+      <span class="ej-title">Tu ecosistema como punto de partida</span>
+    </div>
+    <p class="ej-instruccion">Responde sin buscar datos externos. Lo que importa aquí es tu percepción actual. El contraste con el diagnóstico basado en evidencia que harás al final del curso es parte del aprendizaje.</p>
+    <div class="ej-preguntas">
+      <div class="ej-pregunta">
+        <div class="ej-pnum">01</div>
+        <div class="ej-ptexto">¿En qué punto del recorrido emprendedor (de la idea al escalamiento) se estanca más actividad en tu ecosistema? ¿Dónde se rompe la continuidad del flujo?</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">02</div>
+        <div class="ej-ptexto">¿Qué tipo de organización tiene mayor presencia activa hoy en tu ecosistema? ¿Cuál percibes como ausente o desconectada del resto?</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">03</div>
+        <div class="ej-ptexto">¿Puedes identificar algún momento donde viste la Espiral de Desalineación en acción: una empresa que fracasó no por falta de esfuerzo, sino porque el ecosistema no respondió a lo que necesitaba en ese momento?</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">04</div>
+        <div class="ej-ptexto">¿Qué cambiaría en tu ecosistema si cada actor pudiera ver el mismo mapa de resultados con los mismos indicadores? ¿Quién tomaría decisiones diferentes?</div>
+      </div>
+    </div>
+    <div class="ej-nota">No hay respuesta correcta. Este ejercicio es tu línea base. Al terminar el curso, podrás responder estas mismas preguntas con datos, no con percepciones.</div>
+  </div>
+</div>
+
+</div><!-- /mod1 -->
+
+<div id="mod2">
+
+<!-- M2-S1 · Qué es el Modelo CORE -->
+<div id="mod2-s1" class="mod-section alt">
+  <div class="kicker">Módulo 2 · Sección 1</div>
+  <h2 class="sec-heading">¿Qué es el<br>Modelo CORE?</h2>
+  <div class="divider"></div>
+
+  <p class="prose">CORE es un modelo de diagnóstico de ecosistemas de innovación basado en resultados. Responde con evidencia tres preguntas que los índices tradicionales no resuelven. ¿Quién participa en el ecosistema? ¿En qué etapa de desarrollo están las empresas que lo habitan? ¿Qué resultado está generando cada actor en cada etapa?</p>
+
+  <p class="prose">La respuesta se organiza en una arquitectura de tres capas. La primera capa es un embudo de cinco etapas que describe el recorrido emprendedor. La segunda capa cubre seis tipos de actores del ecosistema. La tercera capa funciona como una matriz que cruza actores con etapas y contiene los indicadores de resultado de cada intersección. Por debajo de todas estas capas, existe una governanza que coordina el diagnóstico y gobierna el uso de los datos.</p>
+
+  <figure class="fig-wrap" style="max-width:820px">
+    <img src="assets/fig13-outcome-model.png" alt="Modelo de ecosistema basado en resultados: matriz de actores (academia, empresas, gobierno, proveedores, capital, conectores) cruzada con el embudo de densidad (personas inspiradas, capaces, proyectos tecnológicos, startups, scaleups), con la Organización Backbone articulando el sistema" class="fig-img">
+    <figcaption>Modelo del ecosistema basado en resultados. Adaptado de Sánchez-Domínguez &amp; Almanza-Rueda (2025, §6.5, p. 132).</figcaption>
+  </figure>
+
+  <p class="prose">El modelo CORE fue desarrollado mediante Design Science Research, ha sido validado en campo en América Latina, y publicado en Palgrave Macmillan en 2025. Se apoya en cuatro marcos teóricos que juntos explican por qué funciona de la forma en que funciona.</p>
+
+  <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#64748B;margin:36px 0 16px">Los 4 pilares teóricos del modelo</h3>
+
+  <div class="sintoma-list">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2)">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Teoría de ecosistemas de innovación (Adner, 2017)</div>
+        <div class="sintoma-text">Los actores del ecosistema deben co-evolucionar y alinear sus intereses para generar valor colectivo. El éxito no depende de ningún actor en particular, sino de la coordinación de todos hacia resultados compartidos. Por eso CORE mide la contribución de cada actor, no el desempeño del ecosistema como un todo abstracto.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2)">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Visión basada en recursos (Barney, 1991)</div>
+        <div class="sintoma-text">El despliegue estratégico de recursos financieros, intelectuales y humanos es condición necesaria para lograr resultados medibles. El ecosistema debe identificar qué recursos críticos faltan en cada etapa de desarrollo. De aquí viene la lógica de CORE: el diagnóstico no pregunta si hay recursos en el ecosistema, sino si están en el actor correcto y en la etapa correcta.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#FEF2F2;color:#DC2626;border-color:rgba(220,38,38,0.2)">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Teoría de sistemas complejos (Simon, 1962)</div>
+        <div class="sintoma-text">El ecosistema es un sistema dinámico y adaptativo: los actores interactúan de forma no lineal, generando comportamientos emergentes. Los loops de retroalimentación entre etapas son centrales a su funcionamiento. Por eso los indicadores de CORE están diseñados para actualizar la toma de decisiones en tiempo real, no solo para reportar lo que ya ocurrió.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#EFF6FF;color:#1D4ED8;border-color:rgba(29,78,216,0.2)">04</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Impacto colectivo (Kania y Kramer, 2011)</div>
+        <div class="sintoma-text">El cambio sistémico requiere coordinación entre sectores: una agenda común, sistemas de medición compartidos, y una organización que orqueste el esfuerzo colectivo. Sin estas condiciones, los esfuerzos individuales no se traducen en resultados ecosistémicos. La Matriz Actor x Etapa de CORE es la implementación concreta de ese sistema de medición compartido.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">Una arquitectura viva, no un diagnóstico de una sola vez</div>
+    <div class="cl-body">El modelo no es una foto estática del ecosistema. Es una estructura que evoluciona: los actores ajustan sus roles en función de en qué etapa se encuentra cada empresa de base tecnológica, y el sistema retroalimenta continuamente a quienes toman decisiones. A diferencia de los índices que se actualizan una vez al año, CORE está diseñado para producir señales en tiempo real que guíen la gobernanza del ecosistema. (Sánchez-Domínguez &amp; Almanza-Rueda, 2025, Cap.6 §6.3.4)</div>
+  </div>
+
+  </div>
+
+
+<!-- M2-S2 · El Embudo de Densidad de Innovación -->
+<div id="mod2-s2" class="mod-section">
+  <div class="kicker">Módulo 2 · Sección 2</div>
+  <h2 class="sec-heading">El Embudo de<br>Densidad de Innovación</h2>
+  <div class="divider"></div>
+
+  <p class="prose">El núcleo del modelo es el Embudo de Densidad de Innovación: una secuencia de 5 etapas que describe el camino que recorre una persona, desde tener una inquietud por innovar hasta convertirse en una empresa que escala en el mercado. La "densidad" es la clave. Mide cuántas personas y proyectos avanzan a través de cada etapa, revelando qué tan fértil es el ecosistema en cada transición. (Sánchez-Domínguez &amp; Almanza-Rueda, 2025)</p>
+
+  <div style="margin:32px 0 8px;padding:24px;background:#F8FAFC;border-radius:14px;border:1px solid var(--gris-200)">
+    <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:20px;text-align:center">Embudo de Densidad de Innovación · 5 etapas</div>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:620px;margin:0 auto">
+
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:100%;padding:12px 18px;background:var(--bg-lime);border:1px solid rgba(16,185,129,0.25);border-radius:8px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;font-weight:800;color:#065F46;min-width:26px">01</span>
+          <span style="font-size:13px;font-weight:700;color:#065F46;min-width:160px">Personas inspiradas</span>
+          <span style="font-size:11px;color:#6B7280;margin-left:auto;text-align:right">Individuos con interés por innovar. El ecosistema los detecta y estimula.</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:0 28px">
+        <div style="width:100%;padding:12px 18px;background:var(--bg-lime);border:1px solid rgba(16,185,129,0.25);border-radius:8px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;font-weight:800;color:#065F46;min-width:26px">02</span>
+          <span style="font-size:13px;font-weight:700;color:#065F46;min-width:160px">Personas capaces</span>
+          <span style="font-size:11px;color:#6B7280;margin-left:auto;text-align:right">Con conocimiento técnico. El ecosistema las forma y certifica.</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:0 56px">
+        <div style="width:100%;padding:12px 18px;background:var(--bg-amber);border:1px solid rgba(217,119,6,0.2);border-radius:8px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;font-weight:800;color:var(--amber);min-width:26px">03</span>
+          <span style="font-size:13px;font-weight:700;color:var(--amber);min-width:160px">Proyectos tecnológicos</span>
+          <span style="font-size:11px;color:#6B7280;margin-left:auto;text-align:right">Con modelo validado y mercado potencial. El ecosistema los estructura y financia.</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:0 84px">
+        <div style="width:100%;padding:12px 18px;background:#EFF6FF;border:1px solid rgba(29,78,216,0.2);border-radius:8px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;font-weight:800;color:#1D4ED8;min-width:26px">04</span>
+          <span style="font-size:13px;font-weight:700;color:#1D4ED8;min-width:160px">Startups</span>
+          <span style="font-size:11px;color:#6B7280;margin-left:auto;text-align:right">Empresas con más de un año. El ecosistema las escala y conecta con capital.</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:0 112px">
+        <div style="width:100%;padding:12px 18px;background:#EFF6FF;border:1px solid rgba(29,78,216,0.2);border-radius:8px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;font-weight:800;color:#1D4ED8;min-width:26px">05</span>
+          <span style="font-size:13px;font-weight:700;color:#1D4ED8;min-width:160px">Scaleups</span>
+          <span style="font-size:11px;color:#6B7280;margin-left:auto;text-align:right">En expansión con tracción comprobada. El ecosistema las internacionaliza.</span>
+        </div>
+      </div>
+
+    </div>
+    <p style="font-size:11px;color:#94A3B8;text-align:center;margin:20px 0 0;font-style:italic">La densidad mide cuántas personas y proyectos avanzan a través de cada transición. Donde el flujo se interrumpe, el ecosistema tiene un cuello de botella.</p>
+  </div>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">La densidad como señal del sistema</div>
+    <div class="cl-body">Si un ecosistema tiene miles de personas inspiradas pero muy pocos proyectos tecnológicos, hay un cuello de botella en la formación de capacidades. Si tiene muchas startups pero pocas scaleups, el problema está en el acceso a capital o a mercados en etapas avanzadas. CORE mide exactamente eso: dónde se pierde el flujo y qué actor específico debería intervenir en esa etapa concreta. Eso es lo que un índice nacional no puede decirte.</div>
+  </div>
+</div>
+
+
+<!-- M2-S3 · Los 6 actores del ecosistema -->
+<div id="mod2-s3" class="mod-section alt">
+  <div class="kicker">Módulo 2 · Sección 3</div>
+  <h2 class="sec-heading">Los 6 actores<br>del ecosistema</h2>
+  <div class="divider"></div>
+
+  <p class="prose">El modelo identifica seis tipos de actores que participan en el ecosistema. El problema que CORE resuelve no es que falten actores. En la mayoría de ecosistemas ya existen todos. El problema es que no hay alineación entre lo que cada actor hace y lo que el ecosistema necesita en cada etapa. Cada actor tiene un perfil de intervención distinto, y la clave del modelo está en mapear exactamente cuándo y cómo debe actuar cada uno para que las empresas avancen. (Sánchez-Domínguez &amp; Almanza-Rueda, 2025, §4.5.2)</p>
+
+  <div style="margin:28px 0 8px;padding:24px;background:#F8FAFC;border-radius:14px;border:1px solid var(--gris-200)">
+    <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:20px;text-align:center">Los 6 actores del ecosistema — Sánchez-Domínguez &amp; Almanza-Rueda (2025)</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding-bottom:4px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;font-weight:800;color:#1E293B;letter-spacing:.5px">ACADEMIA</div>
+          <div style="font-size:9px;color:#94A3B8;font-weight:700;letter-spacing:1.5px">A1</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Ejemplos</div>
+          <ul style="margin:0;padding-left:13px;font-size:10px;color:#475569;line-height:1.7">
+            <li>Universidades</li>
+            <li>Centros de investigación</li>
+            <li>Institutos tecnológicos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding-bottom:4px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;font-weight:800;color:#1E293B;letter-spacing:.5px">EMPRESAS</div>
+          <div style="font-size:9px;color:#94A3B8;font-weight:700;letter-spacing:1.5px">A2</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Ejemplos</div>
+          <ul style="margin:0;padding-left:13px;font-size:10px;color:#475569;line-height:1.7">
+            <li>Corporativos y anclas</li>
+            <li>Multinacionales</li>
+            <li>Pymes tecnológicas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding-bottom:4px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;font-weight:800;color:#1E293B;letter-spacing:.5px">GOBIERNO</div>
+          <div style="font-size:9px;color:#94A3B8;font-weight:700;letter-spacing:1.5px">A3</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Ejemplos</div>
+          <ul style="margin:0;padding-left:13px;font-size:10px;color:#475569;line-height:1.7">
+            <li>Federal, estatal, municipal</li>
+            <li>Fondos públicos</li>
+            <li>Políticas de innovación</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding-bottom:4px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;font-weight:800;color:#1E293B;letter-spacing:.5px">PROVEEDORES</div>
+          <div style="font-size:9px;color:#94A3B8;font-weight:700;letter-spacing:1.5px">A4</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Ejemplos</div>
+          <ul style="margin:0;padding-left:13px;font-size:10px;color:#475569;line-height:1.7">
+            <li>Incubadoras</li>
+            <li>Aceleradoras</li>
+            <li>Hubs y parques tecnológicos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding-bottom:4px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0891B2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;font-weight:800;color:#1E293B;letter-spacing:.5px">CAPITAL</div>
+          <div style="font-size:9px;color:#94A3B8;font-weight:700;letter-spacing:1.5px">A5</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Ejemplos</div>
+          <ul style="margin:0;padding-left:13px;font-size:10px;color:#475569;line-height:1.7">
+            <li>Inversores ángel</li>
+            <li>Fondos de capital de riesgo</li>
+            <li>Advisors e instrumentos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding-bottom:4px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#DB2777" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;font-weight:800;color:#1E293B;letter-spacing:.5px">CONECTORES</div>
+          <div style="font-size:9px;color:#94A3B8;font-weight:700;letter-spacing:1.5px">A6</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Ejemplos</div>
+          <ul style="margin:0;padding-left:13px;font-size:10px;color:#475569;line-height:1.7">
+            <li>Comunidades y medios</li>
+            <li>Alianzas internacionales</li>
+            <li>Redes de ecosistemas</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+    <p style="font-size:11px;color:#94A3B8;text-align:center;margin:16px 0 0;font-style:italic">Un mismo actor puede estar presente en múltiples etapas del embudo. El valor diagnóstico aparece al cruzar actores con etapas.</p>
+  </div>
+
+  <div class="callout-lime" style="margin-top:32px">
+    <div class="cl-label">El valor está en las intersecciones</div>
+    <div class="cl-body">En cada celda de la matriz el modelo define qué actividades o responsabilidades específicas debe asumir cada actor. La coordinación resultante evita duplicidades y fomenta resultados de innovación más eficientes, asegurando que cada participante contribuya de manera alineada con el resto. (Sánchez-Domínguez &amp; Almanza-Rueda, 2025)</div>
+  </div>
+</div>
+
+
+<!-- M1-S4 · La Organización Backbone -->
+<div id="mod2-s4" class="mod-section">
+  <div class="kicker">Módulo 2 · Sección 4</div>
+  <h2 class="sec-heading">La Organización Backbone:<br>quien coordina, quien responde</h2>
+  <div class="divider"></div>
+
+  <p class="prose">En un ecosistema sin coordinación central, cada actor trabaja en silos. Los esfuerzos se duplican, los recursos se desperdician, y las empresas de base tecnológica caen en los espacios entre actores, sin que nadie sea responsable de lo que no se hizo. El modelo propone una solución estructural: la Organización Backbone.</p>
+
+  <div class="quote-block" style="margin-top:24px">
+    <div class="quote-text">"Este tipo de organización es crítica para lograr el impacto colectivo, al coordinar los esfuerzos de múltiples actores hacia un objetivo común."</div>
+    <div style="font-size:12px;color:#94A3B8;margin-top:8px;font-weight:600;">Kania y Kramer (2011), citado en Sánchez-Domínguez &amp; Almanza-Rueda (2025)</div>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#64748B;margin:36px 0 16px">Las 4 funciones del Backbone</h3>
+
+  <div class="sintoma-list">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2)">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Comunicación</div>
+        <div class="sintoma-text">Mantener alineados a todos los actores sobre el estado del ecosistema, las prioridades compartidas y los resultados obtenidos. La información fluye hacia todos, no solo hacia quien la genera.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2)">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Asignación de recursos</div>
+        <div class="sintoma-text">Orquestar quién hace qué en cada etapa del embudo, evitando duplicaciones y cubriendo los vacíos. Ningún actor puede asignar recursos de forma óptima sin ver lo que hacen los demás.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#FEF2F2;color:#DC2626;border-color:rgba(220,38,38,0.2)">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Seguimiento de desempeño</div>
+        <div class="sintoma-text">Medir qué está produciendo cada actor en cada etapa y dónde se interrumpe el flujo de empresas de base tecnológica. Sin medición compartida, la rendición de cuentas colectiva es imposible. (Turner et al., 2012)</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#EFF6FF;color:#1D4ED8;border-color:rgba(29,78,216,0.2)">04</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Alineación estratégica</div>
+        <div class="sintoma-text">Asegurar que los esfuerzos individuales de cada actor converjan en resultados sistémicos compartidos. La estrategia del ecosistema no la define un solo actor. La Backbone la articula para todos.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">Sin Backbone, sin impacto colectivo</div>
+    <div class="cl-body">La mayoría de organizaciones que hoy intentan cumplir el rol de Backbone trabajan con datos agregados o con intuición, no con métricas desagregadas por actor y etapa. Eso limita su capacidad de coordinación. CORE fue diseñado para darle a la Backbone la arquitectura de datos que necesita: saber qué está pasando en cada celda de la Matriz, en tiempo real, para tomar decisiones de gobernanza con evidencia. Sin los indicadores correctos, la coordinación no escala. (Sánchez-Domínguez, 2025, Cap.6 §6.3.4)</div>
+  </div>
+</div>
+
+
+<!-- M1-S5 · La Matriz Actor × Etapa -->
+<div id="mod2-s5" class="mod-section alt">
+  <div class="kicker">Módulo 2 · Sección 5</div>
+  <h2 class="sec-heading">La Matriz Actor × Etapa:<br>cómo funciona CORE</h2>
+  <div class="divider"></div>
+
+  <p class="prose">El Modelo de Ecosistema Basado en Resultados se operacionaliza en una matriz: las filas son las 5 etapas del Embudo de Densidad, las columnas son los 6 actores. En cada celda, un indicador específico que ese actor debe generar en esa etapa. Esta estructura convierte el modelo conceptual en una herramienta de gobernanza accionable. (Sánchez-Domínguez &amp; Almanza-Rueda, 2025, §4.6.1)</p>
+
+  <div style="overflow-x:auto;margin-bottom:20px;margin-top:32px">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px">
+      <thead>
+        <tr style="background:var(--gris-100)">
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#64748B;border:1px solid var(--gris-200);font-size:11px;letter-spacing:0.5px;min-width:90px">Etapa</th>
+          <th style="padding:12px 10px;text-align:left;font-weight:700;color:#065F46;border:1px solid var(--gris-200);font-size:11px">Academia</th>
+          <th style="padding:12px 10px;text-align:left;font-weight:700;color:var(--amber);border:1px solid var(--gris-200);font-size:11px">Empresas e industria</th>
+          <th style="padding:12px 10px;text-align:left;font-weight:700;color:var(--cyan);border:1px solid var(--gris-200);font-size:11px">Gobierno</th>
+          <th style="padding:12px 10px;text-align:left;font-weight:700;color:#64748B;border:1px solid var(--gris-200);font-size:11px">Proveedores</th>
+          <th style="padding:12px 10px;text-align:left;font-weight:700;color:#64748B;border:1px solid var(--gris-200);font-size:11px">Capital</th>
+          <th style="padding:12px 10px;text-align:left;font-weight:700;color:#64748B;border:1px solid var(--gris-200);font-size:11px">Conectores</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:12px 14px;border:1px solid var(--gris-200);background:#F0FDF4;font-weight:700;color:#065F46;font-size:11px">01 · Personas inspiradas</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de estudiantes y profesores en experiencias de emprendimiento científico o tecnológico</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de empleados certificados en tecnología o emprendimiento</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de funcionarios certificados en emprendimiento científico-tecnológico</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de proveedores especializados colaborando en el ecosistema</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de prospectos de inversión alineados al ecosistema</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de población que asistió a una comunidad de ciencia, tecnología o emprendimiento</td>
+        </tr>
+        <tr style="background:#FAFAFA">
+          <td style="padding:12px 14px;border:1px solid var(--gris-200);background:#ECFDF5;font-weight:700;color:#065F46;font-size:11px">02 · Personas capaces</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de maestros certificados en emprendimiento de base tecnológica</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de empleados involucrados en proyectos emprendedores dentro de su organización</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de mentores certificados por gobierno en habilidades técnicas para TBVs</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de proveedores que ofrecen +5 servicios a emprendedores tecnológicos por año</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de deals y $ invertidos pre-seed y seed; # de advisors vinculados</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de emprendedores que lideran una comunidad de ciencia o tecnología</td>
+        </tr>
+        <tr>
+          <td style="padding:12px 14px;border:1px solid var(--gris-200);background:#FFF7ED;font-weight:700;color:var(--amber);font-size:11px">03 · Proyectos tecnológicos</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de patentes o inventos científico-tecnológicos con mercado potencial identificado</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de proyectos emprendedores alineados a prioridades locales (ej. manufactura)</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% del presupuesto destinado a desarrollo de proyectos científicos-tecnológicos (fondos, grants)</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de proyectos tech que resultan de programas de preincubación o incubación</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de deals y $ invertidos en startups en etapa semilla</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de proyectos de emprendimiento tech identificados en comunidades locales</td>
+        </tr>
+        <tr style="background:#FAFAFA">
+          <td style="padding:12px 14px;border:1px solid var(--gris-200);background:#EFF6FF;font-weight:700;color:#1D4ED8;font-size:11px">04 · Startups</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de startups tech con +1 año de operación originadas en academia o universidades locales</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de spinoffs o proyectos emprendedores lanzados exitosamente desde la empresa</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% del presupuesto destinado a proyectos científicos y tecnológicos en etapa startup</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de startups tech que resultan de programas de incubación o aceleración</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de deals y $ invertidos en startups (Series A y B)</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de startups activas en comunidades locales de ciencia, tecnología e innovación</td>
+        </tr>
+        <tr>
+          <td style="padding:12px 14px;border:1px solid var(--gris-200);background:#F8FAFC;font-weight:700;color:var(--negro);font-size:11px">05 · Scaleups</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#94A3B8;font-style:italic;line-height:1.5">N/A</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#94A3B8;font-style:italic;line-height:1.5">N/A</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de empleos generados por scaleups tecnológicas en la región</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5">% de scaleups tech que resultan de programas de incubación o aceleración</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5"># de deals y $ invertidos en scaleups (Series B+)</td>
+          <td style="padding:12px 10px;border:1px solid var(--gris-200);color:#94A3B8;font-style:italic;line-height:1.5">N/A</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="prose" style="font-size:13px;color:#64748B"><em>Muestra representativa de indicadores por Actor × Etapa. Basado en Sánchez-Domínguez (2025). La matriz completa contiene 228 KPIs.</em></p>
+
+  <div class="callout-lime" style="margin-top:28px">
+    <div class="cl-label">De modelo a herramienta de gobernanza</div>
+    <div class="cl-body">Cada indicador en CORE tiene un actor responsable, una etapa de referencia, y un resultado esperado. Eso es lo que convierte un diagnóstico en gobernanza: no solo medir qué pasó, sino quién debía actuar, en qué momento, y si lo hizo. Los indicadores de CORE no son promedios nacionales ni rankings comparativos. Son preguntas específicas sobre qué está haciendo cada actor, en qué etapa, y qué está cambiando en el ecosistema como consecuencia. En el Módulo 3 explorarás el catálogo completo de 228 indicadores.</div>
+  </div>
+</div>
+
+<!-- M1-S6 · Por qué resultados, no actividades -->
+<div id="mod2-s6" class="mod-section">
+  <div class="kicker">Módulo 2 · Sección 6</div>
+  <h2 class="sec-heading">Por qué resultados,<br>no actividades.</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Hay una diferencia fundamental entre medir lo que hace un actor en el ecosistema y medir lo que cambia en el ecosistema gracias a lo que ese actor hace. CORE mide lo segundo. La mayoría de los sistemas de seguimiento miden lo primero.</p>
+  <p class="prose">Esta distinción no es semántica. Define cómo se asignan los recursos, cómo se rinde cuentas, y si el ecosistema aprende de sus propias intervenciones o simplemente las acumula año tras año.</p>
+
+  <div class="sintoma-list" style="margin-top:28px">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2)">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Lo que se acostumbra medir: la actividad del actor.</div>
+        <div class="sintoma-text">Cuántas empresas incubaste. Cuántos eventos realizaste. Cuánto capital se movilizó. Cuántas personas tomaron un taller. Estas son actividades del actor, no resultados del ecosistema. Decir que incubaste 40 empresas no dice nada sobre si avanzaron hacia la siguiente etapa del embudo.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2)">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Lo que CORE mide: el resultado del ecosistema.</div>
+        <div class="sintoma-text">Cuántas de esas 40 empresas avanzaron a la siguiente etapa gracias al soporte de ese actor, en ese momento. Eso es un resultado ecosistémico. No mide al actor en aislado, mide si el actor cumplió su función en el sistema en la etapa correcta para la empresa correcta.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#EFF6FF;color:#1D4ED8;border-color:rgba(29,78,216,0.2)">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">La ventaja del tiempo real.</div>
+        <div class="sintoma-text">Los indicadores orientados a resultados permiten ajustar las intervenciones mientras suceden, no solo reportarlas al final del año. Si una celda de la Matriz muestra que un actor no está generando avance en una etapa específica, eso es una señal de gobernanza activa, no un dato de cierre de ciclo. (Sánchez-Domínguez, 2025, Cap.6 §6.3.4)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- M2-S7 · Actividad: Mandala Actor × Etapa -->
+<div id="mod2-s7" class="mod-section">
+  <div class="kicker">Módulo 2 · Sección 7 · Actividad</div>
+  <h2 class="sec-heading">Mapea tu ecosistema<br>con el Modelo CORE</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Este ejercicio es una adaptación del framework que Odille usa con el Tec de Monterrey para diagnosticar distritos de innovación. Vas a completar una matriz Actor × Etapa para tu ecosistema, en 6 capas de análisis: del ideal hasta los siguientes pasos concretos. Guarda tu progreso en este navegador y exporta tus respuestas cuando termines.</p>
+
+  <div class="mandala-actividad">
+    <aside class="mandala-pasos">
+      <h3>Reglas del juego</h3>
+      <ol>
+        <li data-step="1" class="active"><strong>Modelo ideal</strong><br><span>¿Cómo imaginas la versión ideal de tu ecosistema?</span></li>
+        <li data-step="2"><strong>KPIs del modelo</strong><br><span>¿Qué medirías en cada celda?</span></li>
+        <li data-step="3"><strong>Números actuales</strong><br><span>¿Qué datos cuantitativos tienes hoy?</span></li>
+        <li data-step="4"><strong>Actores e iniciativas</strong><br><span>¿Qué instituciones y programas existen?</span></li>
+        <li data-step="5"><strong>¿Qué falta?</strong><br><span>Brecha entre ideal y realidad</span></li>
+        <li data-step="6"><strong>Next steps</strong><br><span>Prioriza qué resolver primero</span></li>
+      </ol>
+      <div class="mandala-acciones">
+        <button class="ma-btn" id="mandalaExport">Exportar JSON</button>
+        <button class="ma-btn" id="mandalaPrint">Imprimir</button>
+        <button class="ma-btn ma-danger" id="mandalaReset">Limpiar todo</button>
+      </div>
+    </aside>
+    <div class="mandala-wrap">
+      <svg class="mandala-svg" viewBox="0 0 720 720" role="img" aria-label="Mandala Actor por Etapa del ecosistema">
+        <g class="mandala-cells"></g>
+        <g class="mandala-labels"></g>
+        <circle cx="360" cy="360" r="56" class="mandala-center"/>
+        <text x="360" y="354" class="mandala-core-label" text-anchor="middle">CORE</text>
+        <text x="360" y="374" class="mandala-core-sub" text-anchor="middle">Tu ecosistema</text>
+      </svg>
+      <p class="mandala-hint">Haz click en cualquier celda para escribir la respuesta del paso activo.</p>
+    </div>
+  </div>
+
+  <div class="mandala-modal" id="mandalaModal" hidden>
+    <div class="mandala-modal-card">
+      <div class="mandala-modal-header">
+        <div class="mmh-kicker"><span id="mmStep"></span> · <span id="mmActor"></span> × <span id="mmStage"></span></div>
+        <button class="mm-close" id="mmClose" aria-label="Cerrar">×</button>
+      </div>
+      <textarea id="mmText" rows="6" placeholder="Escribe tu respuesta para este actor y etapa en el paso activo..."></textarea>
+      <div class="mandala-modal-foot">
+        <button class="ma-btn ma-danger" id="mmClear">Limpiar celda</button>
+        <button class="ma-btn ma-primary" id="mmSave">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /mod2 -->
+
+<div id="mod3">
+
+<!-- M3-S1 · Cómo se lee la Matriz -->
+<div id="mod3-s1" class="mod-section alt">
+  <div class="kicker">Módulo 3 · Sección 1</div>
+  <h2 class="sec-heading">Cómo se lee la Matriz:<br>el instrumento que organiza los 228 KPIs</h2>
+  <div class="divider"></div>
+
+  <p class="prose">La Matriz Actor × Etapa es el instrumento central de CORE. Las filas son las 7 etapas del embudo. Las columnas son los 8 tipos de actor. En cada celda viven los indicadores que ese actor debe generar en esa etapa del ciclo. Los 228 KPIs del catálogo no son una lista suelta: cada uno tiene una coordenada concreta (actor, etapa) en esta matriz, lo que convierte la complejidad del ecosistema en algo legible y accionable.</p>
+
+  <p class="prose">La Matriz no se usa para llenarla toda. Se usa para identificar qué celdas importan en este ecosistema específico, y cuáles están vacías cuando deberían estar llenas. Esa es la lógica del diagnóstico CORE: no medir todo, sino medir lo correcto.</p>
+
+  <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#64748B;margin:36px 0 16px">Fragmento de la Matriz, ejemplos de KPIs por intersección</h3>
+
+  <div style="overflow-x:auto;margin-bottom:20px">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:680px">
+      <thead>
+        <tr style="background:var(--gris-100)">
+          <th style="padding:10px 12px;text-align:left;font-weight:700;color:#64748B;border:1px solid var(--gris-200);font-size:11px;min-width:90px">Etapa</th>
+          <th style="padding:10px 10px;text-align:left;font-weight:700;color:#065F46;border:1px solid var(--gris-200);font-size:11px">A1, Academia</th>
+          <th style="padding:10px 10px;text-align:left;font-weight:700;color:var(--amber);border:1px solid var(--gris-200);font-size:11px">A4-B, Incubadoras</th>
+          <th style="padding:10px 10px;text-align:left;font-weight:700;color:var(--cyan);border:1px solid var(--gris-200);font-size:11px">A5, Capital</th>
+          <th style="padding:10px 10px;text-align:left;font-weight:700;color:#64748B;border:1px solid var(--gris-200);font-size:11px">A6, Conectores</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:10px 12px;border:1px solid var(--gris-200);background:#F8FAFC;font-weight:700;color:#64748B;font-size:11px">E0 · Comunicación</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);background:#F8FAFC;color:#94A3B8;font-size:11px;text-align:center">—</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);background:#F8FAFC;color:#94A3B8;font-size:11px;text-align:center">—</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);background:#F8FAFC;color:#94A3B8;font-size:11px;text-align:center">—</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Alcance e impacto en medios; Publicaciones del ecosistema</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;border:1px solid var(--gris-200);background:#F0FDF4;font-weight:700;color:#065F46;font-size:11px">E1 · Conciencia y Cultura</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Estudiantes en programas de emprendimiento; Tasa de startups de egresados</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Programas para habilidades emergentes; Competencias de startups</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Nuevos inversores con menos de 5 años de actividad</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Tasa de participación de actores en el ecosistema; Mentores activos</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;border:1px solid var(--gris-200);background:#FFFBEB;font-weight:700;color:var(--amber);font-size:11px">E3 · Idea y Proyecto</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Patentes y colaboraciones I+D; Gasto en investigación</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Programas de incubación entregados; Grants para startups</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);background:#F8FAFC;color:#94A3B8;font-size:11px;text-align:center">—</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Iniciativas colaborativas facilitadas; Actividad de networking</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;border:1px solid var(--gris-200);background:#EFF6FF;font-weight:700;color:#1D4ED8;font-size:11px">E4 · Crear y Lanzar</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);background:#F8FAFC;color:#94A3B8;font-size:11px;text-align:center">—</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Rondas de financiamiento cerradas; Volumen early-stage</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Capital total invertido; Tiempo promedio para cerrar ronda</td>
+          <td style="padding:10px;border:1px solid var(--gris-200);color:#374151;line-height:1.5;font-size:11px">Costo de iniciar un negocio; Días para registrar empresa</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="prose">Las celdas vacías, marcadas con un guion, no son errores. Indican que ese actor no tiene un rol central en esa etapa del ciclo. Si una celda está vacía cuando debería estar llena para tu ecosistema, eso es una brecha que el diagnóstico revela.</p>
+
+  <div class="callout-lime" style="margin-top:28px">
+    <div class="cl-label">Cómo usar la Matriz en la práctica</div>
+    <div class="cl-body">El primer paso no es llenar toda la Matriz. Es identificar qué actores existen en tu ecosistema y en qué etapas operan con mayor presencia. A partir de ahí, se seleccionan los KPIs relevantes para esas intersecciones. La Matriz no es un cuestionario universal, es un mapa de diagnóstico que se adapta a cada contexto. (Sánchez-Domínguez, 2025, §6.5.1)</div>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#64748B;margin:40px 0 16px">De dónde salen los 228 KPIs</h3>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:4px">
+    <div style="padding:20px;border-radius:12px;background:var(--gris-100);border:1px solid var(--gris-200);text-align:center">
+      <div style="font-size:32px;font-weight:900;color:#1565C0;line-height:1">158</div>
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#1565C0;margin:8px 0 8px">Original</div>
+      <p style="font-size:12px;color:var(--gris);line-height:1.5;margin:0">Indicadores del toolkit base, primera iteración del modelo (Tesis Cap. 6).</p>
+    </div>
+    <div style="padding:20px;border-radius:12px;background:var(--bg-lime);border:1px solid rgba(16,185,129,0.2);text-align:center">
+      <div style="font-size:32px;font-weight:900;color:#065F46;line-height:1">41</div>
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#065F46;margin:8px 0 8px">Recuperado</div>
+      <p style="font-size:12px;color:var(--gris);line-height:1.5;margin:0">Indicadores propuestos por la autora en trabajos previos, reincorporados en la revisión 2025.</p>
+    </div>
+    <div style="padding:20px;border-radius:12px;background:var(--bg-amber);border:1px solid rgba(217,119,6,0.15);text-align:center">
+      <div style="font-size:32px;font-weight:900;color:var(--amber);line-height:1">29</div>
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber);margin:8px 0 8px">Nuevo</div>
+      <p style="font-size:12px;color:var(--gris);line-height:1.5;margin:0">Agregados en la revisión de Diciembre 2025 para cubrir vacíos detectados en la matriz, como la etapa E0 (Comunicación).</p>
+    </div>
+  </div>
+
+  <p class="prose" style="margin-top:24px">El catálogo se construyó con Design Science Research (Hevner et al., 2004). En la primera iteración el equipo definió un indicador por celda como mínimo, validó con expertos por dificultad de recolección y relevancia estratégica, y eliminó métricas redundantes. La revisión 2025, documentada por la Ing. Ana Victoria Gutiérrez, agregó 70 indicadores adicionales (41 recuperados + 29 nuevos) para cerrar brechas de cobertura, principalmente en la etapa de Comunicación (E0) que era un punto ciego del modelo original.</p>
+</div>
+
+
+<!-- M3-S2 · Las 7 etapas del embudo -->
+<div id="mod3-s2" class="mod-section">
+  <div class="kicker">Módulo 3 · Sección 2</div>
+  <h2 class="sec-heading">Las 7 etapas del embudo:<br>E0 a E6</h2>
+  <div class="divider"></div>
+
+  <p class="prose">En el Módulo 2 viste el Embudo de Densidad de Innovación con 5 etapas, la versión introductoria del modelo. En la práctica del diagnóstico CORE el embudo tiene 7 etapas, no 5. Se agregan E0 (Comunicación) al inicio, antes de que las personas se inspiren, y E6 (Infraestructura Compartida) como capa transversal que sostiene a todas las demás. Cada etapa tiene un resultado esperado distinto, y los actores que intervienen en cada una son también distintos.</p>
+
+  <div class="sintoma-list" style="margin-top:28px">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#F8FAFC;color:#64748B;border-color:var(--gris-200);font-size:12px">E0</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Comunicación</div>
+        <div class="sintoma-text">Antes de que cualquier persona se inspire, el ecosistema necesita existir como narrativa. E0 (Comunicación) es la capa de visibilidad: publicaciones, eventos globales, menciones en medios, presencia del ecosistema como referente. Sin E0 (Comunicación), las personas no llegan a E1 (Conciencia y Cultura) porque no saben que hay un lugar al que llegar.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2);font-size:12px">E1</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Conciencia y Cultura</div>
+        <div class="sintoma-text">Personas que se interesan por la innovación, la ciencia y el emprendimiento por primera vez. El resultado esperado es que quieran. Aquí intervienen conectores, academia, gobierno y proveedores de servicios que crean espacios de activación. Los KPIs miden participación, alcance y primeras conexiones.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2);font-size:12px">E2</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Inmersión y Conocimiento</div>
+        <div class="sintoma-text">Personas que ya quieren, y ahora aprenden. Formación en STEM, certificaciones, cursos técnicos, programas de emprendimiento. El resultado esperado es que sepan. La academia es el actor central en esta etapa, pero las incubadoras y el gobierno también tienen indicadores aquí.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2);font-size:12px">E3</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Idea y Proyecto</div>
+        <div class="sintoma-text">Personas que saben, y ya tienen un proyecto de base tecnológica. Prototipos, pruebas de concepto, investigación aplicada, primeros spin-offs. El resultado esperado es que tengan algo que mostrar. La academia, los corporativos y los proveedores de servicios acompañan esta etapa con financiamiento, mentoría y espacio de trabajo.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2);font-size:12px">E4</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Crear y Lanzar</div>
+        <div class="sintoma-text">El proyecto se convierte en empresa. Incubación formal, primeras ventas, primeras rondas de inversión, registro legal. El resultado esperado es que existan como negocio. Las incubadoras y aceleradoras son el actor clave junto con el capital. Los KPIs miden número de startups creadas, rondas cerradas, tiempo de registro y acceso a primeros clientes.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#EFF6FF;color:#1D4ED8;border-color:rgba(29,78,216,0.2);font-size:12px">E5</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Consolidar y Crecer</div>
+        <div class="sintoma-text">La startup tiene modelo validado y crece. Rondas B o superiores, expansión a otros mercados, internacionalización, fusiones o adquisiciones. El resultado esperado es que escalen. El capital toma el rol central junto con los corporativos como socios estratégicos.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#F8FAFC;color:#64748B;border-color:var(--gris-200);font-size:12px">E6</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Infraestructura Compartida</div>
+        <div class="sintoma-text">No es una etapa final del ciclo de la empresa: es una capa transversal. Labs, makerspaces, coworks, centros de prototipado, plataformas de datos. E6 (Infraestructura Compartida) mide los espacios y recursos que el ecosistema pone a disposición de todos los actores en todas las etapas. Sin infraestructura compartida, el ecosistema no puede densificarse.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout-lime" style="margin-top:32px">
+    <div class="cl-label">E0 (Comunicación) es la etapa que la mayoría ignora</div>
+    <div class="cl-body">Si nadie sabe que el ecosistema existe, no importa cuántos recursos tenga: las personas no llegan. Muchos ecosistemas invierten todo en E3 (Idea y Proyecto) y E4 (Crear y Lanzar Empresas), y se preguntan por qué les cuesta llenar el embudo desde arriba. La respuesta casi siempre está en E0 (Comunicación) y E1 (Conciencia y Cultura): nadie está construyendo la narrativa y nadie está activando la cultura.</div>
+  </div>
+</div>
+
+
+<!-- M3-S3 · Los 8 tipos de actor -->
+<div id="mod3-s3" class="mod-section alt">
+  <div class="kicker">Módulo 3 · Sección 3</div>
+  <h2 class="sec-heading">Los 8 tipos de actor:<br>A0 a A6</h2>
+  <div class="divider"></div>
+
+  <p class="prose">En el Módulo 2 viste 6 actores. Para operar el diagnóstico el modelo distingue 8: se agrega A0 (Founders) como el actor central que recibe el soporte de todos los demás, y A4 se divide en dos perfiles diferentes (A4-A Proveedores de Servicios y A4-B Incubadoras y Aceleradoras), porque cada uno mide cosas distintas. Cada tipo tiene un rol diferente, fuentes de datos distintas y KPIs propios. Confundir el perfil del actor lleva a medir las cosas equivocadas en las personas equivocadas.</p>
+
+  <div class="perfil-grid" style="margin-top:24px">
+
+    <div class="perfil-card pc-lime">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A0</div>
+        <p class="perfil-intro">Founders — emprendedores y startups</p>
+        <div class="perfil-logro">Los usuarios del ecosistema. Personas, startups y scaleups que reciben el soporte y generan los resultados que todo el sistema busca producir. Sus datos son los más difíciles de recopilar, pero los más relevantes para medir outcomes reales.</div>
+      </div>
+    </div>
+
+    <div class="perfil-card pc-amber">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A1</div>
+        <p class="perfil-intro">Academia e Investigación</p>
+        <div class="perfil-logro">Docentes, investigadores, estudiantes de posgrado, centros de investigación y Oficinas de Transferencia de Tecnología. El actor que forma el talento y genera el conocimiento que alimenta el embudo desde E1 (Conciencia y Cultura) hasta E4 (Crear y Lanzar Empresas).</div>
+      </div>
+    </div>
+
+    <div class="perfil-card pc-cyan">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A2</div>
+        <p class="perfil-intro">Corporativos e industria</p>
+        <div class="perfil-logro">Empresas establecidas, grandes corporativos, cámaras empresariales y spin-offs corporativos. Son demandantes de innovación, socios estratégicos y generadores de mercado para las startups en etapas E3 (Idea y Proyecto) a E5 (Consolidar y Crecer).</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="perfil-grid" style="margin-top:16px">
+
+    <div class="perfil-card pc-lime">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A3</div>
+        <p class="perfil-intro">Gobierno y administración pública</p>
+        <div class="perfil-logro">Gobiernos municipales, estatales y federales, agencias públicas y organismos de fomento. Diseñan política, regulación y financiamiento público. Sus KPIs miden facilidad para hacer negocios, financiamiento a startups y estabilidad institucional.</div>
+      </div>
+    </div>
+
+    <div class="perfil-card pc-amber">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A4-A</div>
+        <p class="perfil-intro">Proveedores de Servicios</p>
+        <div class="perfil-logro">Laboratorios, makerspaces, coworks, consultores, oficinas de transferencia privadas e incubadoras no formales. Acompañan al emprendedor con infraestructura, asesoría técnica o legal sin ser un programa formal de aceleración. Su rol es de E0 (Comunicación) a E3 (Idea y Proyecto).</div>
+      </div>
+    </div>
+
+    <div class="perfil-card pc-cyan">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A4-B</div>
+        <p class="perfil-intro">Incubadoras y Aceleradoras</p>
+        <div class="perfil-logro">Programas formales de incubación, aceleradoras con portafolio, parques tecnológicos orientados a la creación de startups. Se diferencian de A4-A en que tienen estructura de programa, selección de participantes y métricas de resultado. Son críticos de E2 (Inmersión y Conocimiento) a E5 (Consolidar y Crecer).</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="perfil-grid" style="margin-top:16px">
+
+    <div class="perfil-card pc-lime">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A5</div>
+        <p class="perfil-intro">Capital — inversión y financiamiento</p>
+        <div class="perfil-logro">Inversionistas ángeles, fondos de venture capital, banca de desarrollo y fideicomisos públicos. Validan modelos de negocio y financian escala. Sus KPIs miden volumen de inversión, velocidad para cerrar rondas y diversidad del ecosistema inversor.</div>
+      </div>
+    </div>
+
+    <div class="perfil-card pc-amber">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">A6</div>
+        <p class="perfil-intro">Conectores, Comunidades y Medios</p>
+        <div class="perfil-logro">Clubes de emprendimiento, comunidades tecnológicas, medios especializados, asociaciones, clusters y espacios de divulgación. Crean la cultura del ecosistema, conectan actores que de otro modo no se encontrarían y dan visibilidad a los resultados.</div>
+      </div>
+    </div>
+
+    <div class="perfil-card pc-cyan">
+      <div class="pc-top"></div>
+      <div class="perfil-body">
+        <div class="perfil-num">Backbone</div>
+        <p class="perfil-intro">G1 / G2 / G3 — la capa de gobernanza</p>
+        <div class="perfil-logro">No es un actor más del ecosistema: es la arquitectura de coordinación. G1 es el Consejo Ejecutivo (líderes de alto nivel), G2 es el Núcleo Operativo (equipo profesional que gestiona datos y procesos), G3 son los stakeholders activamente vinculados al backbone. Tiene 4 KPIs propios de gobernanza.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout-lime" style="margin-top:32px">
+    <div class="cl-label">Por qué A4 se divide en dos</div>
+    <div class="cl-body">Un cowork no es lo mismo que un programa formal de aceleración. A4-A Proveedores de Servicios y A4-B Incubadoras y Aceleradoras tienen roles distintos, sirven a etapas distintas y se entrevistan con instrumentos distintos. Meterlos en el mismo tipo de actor produce datos mezclados que no le dicen nada a nadie. La distinción es estructural: refleja la diferencia entre infraestructura de soporte y programas de desarrollo empresarial con resultados medibles.</div>
+  </div>
+</div>
+
+
+<!-- M3-S4 · Cómo se recopilan los datos -->
+<div id="mod3-s4" class="mod-section">
+  <div class="kicker">Módulo 3 · Sección 4</div>
+  <h2 class="sec-heading">Cómo se recopilan los datos:<br>las 4 fuentes del diagnóstico</h2>
+  <div class="divider"></div>
+
+  <p class="prose">No todos los KPIs se recopilan de la misma forma. El modelo distribuye los 228 indicadores en cuatro fuentes distintas según el tipo de dato que se necesita y quién lo puede proveer. Esta distribución reduce la carga sobre cualquier actor individual y aprovecha la información que ya existe en el ecosistema antes de obtener más información.</p>
+
+  <div class="sintoma-list" style="margin-top:28px">
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-lime);color:#065F46;border-color:rgba(16,185,129,0.2)">01</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Encuesta directa por actor (aprox. 100 KPIs)</div>
+        <div class="sintoma-text">Entrevistas y formularios aplicados directamente a cada tipo de actor: A0 Founders, A1 Academia, A2 Corporativos, A3 Gobierno, A4-A Proveedores, A4-B Incubadoras, A5 Capital y A6 Conectores. Cada actor recibe un instrumento diseñado para su perfil específico. Esta fuente provee los datos más precisos sobre lo que cada actor hace y produce.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:var(--bg-amber);color:var(--amber);border-color:rgba(217,119,6,0.2)">02</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Reportes existentes (38 KPIs)</div>
+        <div class="sintoma-text">Datos que ya están disponibles en fuentes públicas: INEGI, OCDE, bases de datos de organismos multilaterales, registros gubernamentales, estadísticas universitarias. No hay que generar esta información desde cero. Incluye KPIs como tasas de empleo en industrias del conocimiento, costo de hacer negocios o densidad de universidades de alto nivel.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#EFF6FF;color:#1D4ED8;border-color:rgba(29,78,216,0.2)">03</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Datos digitales y automatizables (21 KPIs)</div>
+        <div class="sintoma-text">Indicadores que se pueden recopilar mediante herramientas de extracción automatizada: publicaciones en revistas de alto impacto, menciones en medios nacionales e internacionales, número de eventos globales de startups, actividad en plataformas académicas o de inversión. Esta fuente reduce tiempo de recopilación significativamente para los indicadores que tienen rastro digital.</div>
+      </div>
+    </div>
+
+    <div class="sintoma-item">
+      <div class="sintoma-num" style="background:#FEF2F2;color:#DC2626;border-color:rgba(220,38,38,0.2)">04</div>
+      <div class="sintoma-content">
+        <div class="sintoma-title">Encuesta a líderes del ecosistema (35 KPIs)</div>
+        <div class="sintoma-text">Algunos indicadores requieren una perspectiva transversal que ningún actor individual puede proveer solo. Esta encuesta está diseñada para personas con visión del ecosistema completo: directivos de backbone, líderes con presencia en múltiples actores, consultores con experiencia regional. Mide cosas como la calidad del networking entre sectores, la efectividad de los programas de habilidades o el nivel de coordinación interinstitucional.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- M3-S5 · Vista 1 · Matriz desplegada -->
+<div id="mod3-s5" class="mod-section alt">
+  <div class="kicker">Módulo 3 · Sección 5</div>
+  <h2 class="sec-heading">Vista 1: explora los 228 KPIs<br>en formato Matriz</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Antes de aprender el proceso de levantamiento, es útil ver cómo se ven los 228 KPIs ya colocados en sus celdas. Esta primera vista despliega la Matriz Actor × Etapa con todos los indicadores visibles dentro de cada intersección. Permite explorar visualmente qué se mide en cada celda y dónde hay mayor o menor densidad de indicadores.</p>
+
+  <div style="margin:28px 0 12px;border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;background:#F8FAFC">
+    <iframe src="../mapa-del-proceso-CORE-v2.html" style="width:100%;height:720px;border:none;display:block" title="Matriz Actor × Etapa con KPIs desplegados"></iframe>
+  </div>
+
+  <p style="font-size:13px;color:#64748B;text-align:center;margin-top:8px">
+    <a href="../mapa-del-proceso-CORE-v2.html" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-weight:600">Abrir la matriz en pestaña nueva ↗</a>
+  </p>
+</div>
+
+
+<!-- M3-S6 · Vista 2 · Directorio filtrable -->
+<div id="mod3-s6" class="mod-section">
+  <div class="kicker">Módulo 3 · Sección 6</div>
+  <h2 class="sec-heading">Vista 2: explora los 228 KPIs<br>en formato Directorio</h2>
+  <div class="divider"></div>
+
+  <p class="prose">La segunda vista presenta los mismos 228 KPIs en formato de listado tabular con filtros. Permite buscar por palabra clave, filtrar por tipo (Original, Recuperado, Nuevo) o por fuente de datos (encuesta directa, reportes existentes, web scraping, encuesta abierta a líderes). Es la mejor forma de explorar el catálogo cuando ya tienes una hipótesis o quieres responder preguntas como "¿qué KPIs miden capital?" o "¿cuántos indicadores se obtienen por web scraping?".</p>
+
+  <div style="margin:28px 0 12px;border:1px solid var(--gris-200);border-radius:12px;overflow:hidden;background:#F8FAFC">
+    <iframe src="../mapa-del-proceso-CORE-v2-directorio.html" style="width:100%;height:720px;border:none;display:block" title="Directorio filtrable de los 228 KPIs"></iframe>
+  </div>
+
+  <p style="font-size:13px;color:#64748B;text-align:center;margin-top:8px">
+    <a href="../mapa-del-proceso-CORE-v2-directorio.html" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-weight:600">Abrir el directorio en pestaña nueva ↗</a>
+  </p>
+
+  <div class="callout-lime" style="margin-top:36px">
+    <div class="cl-label">Esto es exploración, no levantamiento</div>
+    <div class="cl-body">Las dos vistas anteriores son para conocer el catálogo. No se pretende que recopiles los 228 KPIs en tu ecosistema. En el Módulo 4 aprenderás el proceso operativo: cuándo seleccionar qué KPIs, con qué actor levantarlos, en qué fase del diagnóstico y con qué instrumento concreto. La Matriz se vuelve un mapa accionable, no un cuestionario universal.</div>
+  </div>
+</div>
+
+
+<!-- M3-S7 · Actividad -->
+<div id="mod3-s7" class="mod-section alt">
+  <div class="kicker">Módulo 3 · Sección 7 · Actividad</div>
+  <h2 class="sec-heading">Tu ecosistema<br>en la Matriz</h2>
+  <div class="divider"></div>
+
+  <p class="prose">Ahora que conoces las 7 etapas y los 8 tipos de actor, es momento de ubicar tu ecosistema en la Matriz. Estas preguntas no requieren datos exactos: son un ejercicio de mapeo para que llegues al Módulo 4 con una hipótesis clara de qué intersecciones son más críticas para ti.</p>
+
+  <div class="ejercicio-wrap">
+    <div class="ejercicio-header">
+      <span class="ej-badge">Actividad 2</span>
+      <span class="ej-title">Tu ecosistema en la Matriz Actor × Etapa</span>
+    </div>
+    <p class="ej-instruccion">Responde desde lo que observas en tu ecosistema hoy. No hay respuestas correctas: este ejercicio construye la hipótesis de diagnóstico que CORE confirmará o corregirá con datos en el Módulo 4.</p>
+    <div class="ej-preguntas">
+      <div class="ej-pregunta">
+        <div class="ej-pnum">01</div>
+        <div class="ej-ptexto">Elige 2 actores que tienen presencia activa en tu ecosistema. Para cada uno, ¿en qué etapas del embudo (E0 a E6) tienen mayor actividad? ¿En cuáles están completamente ausentes?</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">02</div>
+        <div class="ej-ptexto">Para esas combinaciones Actor × Etapa que identificaste, ¿cuál de las 4 fuentes de datos es más fácil de usar hoy en tu contexto? ¿Cuál sería prácticamente imposible de ejecutar sin preparación previa?</div>
+      </div>
+      <div class="ej-pregunta">
+        <div class="ej-pnum">03</div>
+        <div class="ej-ptexto">Si solo pudieras medir 3 cosas sobre tu ecosistema hoy, ¿qué preguntas responderían esas 3 cosas? ¿Son preguntas sobre actividades (qué hacemos) o sobre resultados (qué está cambiando)?</div>
+      </div>
+    </div>
+    <div class="ej-nota">Guarda estas respuestas. En el Módulo 4 aprenderás las fases del proceso de diagnóstico — y podrás diseñar el levantamiento de datos para las intersecciones que identificaste aquí.</div>
+  </div>
+</div>
+
+</div><!-- /mod3 -->
+
+<div id="mod4">
+  <div class="locked-section">
+    <div class="locked-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="locked-kicker">Módulo 4</div>
+    <h2 class="locked-title">El Proceso de Diagnóstico</h2>
+    <p class="locked-sub">Esta sección está en construcción. En el módulo verás el proceso de levantamiento, las 6 fases del diagnóstico (F0 a F6), cómo construir el Heatmap del ecosistema, cómo redactar el Reporte y la actividad de cierre que conecta todo lo aprendido.</p>
+    <div class="locked-tags">
+      <span>5 secciones</span>
+      <span>De la Matriz al diagnóstico</span>
+      <span>Las fases F0–F6</span>
+      <span>El Heatmap</span>
+      <span>El Reporte</span>
+      <span>Actividad final</span>
+    </div>
+    <p class="locked-note">Próximamente disponible</p>
+  </div>
+</div><!-- /mod4 -->
+
+<div id="casos">
+  <div class="locked-section">
+    <div class="locked-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="locked-kicker">Casos de Estudio</div>
+    <h2 class="locked-title">CORE en campo</h2>
+    <p class="locked-sub">Esta sección está en construcción. Aquí verás tres aplicaciones del modelo CORE en ecosistemas distintos: Sinaloa, Tlalpan y Chihuahua. Cada caso muestra cómo se ajusta el método al contexto, qué actores participan y qué decisiones de gobernanza se desprenden del diagnóstico.</p>
+    <div class="locked-tags">
+      <span>4 secciones</span>
+      <span>Introducción</span>
+      <span>Sinaloa</span>
+      <span>Tlalpan</span>
+      <span>Chihuahua</span>
+    </div>
+    <p class="locked-note">Próximamente disponible</p>
+  </div>
+</div><!-- /casos -->
+
+
+<!-- ── FOOTER ─────────────────────────────────────────── -->
+<footer>
+  <div class="ft-brand"><em>CORE</em> · Playbook · Curso Guiado</div>
+  <div class="ft-copy">OI Solutions · 2026</div>
+</footer>
+
+</main>
+
+<script>
+(() => {
+  const sidebar      = document.getElementById('sidebar');
+  const toggleBtn    = document.getElementById('sidebarToggle');
+  const progressEl   = document.getElementById('progressCount');
+  const modules      = Array.from(document.querySelectorAll('.nav-module'));
+  const navLinks     = Array.from(document.querySelectorAll('.nav-sublist a'));
+  const trackedIds   = navLinks.map(a => a.getAttribute('href').slice(1));
+  const trackedEls   = trackedIds.map(id => document.getElementById(id)).filter(Boolean);
+  const linkById     = new Map(navLinks.map(a => [a.getAttribute('href').slice(1), a]));
+  const visited      = new Set();
+
+  // Toggle sidebar drawer on mobile
+  toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+  // Manual expand/collapse on module header click
+  modules.forEach(mod => {
+    const btn = mod.querySelector(':scope > button');
+    btn.addEventListener('click', () => {
+      const isOpen = mod.getAttribute('aria-expanded') === 'true';
+      mod.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    });
+  });
+
+  // Close mobile drawer after tapping a sub-link
+  navLinks.forEach(a => {
+    a.addEventListener('click', () => {
+      if (window.innerWidth <= 960) sidebar.classList.remove('open');
+    });
+  });
+
+  // Section tracking: IntersectionObserver with rootMargin favoring mid-viewport
+  const setActive = (id) => {
+    const link = linkById.get(id);
+    if (!link) return;
+    navLinks.forEach(x => x.classList.remove('active'));
+    link.classList.add('active');
+    const parentMod = link.closest('.nav-module');
+    modules.forEach(m => {
+      const isCurrent = m === parentMod;
+      m.classList.toggle('current', isCurrent);
+      if (isCurrent) m.setAttribute('aria-expanded', 'true');
+    });
+    // progress: each unique section visited counts as 1
+    if (!visited.has(id)) {
+      visited.add(id);
+      progressEl.textContent = visited.size;
+    }
+    // keep the active link visible in the sidebar
+    const sidebarRect = sidebar.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    if (linkRect.top < sidebarRect.top + 60 || linkRect.bottom > sidebarRect.bottom - 40) {
+      link.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    // Pick the entry closest to the top of the tracking band
+    const visible = entries.filter(e => e.isIntersecting);
+    if (visible.length === 0) return;
+    visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    setActive(visible[0].target.id);
+  }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+
+  trackedEls.forEach(el => observer.observe(el));
+
+  // On first load, set initial active based on scroll position (e.g. page refresh mid-scroll)
+  window.addEventListener('load', () => {
+    const y = window.scrollY + window.innerHeight * 0.4;
+    let best = trackedEls[0];
+    trackedEls.forEach(el => {
+      if (el.offsetTop <= y) best = el;
+    });
+    if (best) setActive(best.id);
+  });
+})();
+</script>
+
+<script>
+/* Mandala Actor × Etapa — Actividad M2 S7 */
+(() => {
+  const ACTORS = [
+    {id:'A1',name:'Academia'},
+    {id:'A2',name:'Empresas'},
+    {id:'A3',name:'Gobierno'},
+    {id:'A4',name:'Proveedores'},
+    {id:'A5',name:'Capital'},
+    {id:'A6',name:'Conectores'}
+  ];
+  const STAGES = [
+    {id:'E1',name:'Personas inspiradas',fill:'#F0FDF4'},
+    {id:'E2',name:'Personas capaces',fill:'#DCFCE7'},
+    {id:'E3',name:'Proyectos tecnológicos',fill:'#FFF7ED'},
+    {id:'E4',name:'Startups',fill:'#EFF6FF'},
+    {id:'E5',name:'Scaleups',fill:'#F1F5F9'}
+  ];
+  const RADII = [56, 116, 176, 240, 304, 340];
+  const CX = 360, CY = 360;
+  const SP = 'core-mandala:';
+
+  function arcCell(sector, ring){
+    const a0 = (sector*60 - 90) * Math.PI/180;
+    const a1 = ((sector+1)*60 - 90) * Math.PI/180;
+    const rI = RADII[ring], rO = RADII[ring+1];
+    const x0 = CX + rI*Math.cos(a0),  y0 = CY + rI*Math.sin(a0);
+    const x1 = CX + rO*Math.cos(a0),  y1 = CY + rO*Math.sin(a0);
+    const x2 = CX + rO*Math.cos(a1),  y2 = CY + rO*Math.sin(a1);
+    const x3 = CX + rI*Math.cos(a1),  y3 = CY + rI*Math.sin(a1);
+    return `M ${x0.toFixed(2)} ${y0.toFixed(2)} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${rO} ${rO} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x3.toFixed(2)} ${y3.toFixed(2)} A ${rI} ${rI} 0 0 0 ${x0.toFixed(2)} ${y0.toFixed(2)} Z`;
+  }
+  const key = (s,a,e) => `${SP}s${s}:${a}:${e}`;
+
+  const cellsG = document.querySelector('.mandala-cells');
+  if (!cellsG) return;
+
+  const labelsG = document.querySelector('.mandala-labels');
+  const modal   = document.getElementById('mandalaModal');
+  const mmText  = document.getElementById('mmText');
+  const mmStep  = document.getElementById('mmStep');
+  const mmActor = document.getElementById('mmActor');
+  const mmStage = document.getElementById('mmStage');
+
+  let activeStep = 1;
+  let current = null;
+
+  function buildMandala(){
+    for (let s = 0; s < 6; s++){
+      for (let r = 0; r < 5; r++){
+        const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+        p.setAttribute('d', arcCell(s, r));
+        p.setAttribute('fill', STAGES[r].fill);
+        p.setAttribute('stroke', '#CBD5E1');
+        p.setAttribute('stroke-width', '1');
+        p.classList.add('cell');
+        p.dataset.actor = ACTORS[s].id;
+        p.dataset.stage = STAGES[r].id;
+        p.dataset.actorName = ACTORS[s].name;
+        p.dataset.stageName = STAGES[r].name;
+        p.addEventListener('click', () => openModal(ACTORS[s], STAGES[r]));
+        cellsG.appendChild(p);
+      }
+    }
+    for (let s = 0; s < 6; s++){
+      const aMid = (s*60 + 30 - 90) * Math.PI/180;
+      const lx = CX + (RADII[5] + 26) * Math.cos(aMid);
+      const ly = CY + (RADII[5] + 26) * Math.sin(aMid);
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', lx.toFixed(2));
+      t.setAttribute('y', ly.toFixed(2));
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('dominant-baseline', 'middle');
+      t.classList.add('actor-label');
+      t.textContent = ACTORS[s].name;
+      labelsG.appendChild(t);
+    }
+    refreshCells();
+  }
+
+  function refreshCells(){
+    document.querySelectorAll('.mandala-cells .cell').forEach(p => {
+      const v = localStorage.getItem(key(activeStep, p.dataset.actor, p.dataset.stage));
+      p.classList.toggle('filled', !!(v && v.trim()));
+    });
+  }
+
+  function openModal(actor, stage){
+    current = {actor, stage};
+    mmStep.textContent  = 'Paso ' + activeStep;
+    mmActor.textContent = actor.name;
+    mmStage.textContent = stage.name;
+    mmText.value = localStorage.getItem(key(activeStep, actor.id, stage.id)) || '';
+    modal.hidden = false;
+    setTimeout(() => mmText.focus(), 50);
+  }
+  function closeModal(){ modal.hidden = true; current = null; }
+
+  document.getElementById('mmSave').addEventListener('click', () => {
+    if (!current) return;
+    const v = mmText.value.trim();
+    if (v) localStorage.setItem(key(activeStep, current.actor.id, current.stage.id), v);
+    else   localStorage.removeItem(key(activeStep, current.actor.id, current.stage.id));
+    refreshCells();
+    closeModal();
+  });
+  document.getElementById('mmClear').addEventListener('click', () => {
+    if (!current) return;
+    localStorage.removeItem(key(activeStep, current.actor.id, current.stage.id));
+    mmText.value = '';
+    refreshCells();
+  });
+  document.getElementById('mmClose').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  document.querySelectorAll('.mandala-pasos li').forEach(li => {
+    li.addEventListener('click', () => {
+      activeStep = parseInt(li.dataset.step, 10);
+      document.querySelectorAll('.mandala-pasos li').forEach(x => x.classList.toggle('active', x === li));
+      refreshCells();
+    });
+  });
+
+  document.getElementById('mandalaExport').addEventListener('click', () => {
+    const data = {};
+    for (let s = 1; s <= 6; s++) data['paso_' + s] = {};
+    for (let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(SP)) continue;
+      const parts = k.slice(SP.length).split(':');
+      const step = parts[0].replace('s','');
+      data['paso_' + step][`${parts[1]}_${parts[2]}`] = localStorage.getItem(k);
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mandala-core-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById('mandalaPrint').addEventListener('click', () => window.print());
+  document.getElementById('mandalaReset').addEventListener('click', () => {
+    if (!confirm('¿Borrar TODAS las respuestas de los 6 pasos? Esta acción no se puede deshacer.')) return;
+    const toDel = [];
+    for (let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (k && k.startsWith(SP)) toDel.push(k);
+    }
+    toDel.forEach(k => localStorage.removeItem(k));
+    refreshCells();
+  });
+
+  buildMandala();
+})();
+</script>
+</body>
+</html>
